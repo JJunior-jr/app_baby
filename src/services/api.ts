@@ -1,8 +1,8 @@
 import { ActivityItem, CustomActivityDefinition, DailySummary } from '../types';
 import { authService } from './auth';
 
-const ACTIVITIES_STORAGE_KEY = 'roti_hub_activities_v2';
-const CUSTOM_ACTIVITIES_STORAGE_KEY = 'roti_hub_custom_activities_v2';
+const ACTIVITIES_STORAGE_KEY = 'baby_john_activities_v2';
+const CUSTOM_ACTIVITIES_STORAGE_KEY = 'baby_john_custom_activities_v2';
 
 // Seed initial activities matching screenshots exactly
 const INITIAL_ACTIVITIES: ActivityItem[] = [
@@ -198,7 +198,7 @@ const INITIAL_CUSTOM_ACTIVITIES: CustomActivityDefinition[] = [
 ];
 
 function getStoredActivities(): ActivityItem[] {
-  const json = localStorage.getItem(ACTIVITIES_STORAGE_KEY);
+  const json = localStorage.getItem(ACTIVITIES_STORAGE_KEY) || localStorage.getItem('roti_hub_activities_v2');
   if (!json) {
     localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(INITIAL_ACTIVITIES));
     return INITIAL_ACTIVITIES;
@@ -215,7 +215,7 @@ function saveStoredActivities(activities: ActivityItem[]): void {
 }
 
 function getStoredCustomActivities(): CustomActivityDefinition[] {
-  const json = localStorage.getItem(CUSTOM_ACTIVITIES_STORAGE_KEY);
+  const json = localStorage.getItem(CUSTOM_ACTIVITIES_STORAGE_KEY) || localStorage.getItem('roti_hub_custom_activities_v2');
   if (!json) {
     localStorage.setItem(CUSTOM_ACTIVITIES_STORAGE_KEY, JSON.stringify(INITIAL_CUSTOM_ACTIVITIES));
     return INITIAL_CUSTOM_ACTIVITIES;

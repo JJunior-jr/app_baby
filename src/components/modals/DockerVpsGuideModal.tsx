@@ -29,7 +29,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: roti_hub_fastapi
+    container_name: baby_john_fastapi
     restart: always
     ports:
       - "8000:8000"
@@ -37,7 +37,7 @@ services:
       - SECRET_KEY=sua_chave_secreta_super_segura_jwt_2026
       - ALGORITHM=HS256
       - ACCESS_TOKEN_EXPIRE_MINUTES=10080
-      - DATABASE_URL=sqlite:///./roti_hub.db
+      - DATABASE_URL=sqlite:///./baby_john.db
     volumes:
       - ./backend/data:/app/data
 
@@ -46,7 +46,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: roti_hub_frontend
+    container_name: baby_john_frontend
     restart: always
     ports:
       - "3000:3000"
@@ -61,7 +61,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import activities, auth
 
 app = FastAPI(
-    title="Roti HUB - Diário do Bebê API",
+    title="Baby John - Diário do Bebê API",
     description="Backend FastAPI com autenticação JWT e agendamentos diários",
     version="1.0.0"
 )
@@ -79,7 +79,7 @@ app.include_router(activities.router, prefix="/api/activities", tags=["Atividade
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "service": "roti-hub-fastapi"}
+    return {"status": "ok", "service": "baby-john-fastapi"}
 `;
 
   return (

@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import activities
 
 app = FastAPI(
-    title="Roti HUB - Diário do Bebê API",
+    title="Baby John - Diário do Bebê API",
     description="Backend Python FastAPI para agendamentos e rotina diária com autenticação JWT",
     version="1.0.0"
 )
@@ -23,7 +23,7 @@ app.include_router(activities.router, prefix="/api/activities", tags=["Atividade
 def health_check():
     return {
         "status": "healthy",
-        "service": "roti-hub-fastapi",
+        "service": "baby-john-fastapi",
         "version": "1.0.0"
     }
 

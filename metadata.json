@@ -1,6 +1,6 @@
 {
-  "name": "Roti HUB - Diário do Bebê",
-  "description": "Aplicativo mobile para registro e agendamento diário da rotina do bebê, com autenticação JWT, timeline interativa e estrutura para FastAPI e Docker.",
+  "name": "Baby John - Diário do Bebê",
+  "description": "Aplicativo mobile para registro e agendamento diário da rotina do bebê John, com autenticação JWT, timeline interativa e estrutura para FastAPI e Docker.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

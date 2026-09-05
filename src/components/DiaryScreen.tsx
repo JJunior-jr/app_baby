@@ -19,6 +19,7 @@ import {
 import { ActivityItem, DailySummary } from '../types';
 import { CalendarModal } from './modals/CalendarModal';
 import { EditActivityModal } from './modals/EditActivityModal';
+import { DiaryTopSummary } from './DiaryTopSummary';
 
 interface DiaryScreenProps {
   activities: ActivityItem[];
@@ -290,6 +291,13 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
 
       {/* Main Content Area: Timeline OR Empty State */}
       <div className="flex-1 overflow-y-auto px-4.5 pt-3 pb-32 no-scrollbar">
+        {/* Top Summary: Ofertado/Consumido, Sono/Acordado, e Resumo Dinâmico em Tempo Real */}
+        <DiaryTopSummary
+          activities={activities}
+          selectedDate={selectedDate}
+          dailySummary={dailySummary}
+        />
+
         {filteredActivities.length === 0 ? (
           /* Empty State matching Image 17 */
           <div className="flex flex-col items-center justify-center pt-10 px-4 text-center">
@@ -300,7 +308,7 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                 <span className="text-4xl mb-2">📋</span>
                 <div className="flex items-center space-x-1 text-amber-300">
                   <span>⭐</span>
-                  <span className="text-xs font-extrabold tracking-wider text-purple-200">ROTI DIÁRIO</span>
+                  <span className="text-xs font-extrabold tracking-wider text-purple-200">BABY JOHN DIÁRIO</span>
                   <span>⭐</span>
                 </div>
               </div>

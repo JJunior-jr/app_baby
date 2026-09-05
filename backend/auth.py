@@ -7,7 +7,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from schemas import TokenPayload, UserResponse
 
-SECRET_KEY = os.getenv("SECRET_KEY", "roti_hub_secret_key_vps_jwt_2026_super_safe")
+SECRET_KEY = os.getenv("SECRET_KEY", "baby_john_secret_key_vps_jwt_2026_super_safe")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080")) # 7 days
 

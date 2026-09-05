@@ -15,8 +15,10 @@ import {
   Check,
   Sparkles,
   HelpCircle,
+  Palette,
 } from 'lucide-react';
 import { CustomActivityDefinition } from '../../types';
+import { ThemeSelector } from '../ThemeSelector';
 import {
   remindersService,
   ActivityReminderConfig,
@@ -43,6 +45,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
   onRemindersUpdated,
 }) => {
   const [reminders, setReminders] = useState<Record<string, ActivityReminderConfig>>({});
+  const [activeTab, setActiveTab] = useState<'reminders' | 'palettes'>('reminders');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [feedbackToast, setFeedbackToast] = useState<string | null>(null);
 
@@ -187,57 +190,126 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
       {/* Click outside backdrop */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      <div className="relative z-10 w-full max-w-[440px] landscape:max-w-xl h-auto max-h-[90vh] bg-[#0c0d16] rounded-3xl flex flex-col justify-between overflow-hidden shadow-2xl border border-gray-800 animate-in zoom-in-95 duration-200">
+      <div
+        className="relative z-10 w-full max-w-[440px] landscape:max-w-xl h-auto max-h-[90vh] rounded-3xl flex flex-col justify-between overflow-hidden shadow-2xl border animate-in zoom-in-95 duration-200 transition-colors"
+        style={{
+          backgroundColor: 'var(--color-dominant)',
+          borderColor: 'var(--color-border)',
+        }}
+      >
         
         {/* Navigation Header */}
-        <header className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-white/5 shrink-0 bg-[#0c0d16]">
+        <header
+          className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-white/5 shrink-0"
+          style={{ backgroundColor: 'var(--color-dominant)' }}
+        >
           <button
             type="button"
             onClick={onClose}
             aria-label="Voltar"
-            className="p-1.5 -ml-1 text-gray-300 hover:text-white transition active:scale-95"
+            className="p-1.5 -ml-1 text-gray-300 hover:text-white transition active:scale-95 cursor-pointer"
           >
             <ArrowLeft className="w-6 h-6 stroke-[2.2]" />
           </button>
           
           <div className="flex flex-col items-center">
             <h1 className="text-base font-bold text-white tracking-tight flex items-center gap-1.5">
-              <span>Atividades & Lembretes</span>
+              <span>Configurações & Rotina</span>
               {activeRemindersCount > 0 && (
                 <span className="px-1.5 py-0.5 rounded-full bg-purple-600/40 border border-purple-500/50 text-purple-200 text-[10px] font-extrabold">
                   {activeRemindersCount} ativo{activeRemindersCount > 1 ? 's' : ''}
                 </span>
               )}
             </h1>
-            <span className="text-[10px] text-gray-400">Notificações automáticas em intervalos regulares</span>
+            <span className="text-[10px] text-gray-400">Lembretes regulares e personalização visual</span>
           </div>
 
           <div className="w-6 h-6" />
         </header>
 
+        {/* Tab Switcher: Lembretes vs Cores 60/30/10 */}
+        <div className="px-5 pt-3 shrink-0">
+          <div
+            className="grid grid-cols-2 p-1 rounded-2xl border text-xs font-bold"
+            style={{
+              backgroundColor: 'var(--color-secondary)',
+              borderColor: 'var(--color-border)',
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setActiveTab('reminders')}
+              style={
+                activeTab === 'reminders'
+                  ? {
+                      backgroundColor: 'var(--color-accent)',
+                      color: 'var(--color-accent-text)',
+                    }
+                  : undefined
+              }
+              className={`py-2 rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                activeTab === 'reminders'
+                  ? 'shadow'
+                  : 'text-gray-400 hover:text-gray-200'
+              }`}
+            >
+              <Bell className="w-3.5 h-3.5" />
+              <span>Lembretes</span>
+              {activeRemindersCount > 0 && (
+                <span className="w-4 h-4 rounded-full bg-black/40 text-[9px] flex items-center justify-center border border-white/20">
+                  {activeRemindersCount}
+                </span>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('palettes')}
+              style={
+                activeTab === 'palettes'
+                  ? {
+                      backgroundColor: 'var(--color-accent)',
+                      color: 'var(--color-accent-text)',
+                    }
+                  : undefined
+              }
+              className={`py-2 rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                activeTab === 'palettes'
+                  ? 'shadow'
+                  : 'text-gray-400 hover:text-gray-200'
+              }`}
+            >
+              <Palette className="w-3.5 h-3.5" />
+              <span>Cores (60/30/10)</span>
+            </button>
+          </div>
+        </div>
+
         {/* In-Modal Toast Feedback */}
         {feedbackToast && (
-          <div className="absolute top-16 left-4 right-4 z-30 p-2.5 rounded-xl bg-gradient-to-r from-[#5a43c7] to-[#7158e2] text-white text-xs font-semibold shadow-xl border border-purple-300/40 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+          <div className="absolute top-28 left-4 right-4 z-30 p-2.5 rounded-xl bg-gradient-to-r from-[#5a43c7] to-[#7158e2] text-white text-xs font-semibold shadow-xl border border-purple-300/40 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
             <span className="flex-1 pr-2">{feedbackToast}</span>
             <Check className="w-4 h-4 text-emerald-300 shrink-0" />
           </div>
         )}
 
-        {/* Informative Guidance Banner: O que é e qual o objetivo */}
-        <div className="px-5 pt-3 shrink-0">
-          <div className="bg-[#151728] border border-purple-500/20 rounded-2xl p-3 flex items-start space-x-2.5">
-            <div className="w-7 h-7 rounded-xl bg-purple-900/50 border border-purple-500/30 flex items-center justify-center shrink-0 text-purple-300 mt-0.5">
-              <Sparkles className="w-4 h-4" />
+        {/* TAB 1: LEMBRETES */}
+        {activeTab === 'reminders' && (
+          <>
+            {/* Informative Guidance Banner: O que é e qual o objetivo */}
+            <div className="px-5 pt-3 shrink-0">
+              <div className="bg-[#151728] border border-purple-500/20 rounded-2xl p-3 flex items-start space-x-2.5">
+                <div className="w-7 h-7 rounded-xl bg-purple-900/50 border border-purple-500/30 flex items-center justify-center shrink-0 text-purple-300 mt-0.5">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div className="text-[11px] text-gray-300 leading-relaxed">
+                  <span className="font-bold text-white">Lembretes automáticos: </span>
+                  Ative o toggle nas atividades para receber alertas nos intervalos recomendados. Isso ajuda a acompanhar a rotina e não perder horários cruciais.
+                </div>
+              </div>
             </div>
-            <div className="text-[11px] text-gray-300 leading-relaxed">
-              <span className="font-bold text-white">Lembretes automáticos: </span>
-              Ative o toggle nas atividades para receber alertas nos intervalos recomendados. Isso ajuda a acompanhar a rotina e não perder horários cruciais.
-            </div>
-          </div>
-        </div>
 
-        {/* Activities List */}
-        <div className="flex-1 overflow-y-auto px-5 py-3 space-y-3.5 no-scrollbar">
+            {/* Activities List */}
+            <div className="flex-1 overflow-y-auto px-5 py-3 space-y-3.5 no-scrollbar">
           {activities.map((act) => {
             const reminderConfig = getOrCreateReminder(act);
             const isEnabled = reminderConfig.enabled;
@@ -470,26 +542,59 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
             );
           })}
         </div>
+        </>
+        )}
 
-        {/* Bottom Actions: + Nova Atividade & Fechar */}
-        <footer className="p-4 pt-3 pb-5 bg-[#0c0d16] border-t border-white/5 flex items-center gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={onOpenNewActivity}
-            className="flex-1 py-3.5 rounded-2xl bg-[#1b1e33] hover:bg-[#252945] active:scale-[0.99] text-purple-200 font-bold text-sm border border-purple-500/30 flex items-center justify-center space-x-2 transition shadow"
-          >
-            <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span>Nova Atividade</span>
-          </button>
+        {/* TAB 2: PALETAS DE CORES (60/30/10) */}
+        {activeTab === 'palettes' && (
+          <div className="flex-1 overflow-y-auto px-5 py-3 no-scrollbar">
+            <ThemeSelector />
+          </div>
+        )}
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 py-3.5 rounded-2xl bg-[#7158e2] hover:bg-[#6047cf] active:scale-[0.99] text-white font-extrabold text-sm shadow-lg shadow-purple-900/30 flex items-center justify-center space-x-2 transition"
-          >
-            <Check className="w-4 h-4 stroke-[2.5]" />
-            <span>Salvar & Fechar</span>
-          </button>
+        {/* Bottom Actions */}
+        <footer
+          className="p-4 pt-3 pb-5 border-t border-white/5 flex items-center gap-3 shrink-0"
+          style={{ backgroundColor: 'var(--color-dominant)' }}
+        >
+          {activeTab === 'reminders' ? (
+            <>
+              <button
+                type="button"
+                onClick={onOpenNewActivity}
+                className="flex-1 py-3.5 rounded-2xl bg-[#1b1e33] hover:bg-[#252945] active:scale-[0.99] text-purple-200 font-bold text-sm border border-purple-500/30 flex items-center justify-center space-x-2 transition shadow cursor-pointer"
+              >
+                <Plus className="w-4 h-4 stroke-[2.5]" />
+                <span>Nova Atividade</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={onClose}
+                style={{
+                  backgroundColor: 'var(--color-accent)',
+                  color: 'var(--color-accent-text)',
+                }}
+                className="flex-1 py-3.5 rounded-2xl active:scale-[0.99] font-extrabold text-sm shadow-lg flex items-center justify-center space-x-2 transition cursor-pointer"
+              >
+                <Check className="w-4 h-4 stroke-[2.5]" />
+                <span>Salvar & Fechar</span>
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                backgroundColor: 'var(--color-accent)',
+                color: 'var(--color-accent-text)',
+              }}
+              className="w-full py-3.5 rounded-2xl active:scale-[0.99] font-extrabold text-sm shadow-lg flex items-center justify-center space-x-2 transition cursor-pointer"
+            >
+              <Check className="w-4 h-4 stroke-[2.5]" />
+              <span>Concluir Seleção</span>
+            </button>
+          )}
         </footer>
 
       </div>

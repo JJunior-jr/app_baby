@@ -1,7 +1,7 @@
 import { UserProfile } from '../types';
 
-const TOKEN_STORAGE_KEY = 'roti_hub_jwt_token';
-const USER_STORAGE_KEY = 'roti_hub_user';
+const TOKEN_STORAGE_KEY = 'baby_john_jwt_token';
+const USER_STORAGE_KEY = 'baby_john_user';
 
 // Helper to base64url encode strings
 function base64UrlEncode(str: string): string {
@@ -45,8 +45,8 @@ export function generateMockJwt(user: Partial<UserProfile>): string {
     role: user.role || 'parent',
     iat: nowSeconds,
     exp: nowSeconds + 60 * 60 * 24 * 7, // 7 days expiration
-    iss: 'fastapi-backend-roti-hub',
-    aud: 'roti-hub-client',
+    iss: 'fastapi-backend-baby-john',
+    aud: 'baby-john-client',
   };
 
   const encodedHeader = base64UrlEncode(JSON.stringify(header));
@@ -72,11 +72,11 @@ export function parseJwt(token: string): { header: Record<string, unknown>; payl
 
 export const authService = {
   getToken(): string | null {
-    return localStorage.getItem(TOKEN_STORAGE_KEY);
+    return localStorage.getItem(TOKEN_STORAGE_KEY) || localStorage.getItem('roti_hub_jwt_token');
   },
 
   getCurrentUser(): UserProfile | null {
-    const userJson = localStorage.getItem(USER_STORAGE_KEY);
+    const userJson = localStorage.getItem(USER_STORAGE_KEY) || localStorage.getItem('roti_hub_user');
     if (!userJson) {
       // Default user matching screenshots ("Boa noite, Papai!", baby "John")
       const defaultUser: UserProfile = {

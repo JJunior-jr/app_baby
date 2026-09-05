@@ -20,6 +20,7 @@ import { DockerVpsGuideModal } from './components/modals/DockerVpsGuideModal';
 
 import { apiService } from './services/api';
 import { authService } from './services/auth';
+import { themeService, PaletteTheme } from './services/theme';
 import {
   ActivityItem,
   ActivityType,
@@ -33,6 +34,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<TabType>('diario');
   const [selectedDate, setSelectedDate] = useState<string>('2026-08-19');
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
+  const [currentPalette, setCurrentPalette] = useState<PaletteTheme>(themeService.getCurrentPalette());
 
   // Core Data State
   const [activities, setActivities] = useState<ActivityItem[]>([]);
@@ -56,8 +58,14 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isDockerGuideOpen, setIsDockerGuideOpen] = useState(false);
 
-  // Initialize data on mount
+  // Initialize data and theme on mount
   useEffect(() => {
+    const pal = themeService.initTheme();
+    setCurrentPalette(pal);
+    const unsub = themeService.subscribe((p) => {
+      setCurrentPalette(p);
+    });
+
     loadData();
     // Check or create default parent user
     let user = authService.getCurrentUser();
@@ -66,6 +74,8 @@ export default function App() {
       user = res.user;
     }
     setCurrentUser(user);
+
+    return unsub;
   }, []);
 
   const loadData = async () => {
@@ -295,11 +305,18 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen h-[100dvh] w-full bg-[#06070e] flex justify-center items-stretch text-slate-100 font-sans selection:bg-purple-600/30 selection:text-white overflow-hidden">
+    <div
+      className="min-h-screen h-[100dvh] w-full flex justify-center items-stretch text-slate-100 font-sans selection:bg-purple-600/30 selection:text-white overflow-hidden transition-colors duration-300"
+      style={{ backgroundColor: currentPalette.dominant }}
+    >
       {/* Mobile Device Frame Container with smooth landscape & portrait centering */}
       <main
-        className="w-full max-w-[430px] landscape:max-w-xl sm:max-w-md md:max-w-lg lg:max-w-xl h-full max-h-[100dvh] bg-[#080913] flex flex-col relative shadow-2xl border-x border-[#1a1d30]/70 mx-auto overflow-hidden transition-all duration-200"
+        className="w-full max-w-[430px] landscape:max-w-xl sm:max-w-md md:max-w-lg lg:max-w-xl h-full max-h-[100dvh] flex flex-col relative shadow-2xl mx-auto overflow-hidden transition-all duration-300 border-x"
         data-purpose="mobile-viewport"
+        style={{
+          backgroundColor: currentPalette.dominant,
+          borderColor: currentPalette.border,
+        }}
       >
         {/* Native Mobile Status Bar (9:41, WiFi, Battery) */}
         <StatusBar />

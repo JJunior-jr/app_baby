@@ -1,10 +1,29 @@
 @import "tailwindcss";
 
+:root {
+  /* 60% Dominante (Canvas & Fundo) */
+  --color-dominant: #080913;
+  
+  /* 30% Secundária (Estrutura, Cards, Barra de Navegação) */
+  --color-secondary: #13162a;
+  --color-secondary-elevated: #1a1f38;
+  --color-border: #232747;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  
+  /* 10% Destaque / Accent / CTA */
+  --color-accent: #7c3aed;
+  --color-accent-hover: #6d28d9;
+  --color-accent-text: #ffffff;
+}
+
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    background-color: var(--color-dominant);
+    color: var(--color-text-primary);
   }
 }
 

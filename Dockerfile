@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for Roti HUB Frontend
+# Multi-stage Dockerfile for Baby John Frontend
 FROM node:20-alpine AS build
 
 WORKDIR /app

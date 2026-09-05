@@ -6,12 +6,12 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: roti_hub_backend
+    container_name: baby_john_backend
     restart: always
     ports:
       - "8000:8000"
     environment:
-      - SECRET_KEY=roti_hub_vps_jwt_super_secret_key_2026
+      - SECRET_KEY=baby_john_vps_jwt_super_secret_key_2026
       - ALGORITHM=HS256
       - ACCESS_TOKEN_EXPIRE_MINUTES=10080
     volumes:
@@ -22,7 +22,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: roti_hub_frontend
+    container_name: baby_john_frontend
     restart: always
     ports:
       - "3000:3000"

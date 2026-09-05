@@ -26,7 +26,11 @@ const NAV_ITEMS: NavItem[] = [
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) => {
   return (
     <nav
-      className="relative w-full bg-[#101326]/90 backdrop-blur-3xl border border-white/25 rounded-[30px] p-1.5 flex items-center justify-between gap-1 select-none shadow-[0_16px_45px_rgba(0,0,0,0.75),inset_0_1.5px_2px_rgba(255,255,255,0.28)] overflow-hidden touch-manipulation"
+      className="relative w-full backdrop-blur-3xl border rounded-[30px] p-1.5 flex items-center justify-between gap-1 select-none shadow-[0_16px_45px_rgba(0,0,0,0.75),inset_0_1.5px_2px_rgba(255,255,255,0.28)] overflow-hidden touch-manipulation transition-colors duration-300"
+      style={{
+        backgroundColor: 'var(--color-secondary)',
+        borderColor: 'var(--color-border)',
+      }}
       data-purpose="bottom-tab-navigation"
     >
       {/* Liquid Top Rim Light Line */}

@@ -11,7 +11,7 @@ export interface ActivityReminderConfig {
   lastNotifiedAt?: string;
 }
 
-const REMINDERS_STORAGE_KEY = 'roti_hub_activity_reminders_v1';
+const REMINDERS_STORAGE_KEY = 'baby_john_activity_reminders_v1';
 
 export const DEFAULT_ACTIVITY_REMINDERS: Record<string, ActivityReminderConfig> = {
   'def-1': {
@@ -105,7 +105,7 @@ export function formatMinutesHuman(totalMinutes: number): string {
 export const remindersService = {
   getAll(): Record<string, ActivityReminderConfig> {
     try {
-      const stored = localStorage.getItem(REMINDERS_STORAGE_KEY);
+      const stored = localStorage.getItem(REMINDERS_STORAGE_KEY) || localStorage.getItem('roti_hub_activity_reminders_v1');
       if (!stored) {
         localStorage.setItem(REMINDERS_STORAGE_KEY, JSON.stringify(DEFAULT_ACTIVITY_REMINDERS));
         return DEFAULT_ACTIVITY_REMINDERS;

@@ -59,7 +59,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   // UI Visibility Flags (preservando o código original intacto)
   const isAiAssistantVisible = false; // Desativado para não aparecer na interface do usuário
-  const isRotiHubVisible = false; // Desabilitado e sem ficar visível na interface do usuário
+  const isBabyJohnVisible = false; // Desabilitado e sem ficar visível na interface do usuário
   const isRoutineLevelVisible = false; // Desabilitado e sem ficar visível na interface do usuário (contabilização de rotina e nível)
 
   const [aiQuestion, setAiQuestion] = useState('');
@@ -202,7 +202,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       )}
 
-      {/* Top Header: Baby Avatar + Greeting + Roti HUB Badge + Notifications */}
+      {/* Top Header: Baby Avatar + Greeting + Baby John Badge + Notifications */}
       <header className="flex items-center justify-between pt-1">
         {/* Left: Avatar & Greeting */}
         <div className="flex items-center space-x-3">
@@ -235,9 +235,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </div>
         </div>
 
-        {/* Right: Roti HUB badge (desabilitado e invisível na UI, código preservado) + Bell */}
+        {/* Right: Baby John badge (desabilitado e invisível na UI, código preservado) + Bell */}
         <div className="flex items-center space-x-2">
-          {isRotiHubVisible && (
+          {isBabyJohnVisible && (
             <button
               type="button"
               disabled
@@ -247,8 +247,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             >
               <span className="text-amber-400 text-xs">👶</span>
               <div className="flex flex-col text-left leading-none">
-                <span className="text-[10px] font-black text-amber-300 tracking-wider">Roti</span>
-                <span className="text-[7.5px] text-purple-200 tracking-tighter">HUB</span>
+                <span className="text-[10px] font-black text-amber-300 tracking-wider">Baby</span>
+                <span className="text-[7.5px] text-purple-200 tracking-tighter">John</span>
               </div>
             </button>
           )}
