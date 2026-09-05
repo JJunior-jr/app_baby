@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, X, Calendar as CalendarIcon, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Calendar as CalendarIcon, Check, Smartphone, ExternalLink } from 'lucide-react';
 import { ActivityItem } from '../../types';
 
 interface CalendarModalProps {
@@ -8,6 +8,7 @@ interface CalendarModalProps {
   selectedDate: string; // "YYYY-MM-DD"
   onSelectDate: (dateStr: string) => void;
   activities: ActivityItem[];
+  onOpenCalendarSync?: () => void;
 }
 
 const MONTH_NAMES = [
@@ -33,6 +34,7 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
   selectedDate,
   onSelectDate,
   activities,
+  onOpenCalendarSync,
 }) => {
   if (!isOpen) return null;
 
@@ -290,6 +292,28 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
             <span>Hoje</span>
           </div>
         </div>
+
+        {/* Integration Button */}
+        {onOpenCalendarSync && (
+          <div className="mt-3 pt-3 border-t border-white/10">
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onOpenCalendarSync();
+              }}
+              className="w-full py-2.5 px-3 rounded-2xl bg-[#1e223c] hover:bg-[#282d4f] border border-purple-500/30 text-purple-200 text-xs font-bold flex items-center justify-between transition cursor-pointer shadow-sm active:scale-[0.99]"
+            >
+              <div className="flex items-center gap-2">
+                <Smartphone className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="text-left">Sincronizar com Agenda do Celular</span>
+              </div>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold">
+                Google • Outlook • Android
+              </span>
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -16,9 +16,15 @@ import {
   Sparkles,
   HelpCircle,
   Palette,
+  Calendar as CalendarIcon,
+  Smartphone,
+  ExternalLink,
+  Download,
+  ShieldCheck,
 } from 'lucide-react';
 import { CustomActivityDefinition } from '../../types';
 import { ThemeSelector } from '../ThemeSelector';
+import { calendarSyncService } from '../../services/calendarSync';
 import {
   remindersService,
   ActivityReminderConfig,
@@ -34,6 +40,8 @@ interface ManageActivitiesModalProps {
   onDeleteActivity: (id: string) => void;
   onOpenNewActivity: () => void;
   onRemindersUpdated?: () => void;
+  onOpenCalendarSync?: () => void;
+  onOpenDiagnostics?: () => void;
 }
 
 export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
@@ -43,9 +51,11 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
   onDeleteActivity,
   onOpenNewActivity,
   onRemindersUpdated,
+  onOpenCalendarSync,
+  onOpenDiagnostics,
 }) => {
   const [reminders, setReminders] = useState<Record<string, ActivityReminderConfig>>({});
-  const [activeTab, setActiveTab] = useState<'reminders' | 'palettes'>('reminders');
+  const [activeTab, setActiveTab] = useState<'reminders' | 'palettes' | 'calendar'>('reminders');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [feedbackToast, setFeedbackToast] = useState<string | null>(null);
 
@@ -224,13 +234,27 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
             <span className="text-[10px] text-gray-400">Lembretes regulares e personalização visual</span>
           </div>
 
-          <div className="w-6 h-6" />
+          {onOpenDiagnostics ? (
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onOpenDiagnostics();
+              }}
+              title="Permissões do Celular & Diagnóstico"
+              className="w-8 h-8 rounded-full bg-purple-500/20 hover:bg-purple-500/35 border border-purple-500/30 flex items-center justify-center text-purple-300 hover:text-white transition cursor-pointer"
+            >
+              <ShieldCheck className="w-4 h-4" />
+            </button>
+          ) : (
+            <div className="w-8 h-8" />
+          )}
         </header>
 
-        {/* Tab Switcher: Lembretes vs Cores 60/30/10 */}
+        {/* Tab Switcher: Lembretes vs Cores vs Calendário Celular */}
         <div className="px-5 pt-3 shrink-0">
           <div
-            className="grid grid-cols-2 p-1 rounded-2xl border text-xs font-bold"
+            className="grid grid-cols-3 p-1 rounded-2xl border text-xs font-bold"
             style={{
               backgroundColor: 'var(--color-secondary)',
               borderColor: 'var(--color-border)',
@@ -247,16 +271,16 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
                     }
                   : undefined
               }
-              className={`py-2 rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer ${
+              className={`py-2 rounded-xl flex items-center justify-center gap-1 transition cursor-pointer text-[11px] ${
                 activeTab === 'reminders'
                   ? 'shadow'
                   : 'text-gray-400 hover:text-gray-200'
               }`}
             >
-              <Bell className="w-3.5 h-3.5" />
+              <Bell className="w-3 h-3" />
               <span>Lembretes</span>
               {activeRemindersCount > 0 && (
-                <span className="w-4 h-4 rounded-full bg-black/40 text-[9px] flex items-center justify-center border border-white/20">
+                <span className="w-3.5 h-3.5 rounded-full bg-black/40 text-[8.5px] flex items-center justify-center border border-white/20">
                   {activeRemindersCount}
                 </span>
               )}
@@ -272,14 +296,34 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
                     }
                   : undefined
               }
-              className={`py-2 rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer ${
+              className={`py-2 rounded-xl flex items-center justify-center gap-1 transition cursor-pointer text-[11px] ${
                 activeTab === 'palettes'
                   ? 'shadow'
                   : 'text-gray-400 hover:text-gray-200'
               }`}
             >
-              <Palette className="w-3.5 h-3.5" />
-              <span>Cores (60/30/10)</span>
+              <Palette className="w-3 h-3" />
+              <span>Cores</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('calendar')}
+              style={
+                activeTab === 'calendar'
+                  ? {
+                      backgroundColor: 'var(--color-accent)',
+                      color: 'var(--color-accent-text)',
+                    }
+                  : undefined
+              }
+              className={`py-2 rounded-xl flex items-center justify-center gap-1 transition cursor-pointer text-[11px] ${
+                activeTab === 'calendar'
+                  ? 'shadow'
+                  : 'text-gray-400 hover:text-gray-200'
+              }`}
+            >
+              <Smartphone className="w-3 h-3 text-emerald-400" />
+              <span>Calendário</span>
             </button>
           </div>
         </div>
@@ -552,6 +596,124 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
           </div>
         )}
 
+        {/* TAB 3: CALENDÁRIOS DO CELULAR */}
+        {activeTab === 'calendar' && (
+          <div className="flex-1 overflow-y-auto px-5 py-3.5 space-y-3.5 no-scrollbar animate-in fade-in">
+            <div
+              className="p-3.5 rounded-2xl border text-xs space-y-1.5"
+              style={{
+                backgroundColor: 'var(--color-secondary)',
+                borderColor: 'var(--color-border)',
+              }}
+            >
+              <div className="flex items-center space-x-2 text-white font-bold">
+                <Smartphone className="w-4 h-4 text-emerald-400" />
+                <span>Sincronizar com seu Smartphone</span>
+              </div>
+              <p className="text-[11px] text-gray-300 leading-relaxed">
+                Conecte a rotina do John diretamente à sua agenda pessoal favorita no Android ou
+                computador.
+              </p>
+            </div>
+
+            {/* Provider Quick Cards */}
+            <div className="space-y-2.5">
+              {/* Google Calendar */}
+              <div className="p-3 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-between">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center shadow-xs">
+                    <span className="text-xs font-black text-blue-600">G</span>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white">Google Agenda</h4>
+                    <p className="text-[10px] text-gray-400">Google Calendar no celular e web</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onOpenCalendarSync) {
+                      onClose();
+                      onOpenCalendarSync();
+                    }
+                  }}
+                  className="px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Gerenciar</span>
+                  <ExternalLink className="w-3 h-3" />
+                </button>
+              </div>
+
+              {/* Microsoft Outlook */}
+              <div className="p-3 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-between">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-[#0078d4] flex items-center justify-center shadow-xs">
+                    <span className="text-xs font-black text-white">O</span>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white">Microsoft Outlook</h4>
+                    <p className="text-[10px] text-gray-400">Outlook & Office 365</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onOpenCalendarSync) {
+                      onClose();
+                      onOpenCalendarSync();
+                    }
+                  }}
+                  className="px-2.5 py-1.5 rounded-xl bg-[#0078d4] hover:bg-[#006cc1] text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Gerenciar</span>
+                  <ExternalLink className="w-3 h-3" />
+                </button>
+              </div>
+
+              {/* Calendário Nativo do Android / Celular */}
+              <div className="p-3 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 flex items-center justify-between">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center shadow-xs">
+                    <Smartphone className="w-3.5 h-3.5 text-black stroke-[2.5]" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white">Calendário Nativo Android</h4>
+                    <p className="text-[10px] text-gray-400">Samsung, Xiaomi & Motorola (.ics)</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const sample = calendarSyncService.getDefaultRoutineEvents();
+                    calendarSyncService.exportToAndroidCalendar(sample);
+                    setFeedbackToast('Exportado para a agenda do celular!');
+                    setTimeout(() => setFeedbackToast(null), 3000);
+                  }}
+                  className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                >
+                  <Download className="w-3 h-3" />
+                  <span>Baixar .ics</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Big Launch Button */}
+            {onOpenCalendarSync && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenCalendarSync();
+                }}
+                className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg flex items-center justify-center gap-2 transition cursor-pointer active:scale-[0.99]"
+              >
+                <CalendarIcon className="w-4 h-4" />
+                <span>Abrir Central Completa de Integração</span>
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Bottom Actions */}
         <footer
           className="p-4 pt-3 pb-5 border-t border-white/5 flex items-center gap-3 shrink-0"
@@ -581,7 +743,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
                 <span>Salvar & Fechar</span>
               </button>
             </>
-          ) : (
+          ) : activeTab === 'palettes' ? (
             <button
               type="button"
               onClick={onClose}
@@ -593,6 +755,19 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
             >
               <Check className="w-4 h-4 stroke-[2.5]" />
               <span>Concluir Seleção</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                backgroundColor: 'var(--color-accent)',
+                color: 'var(--color-accent-text)',
+              }}
+              className="w-full py-3.5 rounded-2xl active:scale-[0.99] font-extrabold text-sm shadow-lg flex items-center justify-center space-x-2 transition cursor-pointer"
+            >
+              <Check className="w-4 h-4 stroke-[2.5]" />
+              <span>Fechar</span>
             </button>
           )}
         </footer>

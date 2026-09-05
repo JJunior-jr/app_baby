@@ -32,6 +32,7 @@ interface DiaryScreenProps {
   onDeleteActivity: (id: string) => void;
   onUpdateActivity?: (id: string, updates: Partial<ActivityItem>) => void;
   dailySummary: DailySummary;
+  onOpenCalendarSync?: () => void;
 }
 
 export const DiaryScreen: React.FC<DiaryScreenProps> = ({
@@ -45,6 +46,7 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
   onDeleteActivity,
   onUpdateActivity,
   dailySummary,
+  onOpenCalendarSync,
 }) => {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [showSummaryModal, setShowSummaryModal] = useState<boolean>(false);
@@ -608,6 +610,7 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
         selectedDate={selectedDate}
         onSelectDate={onSelectDate}
         activities={activities}
+        onOpenCalendarSync={onOpenCalendarSync}
       />
 
       {/* Edit Activity Modal */}

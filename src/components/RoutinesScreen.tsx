@@ -12,7 +12,16 @@ import {
   Utensils,
   Shirt,
   Sparkles,
+  Calendar,
+  Smartphone,
+  ChevronRight,
+  ShieldCheck,
 } from 'lucide-react';
+
+interface RoutinesScreenProps {
+  onOpenCalendarSync?: () => void;
+  onOpenDiagnostics?: () => void;
+}
 
 interface RoutineSchedule {
   id: string;
@@ -108,7 +117,10 @@ const INITIAL_ROUTINES: RoutineSchedule[] = [
   },
 ];
 
-export const RoutinesScreen: React.FC = () => {
+export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
+  onOpenCalendarSync,
+  onOpenDiagnostics,
+}) => {
   const [routines, setRoutines] = useState<RoutineSchedule[]>(INITIAL_ROUTINES);
   const [filterPeriod, setFilterPeriod] = useState<string>('todos');
   const [isAdding, setIsAdding] = useState(false);
@@ -187,14 +199,27 @@ export const RoutinesScreen: React.FC = () => {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsAdding(!isAdding)}
-          className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-[#9a7ffc] hover:bg-[#886cf2] text-[#131127] text-xs font-bold shadow-md shadow-purple-900/30 transition active:scale-95"
-        >
-          <Plus className="w-4 h-4 stroke-[2.5]" />
-          <span>Novo Agendamento</span>
-        </button>
+        <div className="flex items-center space-x-2">
+          {onOpenDiagnostics && (
+            <button
+              type="button"
+              onClick={onOpenDiagnostics}
+              title="Diagnóstico e Permissões do Celular"
+              className="p-2 rounded-xl bg-[#1e2238] hover:bg-[#2a2f4d] text-purple-300 border border-purple-500/20 flex items-center justify-center transition active:scale-95 cursor-pointer"
+            >
+              <ShieldCheck className="w-4 h-4" />
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setIsAdding(!isAdding)}
+            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-[#9a7ffc] hover:bg-[#886cf2] text-[#131127] text-xs font-bold shadow-md shadow-purple-900/30 transition active:scale-95 cursor-pointer"
+          >
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            <span>Novo Agendamento</span>
+          </button>
+        </div>
       </header>
 
       {/* Daily Progress Banner */}
@@ -220,6 +245,37 @@ export const RoutinesScreen: React.FC = () => {
           <span>Hoje, 19 de Agosto</span>
         </div>
       </section>
+
+      {/* Calendar Integration Promo Banner */}
+      {onOpenCalendarSync && (
+        <section className="bg-gradient-to-r from-[#171b36] via-[#1c1d3c] to-[#142633] border border-purple-500/25 hover:border-purple-500/40 rounded-2xl p-3.5 shadow-sm transition-all flex items-center justify-between gap-3">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-300 shrink-0">
+              <Smartphone className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h3 className="text-xs font-bold text-white">Sincronizar com seu Celular</h3>
+                <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-bold">
+                  Novo
+                </span>
+              </div>
+              <p className="text-[10px] text-gray-300 mt-0.5 leading-snug">
+                Google Agenda • Microsoft Outlook • Calendário do Android
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onOpenCalendarSync}
+            className="px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 active:scale-95 text-white text-xs font-bold shrink-0 flex items-center gap-1 shadow-md shadow-purple-900/30 transition cursor-pointer"
+          >
+            <span>Conectar</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </section>
+      )}
 
       {/* Filter Tabs */}
       <section className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-0.5">
@@ -349,8 +405,19 @@ export const RoutinesScreen: React.FC = () => {
               </div>
             </div>
 
-            {/* Right: Category badge + Alarm toggle */}
-            <div className="flex items-center space-x-2">
+            {/* Right: Category badge + Calendar sync + Alarm toggle */}
+            <div className="flex items-center space-x-1.5">
+              {onOpenCalendarSync && (
+                <button
+                  type="button"
+                  onClick={onOpenCalendarSync}
+                  title="Sincronizar este horário com o calendário do celular (Google/Outlook/Android)"
+                  className="w-8 h-8 rounded-xl bg-[#1e2238] hover:bg-[#292d4b] text-purple-300 flex items-center justify-center transition cursor-pointer active:scale-95"
+                >
+                  <Calendar className="w-3.5 h-3.5" />
+                </button>
+              )}
+
               <div className="w-8 h-8 rounded-xl bg-[#1e2238] flex items-center justify-center">
                 {getCategoryIcon(routine.category)}
               </div>
@@ -359,7 +426,7 @@ export const RoutinesScreen: React.FC = () => {
                 type="button"
                 onClick={() => toggleNotify(routine.id)}
                 title={routine.notify ? 'Alarme ativado' : 'Alarme desativado'}
-                className="p-1 text-gray-400 hover:text-amber-400 transition"
+                className="p-1 text-gray-400 hover:text-amber-400 transition cursor-pointer"
               >
                 {routine.notify ? (
                   <Bell className="w-4 h-4 text-amber-400" />

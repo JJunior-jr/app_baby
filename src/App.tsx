@@ -17,6 +17,8 @@ import { ManageActivitiesModal } from './components/modals/ManageActivitiesModal
 import { NewActivityModal } from './components/modals/NewActivityModal';
 import { AuthModal } from './components/modals/AuthModal';
 import { DockerVpsGuideModal } from './components/modals/DockerVpsGuideModal';
+import { CalendarSyncModal } from './components/modals/CalendarSyncModal';
+import { PermissionsDiagnosticsModal } from './components/modals/PermissionsDiagnosticsModal';
 
 import { apiService } from './services/api';
 import { authService } from './services/auth';
@@ -57,6 +59,8 @@ export default function App() {
   const [isNewActivityModalOpen, setIsNewActivityModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isDockerGuideOpen, setIsDockerGuideOpen] = useState(false);
+  const [isCalendarSyncOpen, setIsCalendarSyncOpen] = useState(false);
+  const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState(false);
 
   // Initialize data and theme on mount
   useEffect(() => {
@@ -301,6 +305,8 @@ export default function App() {
     setIsNewActivityModalOpen(false);
     setIsAuthModalOpen(false);
     setIsDockerGuideOpen(false);
+    setIsCalendarSyncOpen(false);
+    setIsDiagnosticsOpen(false);
     setActiveTab(tab);
   };
 
@@ -353,10 +359,16 @@ export default function App() {
               onDeleteActivity={handleDeleteActivity}
               onUpdateActivity={handleUpdateActivity}
               dailySummary={dailySummary}
+              onOpenCalendarSync={() => setIsCalendarSyncOpen(true)}
             />
           )}
 
-          {activeTab === 'rotinas' && <RoutinesScreen />}
+          {activeTab === 'rotinas' && (
+            <RoutinesScreen
+              onOpenCalendarSync={() => setIsCalendarSyncOpen(true)}
+              onOpenDiagnostics={() => setIsDiagnosticsOpen(true)}
+            />
+          )}
 
           {activeTab === 'insights' && <InsightsScreen />}
 
@@ -417,6 +429,14 @@ export default function App() {
             setIsManageActivitiesOpen(false);
             setIsNewActivityModalOpen(true);
           }}
+          onOpenCalendarSync={() => {
+            setIsManageActivitiesOpen(false);
+            setIsCalendarSyncOpen(true);
+          }}
+          onOpenDiagnostics={() => {
+            setIsManageActivitiesOpen(false);
+            setIsDiagnosticsOpen(true);
+          }}
         />
 
         <NewActivityModal
@@ -435,6 +455,17 @@ export default function App() {
         <DockerVpsGuideModal
           isOpen={isDockerGuideOpen}
           onClose={() => setIsDockerGuideOpen(false)}
+        />
+
+        <CalendarSyncModal
+          isOpen={isCalendarSyncOpen}
+          onClose={() => setIsCalendarSyncOpen(false)}
+        />
+
+        <PermissionsDiagnosticsModal
+          isOpen={isDiagnosticsOpen}
+          onClose={() => setIsDiagnosticsOpen(false)}
+          onOpenCalendarSync={() => setIsCalendarSyncOpen(true)}
         />
       </main>
     </div>
