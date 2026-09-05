@@ -259,6 +259,15 @@ export default function App() {
     loadData();
   };
 
+  // Update activity
+  const handleUpdateActivity = async (id: string, updates: Partial<ActivityItem>) => {
+    const updated = await apiService.updateActivity(id, updates);
+    if (updated) {
+      setActivities((prev) => prev.map((a) => (a.id === id ? { ...a, ...updated } : a)));
+      loadData();
+    }
+  };
+
   // Custom activity definition creation
   const handleCreateCustomActivity = async (def: Omit<CustomActivityDefinition, 'id'>) => {
     const created = await apiService.createCustomActivity(def);
@@ -325,6 +334,7 @@ export default function App() {
               onOpenFilterModal={() => setIsFilterModalOpen(true)}
               onOpenActivitySheet={() => setIsActivitySheetOpen(true)}
               onDeleteActivity={handleDeleteActivity}
+              onUpdateActivity={handleUpdateActivity}
               dailySummary={dailySummary}
             />
           )}

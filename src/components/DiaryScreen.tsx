@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   Calendar,
   Filter,
@@ -10,12 +10,15 @@ import {
   MoreVertical,
   BarChart2,
   Trash2,
+  Edit3,
   Sparkles,
   Droplets,
   Clock,
   CheckCircle2,
 } from 'lucide-react';
 import { ActivityItem, DailySummary } from '../types';
+import { CalendarModal } from './modals/CalendarModal';
+import { EditActivityModal } from './modals/EditActivityModal';
 
 interface DiaryScreenProps {
   activities: ActivityItem[];
@@ -26,17 +29,9 @@ interface DiaryScreenProps {
   onOpenFilterModal: () => void;
   onOpenActivitySheet: () => void;
   onDeleteActivity: (id: string) => void;
+  onUpdateActivity?: (id: string, updates: Partial<ActivityItem>) => void;
   dailySummary: DailySummary;
 }
-
-const WEEK_DAYS = [
-  { day: 'Sex', num: 14, dateStr: '2026-08-14' },
-  { day: 'Sáb', num: 15, dateStr: '2026-08-15' },
-  { day: 'Dom', num: 16, dateStr: '2026-08-16' },
-  { day: 'Seg', num: 17, dateStr: '2026-08-17' },
-  { day: 'Ter', num: 18, dateStr: '2026-08-18' },
-  { day: 'Qua', num: 19, dateStr: '2026-08-19' },
-];
 
 export const DiaryScreen: React.FC<DiaryScreenProps> = ({
   activities,
@@ -47,10 +42,82 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
   onOpenFilterModal,
   onOpenActivitySheet,
   onDeleteActivity,
+  onUpdateActivity,
   dailySummary,
 }) => {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [showSummaryModal, setShowSummaryModal] = useState<boolean>(false);
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [editingActivity, setEditingActivity] = useState<ActivityItem | null>(null);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const selectedDayRef = useRef<HTMLButtonElement | null>(null);
+
+  // Generate continuous list of days for current month (or centered around selected date)
+  const daysList = useMemo(() => {
+    const parsed = new Date(selectedDate + 'T12:00:00');
+    const year = isNaN(parsed.getTime()) ? 2026 : parsed.getFullYear();
+    const month = isNaN(parsed.getTime()) ? 7 : parsed.getMonth(); // 7 = August
+
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const list = [];
+
+    for (let d = 1; d <= totalDays; d++) {
+      const dStr = String(d).padStart(2, '0');
+      const mStr = String(month + 1).padStart(2, '0');
+      const dateStr = `${year}-${mStr}-${dStr}`;
+      const dateObj = new Date(year, month, d, 12);
+      const dayName = dayNames[dateObj.getDay()];
+      list.push({ day: dayName, num: d, dateStr });
+    }
+    return list;
+  }, [selectedDate]);
+
+  // Compute activity counts by date for dot indicators
+  const activityCountByDate = useMemo(() => {
+    const counts: Record<string, number> = {};
+    activities.forEach((act) => {
+      if (act.dateStr) {
+        counts[act.dateStr] = (counts[act.dateStr] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [activities]);
+
+  // Auto-scroll selected day into view with smooth momentum
+  useEffect(() => {
+    if (selectedDayRef.current) {
+      selectedDayRef.current.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
+    }
+  }, [selectedDate]);
+
+  // Format selected date for display label
+  const formattedDateLabel = useMemo(() => {
+    try {
+      const parts = selectedDate.split('-');
+      if (parts.length === 3) {
+        const d = parseInt(parts[2], 10);
+        const m = parseInt(parts[1], 10);
+        const monthShortNames = [
+          'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+          'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+        ];
+        const dateObj = new Date(parseInt(parts[0], 10), m - 1, d, 12);
+        const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+        const dayName = dayNames[dateObj.getDay()];
+        return `${dayName}, ${d} ${monthShortNames[m - 1]}`;
+      }
+    } catch {
+      // fallback
+    }
+    return selectedDate;
+  }, [selectedDate]);
 
   // Toggle filter by clicking summary icons
   const handleToggleFilter = (filterType: string) => {
@@ -129,49 +196,92 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
           <span>{getFilterLabel()}</span>
         </button>
 
-        {/* Date scope button */}
+        {/* Date scope button - opens calendar */}
         <button
           type="button"
-          className="flex items-center space-x-1.5 px-3.5 py-1.8 rounded-full bg-[#181a2d] border border-[#272a44] text-xs font-semibold text-gray-200 shrink-0 hover:border-purple-400/50 transition"
+          onClick={() => setIsCalendarModalOpen(true)}
+          className="flex items-center space-x-1.5 px-3.5 py-1.8 rounded-full bg-[#181a2d] border border-[#272a44] text-xs font-semibold text-gray-200 shrink-0 hover:border-purple-400/50 hover:bg-[#20233d] transition cursor-pointer"
         >
           <Calendar className="w-3.5 h-3.5 text-purple-400" />
-          <span>Esta semana</span>
+          <span>{formattedDateLabel}</span>
         </button>
       </section>
 
-      {/* Week Day Strip Selector */}
-      <section className="px-4.5 py-2 flex items-center justify-between shrink-0 bg-[#0c0d16]/80 border-b border-[#1b1e33]">
+      {/* Week Day Strip Selector - Swipeable & Floating */}
+      <section className="px-3.5 py-2.5 flex items-center shrink-0 bg-[#0c0d16]/90 border-b border-[#1b1e33] backdrop-blur-lg gap-2">
+        {/* Open Calendar Month Picker Button */}
         <button
           type="button"
-          aria-label="Selecionar data"
-          className="w-10 h-14 rounded-2xl bg-[#151728] border border-gray-800 flex items-center justify-center text-gray-300 hover:text-white shrink-0"
+          onClick={() => setIsCalendarModalOpen(true)}
+          aria-label="Abrir calendário completo"
+          title="Ver calendário do mês"
+          className="w-11 h-16 rounded-2xl bg-[#151728]/90 border border-purple-500/25 flex flex-col items-center justify-center text-purple-300 hover:text-white hover:border-purple-400/60 hover:bg-[#1d213d] shrink-0 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_6px_16px_rgba(154,127,252,0.25)] active:scale-92 group cursor-pointer"
         >
-          <Calendar className="w-4 h-4" />
+          <Calendar className="w-5 h-5 group-hover:scale-110 transition-transform" />
+          <span className="text-[8.5px] font-extrabold text-purple-300 mt-1 uppercase tracking-tighter">
+            Mês
+          </span>
         </button>
 
-        <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar pl-1">
-          {WEEK_DAYS.map((d) => {
+        {/* Scrollable / Swipeable Floating Days Strip */}
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 overflow-x-auto no-scrollbar scroll-smooth flex items-center space-x-2 py-1 px-1 touch-pan-x snap-x"
+        >
+          {daysList.map((d) => {
             const isSelected = selectedDate === d.dateStr;
+            const hasActivities = (activityCountByDate[d.dateStr] || 0) > 0;
+            const isToday = d.dateStr === '2026-08-19';
+
             return (
               <button
                 key={d.dateStr}
+                ref={isSelected ? selectedDayRef : null}
                 type="button"
                 onClick={() => onSelectDate(d.dateStr)}
-                className={`w-11 h-14 rounded-2xl flex flex-col items-center justify-center transition-all ${
+                className={`relative shrink-0 w-12 h-16 rounded-2xl flex flex-col items-center justify-between py-2 px-1 transition-all duration-300 ease-out snap-center cursor-pointer select-none overflow-hidden ${
                   isSelected
-                    ? 'bg-[#9a7ffc] text-[#131127] scale-105 shadow-md shadow-purple-900/30'
-                    : 'bg-[#151728] text-gray-400 hover:text-white border border-[#22253d]'
+                    ? 'bg-gradient-to-b from-[#af95fc] via-[#9273fa] to-[#7854f7] text-[#0f0c22] font-black scale-105 -translate-y-1 shadow-[0_10px_25px_rgba(146,115,250,0.5)] ring-2 ring-purple-300/80 border-t border-white/40'
+                    : 'bg-[#151728]/80 hover:bg-[#1c2038]/90 text-gray-400 hover:text-white border border-[#232742] shadow-[0_4px_12px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(154,127,252,0.2)] active:scale-92 active:translate-y-0'
                 }`}
               >
-                <span className={`text-[10px] font-medium ${isSelected ? 'font-bold' : ''}`}>
+                {/* Floating specular top highlight for liquid glass reflection */}
+                <div className="absolute inset-x-0 top-0 h-1/2 rounded-t-2xl bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
+
+                {/* Day name */}
+                <span
+                  className={`text-[9.5px] uppercase tracking-wider relative z-10 ${
+                    isSelected ? 'font-black text-[#0f0c22]' : 'font-semibold text-gray-400'
+                  }`}
+                >
                   {d.day}
                 </span>
-                <span className={`text-base font-extrabold mt-0.5 ${isSelected ? 'text-[#131127]' : 'text-gray-200'}`}>
+
+                {/* Day number */}
+                <span
+                  className={`text-base tracking-tight relative z-10 leading-none ${
+                    isSelected
+                      ? 'font-black text-[#0f0c22]'
+                      : isToday
+                      ? 'font-extrabold text-purple-200'
+                      : 'font-extrabold text-gray-200'
+                  }`}
+                >
                   {d.num}
                 </span>
-                {isSelected && (
-                  <span className="w-1 h-1 rounded-full bg-[#131127] mt-0.5" />
-                )}
+
+                {/* Activity & Today Indicators */}
+                <div className="flex items-center gap-1 relative z-10 h-2">
+                  {isSelected ? (
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#0f0c22]" />
+                  ) : hasActivities ? (
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shadow-[0_0_6px_rgba(168,85,247,0.7)]" />
+                  ) : isToday ? (
+                    <span className="w-1 h-1 rounded-full bg-purple-300/60" />
+                  ) : (
+                    <span className="w-1 h-1 opacity-0" />
+                  )}
+                </div>
               </button>
             );
           })}
@@ -300,25 +410,44 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                                 type="button"
                                 onClick={() => setActiveMenuId(activeMenuId === act.id ? null : act.id)}
                                 aria-label="Mais opções"
-                                className="p-1.5 text-gray-400 hover:text-white rounded-lg"
+                                className="p-1.5 text-gray-400 hover:text-white rounded-lg transition hover:bg-white/5 active:scale-95 cursor-pointer"
                               >
                                 <MoreVertical className="w-4 h-4" />
                               </button>
 
                               {activeMenuId === act.id && (
-                                <div className="absolute right-0 top-7 w-32 bg-[#1b1e33] rounded-xl shadow-2xl border border-gray-700 py-1 z-20 animate-in fade-in-50">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      onDeleteActivity(act.id);
-                                      setActiveMenuId(null);
-                                    }}
-                                    className="w-full px-3 py-2 text-left text-xs font-medium text-rose-400 hover:bg-rose-950/40 flex items-center space-x-2"
-                                  >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                    <span>Excluir</span>
-                                  </button>
-                                </div>
+                                <>
+                                  <div
+                                    className="fixed inset-0 z-20"
+                                    onClick={() => setActiveMenuId(null)}
+                                  />
+                                  <div className="absolute right-0 top-7 w-36 bg-[#181a30]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/30 py-1.5 z-30 animate-in fade-in-50 zoom-in-95 duration-150">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setEditingActivity(act);
+                                        setIsEditModalOpen(true);
+                                        setActiveMenuId(null);
+                                      }}
+                                      className="w-full px-3.5 py-2 text-left text-xs font-semibold text-gray-200 hover:text-white hover:bg-purple-600/30 flex items-center space-x-2 transition cursor-pointer"
+                                    >
+                                      <Edit3 className="w-3.5 h-3.5 text-purple-300" />
+                                      <span>Editar</span>
+                                    </button>
+                                    <div className="h-[1px] bg-white/5 my-1" />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        onDeleteActivity(act.id);
+                                        setActiveMenuId(null);
+                                      }}
+                                      className="w-full px-3.5 py-2 text-left text-xs font-semibold text-rose-400 hover:bg-rose-950/40 flex items-center space-x-2 transition cursor-pointer"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                      <span>Excluir</span>
+                                    </button>
+                                  </div>
+                                </>
                               )}
                             </div>
                           </div>
@@ -457,13 +586,36 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
             type="button"
             onClick={onOpenActivitySheet}
             aria-label="Registrar nova atividade"
-            className="w-10 h-10 rounded-xl bg-[#9a7ffc] hover:bg-[#886cf2] text-[#131127] flex items-center justify-center shadow-lg shadow-purple-900/40 active:scale-95 transition shrink-0 ml-0.5"
+            className="w-10 h-10 rounded-xl bg-[#9a7ffc] hover:bg-[#886cf2] text-[#131127] flex items-center justify-center shadow-lg shadow-purple-900/40 active:scale-95 transition shrink-0 ml-0.5 cursor-pointer"
           >
             <Plus className="w-5 h-5 stroke-[2.8]" />
           </button>
         </div>
       </section>
 
+      {/* Calendar Modal */}
+      <CalendarModal
+        isOpen={isCalendarModalOpen}
+        onClose={() => setIsCalendarModalOpen(false)}
+        selectedDate={selectedDate}
+        onSelectDate={onSelectDate}
+        activities={activities}
+      />
+
+      {/* Edit Activity Modal */}
+      <EditActivityModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingActivity(null);
+        }}
+        activity={editingActivity}
+        onSave={(id, updates) => {
+          if (onUpdateActivity) {
+            onUpdateActivity(id, updates);
+          }
+        }}
+      />
     </div>
   );
 };
