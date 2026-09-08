@@ -17,10 +17,16 @@ import {
   Moon,
   Volume2,
   MessageSquareHeart,
+  Wifi,
+  WifiOff,
+  Cloud,
+  CloudOff,
+  RefreshCw,
 } from 'lucide-react';
-import { ActivityItem, CustomActivityDefinition, UserProfile } from '../types';
+import { ActivityItem, CustomActivityDefinition, UserProfile, SyncStatusState } from '../types';
 import { FormulaDrawer } from './modals/FormulaDrawer';
 import { remindersService } from '../services/reminders';
+import { syncService } from '../services/syncService';
 
 interface HomeScreenProps {
   currentUser: UserProfile | null;
@@ -37,6 +43,7 @@ interface HomeScreenProps {
   onSaveFormula?: (data: any, notes?: string) => void;
   customActivities: CustomActivityDefinition[];
   onOpenFeedback?: () => void;
+  onOpenOfflineSync?: () => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -54,7 +61,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onSaveFormula,
   customActivities,
   onOpenFeedback,
+  onOpenOfflineSync,
 }) => {
+  const [syncStatus, setSyncStatus] = useState<SyncStatusState>(() => syncService.getSyncStatus());
   // Sleep state and timers
   const [isSleeping, setIsSleeping] = useState<boolean>(true);
   const [sleepAnimation, setSleepAnimation] = useState<boolean>(false);
@@ -82,6 +91,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     syncReminders();
     window.addEventListener('focus', syncReminders);
     return () => window.removeEventListener('focus', syncReminders);
+  }, []);
+
+  // Sync state subscription
+  useEffect(() => {
+    const unsubscribe = syncService.subscribe((status) => {
+      setSyncStatus(status);
+    });
+    return () => unsubscribe();
   }, []);
 
   // Real-time sleep timer when isSleeping is active
@@ -267,6 +284,50 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </button>
           )}
 
+          {onOpenOfflineSync && (
+            <button
+              type="button"
+              onClick={onOpenOfflineSync}
+              title={
+                syncStatus.isSyncing
+                  ? 'Sincronizando dados com o banco...'
+                  : syncStatus.isOnline
+                  ? 'Online: Sincronização com o Banco Ativa'
+                  : 'Modo Offline: Clique para gerenciar a fila'
+              }
+              className={`h-9 px-2.5 rounded-full flex items-center space-x-1.5 transition active:scale-95 cursor-pointer shadow-xs ${
+                syncStatus.isSyncing
+                  ? 'bg-blue-500/20 border border-blue-500/40 text-blue-300'
+                  : !syncStatus.isOnline
+                  ? 'bg-amber-500/20 border border-amber-500/40 text-amber-300'
+                  : syncStatus.pendingCount > 0
+                  ? 'bg-purple-500/20 border border-purple-500/40 text-purple-300'
+                  : 'bg-[#181a2d] border border-gray-800 text-emerald-400 hover:text-white'
+              }`}
+            >
+              {syncStatus.isSyncing ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-300" />
+                  <span className="text-[11px] font-bold">Gravando</span>
+                </>
+              ) : !syncStatus.isOnline ? (
+                <>
+                  <WifiOff className="w-3.5 h-3.5 text-amber-300" />
+                  <span className="text-[11px] font-bold">
+                    Offline{syncStatus.pendingCount > 0 ? ` (${syncStatus.pendingCount})` : ''}
+                  </span>
+                </>
+              ) : syncStatus.pendingCount > 0 ? (
+                <>
+                  <Cloud className="w-3.5 h-3.5 text-purple-300" />
+                  <span className="text-[11px] font-bold">{syncStatus.pendingCount} pendentes</span>
+                </>
+              ) : (
+                <Cloud className="w-4 h-4 text-emerald-400" />
+              )}
+            </button>
+          )}
+
           <button
             type="button"
             onClick={onOpenAuth}
@@ -277,6 +338,34 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </button>
         </div>
       </header>
+
+      {/* Offline Alert Banner (shown when offline or has pending items to sync) */}
+      {(!syncStatus.isOnline || syncStatus.pendingCount > 0) && onOpenOfflineSync && (
+        <div
+          onClick={onOpenOfflineSync}
+          className={`p-3 rounded-2xl border flex items-center justify-between transition cursor-pointer active:scale-98 text-xs shadow-sm ${
+            !syncStatus.isOnline
+              ? 'bg-amber-950/40 border-amber-500/40 text-amber-200'
+              : 'bg-purple-950/40 border-purple-500/40 text-purple-200'
+          }`}
+        >
+          <div className="flex items-center space-x-2">
+            {!syncStatus.isOnline ? (
+              <WifiOff className="w-4 h-4 text-amber-300 shrink-0" />
+            ) : (
+              <RefreshCw className="w-4 h-4 text-purple-300 shrink-0" />
+            )}
+            <span className="text-[11.5px] font-medium leading-snug">
+              {!syncStatus.isOnline
+                ? 'Modo Offline Ativo: Mamadas e atividades são salvas no aparelho e gravadas no banco ao reconectar.'
+                : `${syncStatus.pendingCount} ite${syncStatus.pendingCount === 1 ? 'm pendente' : 'ns pendentes'} para gravar no banco.`}
+            </span>
+          </div>
+          <span className="text-[10.5px] font-bold underline shrink-0 ml-2 text-white">
+            Ver Fila
+          </span>
+        </div>
+      )}
 
       {/* Top Banner Row */}
       <div className="flex flex-col gap-3">

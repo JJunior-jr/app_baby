@@ -21,11 +21,13 @@ import { CalendarSyncModal } from './components/modals/CalendarSyncModal';
 import { PermissionsDiagnosticsModal } from './components/modals/PermissionsDiagnosticsModal';
 import { FeedbackPromptModal } from './components/modals/FeedbackPromptModal';
 import { FeedbackManagementModal } from './components/modals/FeedbackManagementModal';
+import { OfflineSyncModal } from './components/modals/OfflineSyncModal';
 
 import { apiService } from './services/api';
 import { authService } from './services/auth';
 import { themeService, PaletteTheme } from './services/theme';
 import { feedbackService, FeedbackPromptTrigger } from './services/feedback';
+import { syncService } from './services/syncService';
 import {
   ActivityItem,
   ActivityType,
@@ -67,6 +69,7 @@ export default function App() {
   const [isFeedbackPromptOpen, setIsFeedbackPromptOpen] = useState(false);
   const [isFeedbackManagementOpen, setIsFeedbackManagementOpen] = useState(false);
   const [feedbackTriggerContext, setFeedbackTriggerContext] = useState<FeedbackPromptTrigger | null>(null);
+  const [isOfflineSyncOpen, setIsOfflineSyncOpen] = useState(false);
 
   // Helper to trigger contextual feedback prompt based on user engagement & time
   const checkForFeedbackPrompt = (type: 'activity' | 'calendar' | 'general', featureType?: string) => {
@@ -134,6 +137,16 @@ export default function App() {
       console.error('Erro ao carregar dados da API:', err);
     }
   };
+
+  // Observa sincronização offline para atualizar automaticamente a tela quando os dados forem gravados
+  useEffect(() => {
+    const unsubscribe = syncService.subscribe((status) => {
+      if (!status.isSyncing && status.pendingCount === 0) {
+        loadData();
+      }
+    });
+    return () => unsubscribe();
+  }, [selectedDate]);
 
   // Activity Sheet selection handler
   const handleSelectActivityType = (type: ActivityType) => {
@@ -370,7 +383,7 @@ export default function App() {
         }}
       >
         {/* Native Mobile Status Bar (9:41, WiFi, Battery) */}
-        <StatusBar />
+        <StatusBar onOpenOfflineSync={() => setIsOfflineSyncOpen(true)} />
 
         {/* Dynamic Screen Tabs Container */}
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
@@ -390,6 +403,7 @@ export default function App() {
               onSaveFormula={handleSaveFormula}
               customActivities={customActivities}
               onOpenFeedback={() => setIsFeedbackManagementOpen(true)}
+              onOpenOfflineSync={() => setIsOfflineSyncOpen(true)}
             />
           )}
 
@@ -414,6 +428,7 @@ export default function App() {
               onOpenCalendarSync={() => setIsCalendarSyncOpen(true)}
               onOpenDiagnostics={() => setIsDiagnosticsOpen(true)}
               onOpenFeedback={() => setIsFeedbackManagementOpen(true)}
+              onOpenOfflineSync={() => setIsOfflineSyncOpen(true)}
             />
           )}
 
@@ -488,6 +503,10 @@ export default function App() {
             setIsManageActivitiesOpen(false);
             setIsFeedbackManagementOpen(true);
           }}
+          onOpenOfflineSync={() => {
+            setIsManageActivitiesOpen(false);
+            setIsOfflineSyncOpen(true);
+          }}
         />
 
         <NewActivityModal
@@ -545,6 +564,14 @@ export default function App() {
               subheadline: 'Compartilhe suas ideias e sugestões para o Baby John.',
             });
             setIsFeedbackPromptOpen(true);
+          }}
+        />
+
+        <OfflineSyncModal
+          isOpen={isOfflineSyncOpen}
+          onClose={() => setIsOfflineSyncOpen(false)}
+          onSyncComplete={() => {
+            loadData();
           }}
         />
       </main>

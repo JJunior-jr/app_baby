@@ -135,3 +135,38 @@ export interface UserEngagementStats {
   lastFeedbackPromptTimestamp?: number;
   hasDismissedRecentPrompt?: boolean;
 }
+
+export type SyncOperationType =
+  | 'CREATE_ACTIVITY'
+  | 'UPDATE_ACTIVITY'
+  | 'DELETE_ACTIVITY'
+  | 'CREATE_CUSTOM_ACTIVITY'
+  | 'SUBMIT_FEEDBACK';
+
+export interface OfflineSyncQueueItem {
+  id: string;
+  operation: SyncOperationType;
+  entityId: string;
+  entityType: 'activity' | 'custom_activity' | 'feedback';
+  title: string;
+  description: string;
+  payload: any;
+  createdAt: string;
+  retryCount: number;
+  status: 'pending' | 'syncing' | 'synced' | 'failed';
+  errorMessage?: string;
+}
+
+export interface SyncStatusState {
+  isOnline: boolean;
+  isSimulatedOffline: boolean;
+  isSyncing: boolean;
+  pendingCount: number;
+  lastSyncTimestamp: number | null;
+  lastSyncResult?: {
+    success: boolean;
+    syncedCount: number;
+    failedCount: number;
+    timestamp: number;
+  };
+}

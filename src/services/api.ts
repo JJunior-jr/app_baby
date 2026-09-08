@@ -1,5 +1,6 @@
 import { ActivityItem, CustomActivityDefinition, DailySummary } from '../types';
 import { authService } from './auth';
+import { syncService } from './syncService';
 
 const ACTIVITIES_STORAGE_KEY = 'baby_john_activities_v2';
 const CUSTOM_ACTIVITIES_STORAGE_KEY = 'baby_john_custom_activities_v2';
@@ -264,14 +265,36 @@ export const apiService = {
     };
     list.unshift(newActivity);
     saveStoredActivities(list);
+
+    // Enfileira na central de sincronização offline para gravação no banco
+    syncService.enqueue(
+      'CREATE_ACTIVITY',
+      'activity',
+      newActivity.id,
+      newActivity.title || 'Nova Atividade',
+      `${newActivity.dateStr} às ${newActivity.timeStr || ''}`,
+      newActivity
+    );
+
     return newActivity;
   },
 
   // Simulated DELETE /api/activities/{id}
   async deleteActivity(id: string): Promise<boolean> {
     const list = getStoredActivities();
+    const itemToDelete = list.find((a) => a.id === id);
     const updated = list.filter((a) => a.id !== id);
     saveStoredActivities(updated);
+
+    syncService.enqueue(
+      'DELETE_ACTIVITY',
+      'activity',
+      id,
+      itemToDelete?.title || 'Remover Atividade',
+      'Exclusão de registro',
+      { id }
+    );
+
     return true;
   },
 
@@ -282,6 +305,16 @@ export const apiService = {
     if (idx === -1) return null;
     list[idx] = { ...list[idx], ...updates };
     saveStoredActivities(list);
+
+    syncService.enqueue(
+      'UPDATE_ACTIVITY',
+      'activity',
+      id,
+      list[idx].title || 'Atualizar Atividade',
+      'Atualização de registro',
+      list[idx]
+    );
+
     return list[idx];
   },
 
@@ -332,6 +365,16 @@ export const apiService = {
     };
     list.push(newDef);
     saveStoredCustomActivities(list);
+
+    syncService.enqueue(
+      'CREATE_CUSTOM_ACTIVITY',
+      'custom_activity',
+      newDef.id,
+      newDef.name || 'Nova Categoria',
+      newDef.description || 'Atividade personalizada',
+      newDef
+    );
+
     return newDef;
   },
 

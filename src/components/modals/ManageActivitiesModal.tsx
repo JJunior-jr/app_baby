@@ -22,6 +22,7 @@ import {
   Download,
   ShieldCheck,
   MessageSquareHeart,
+  Cloud,
 } from 'lucide-react';
 import { CustomActivityDefinition } from '../../types';
 import { ThemeSelector } from '../ThemeSelector';
@@ -44,6 +45,7 @@ interface ManageActivitiesModalProps {
   onOpenCalendarSync?: () => void;
   onOpenDiagnostics?: () => void;
   onOpenFeedback?: () => void;
+  onOpenOfflineSync?: () => void;
 }
 
 export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
@@ -56,6 +58,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
   onOpenCalendarSync,
   onOpenDiagnostics,
   onOpenFeedback,
+  onOpenOfflineSync,
 }) => {
   const [reminders, setReminders] = useState<Record<string, ActivityReminderConfig>>({});
   const [activeTab, setActiveTab] = useState<'reminders' | 'palettes' | 'calendar'>('reminders');
@@ -238,6 +241,20 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
           </div>
 
           <div className="flex items-center space-x-1.5">
+            {onOpenOfflineSync && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenOfflineSync();
+                }}
+                title="Sincronização Offline & Nuvem"
+                className="w-8 h-8 rounded-full bg-blue-500/20 hover:bg-blue-500/35 border border-blue-500/30 flex items-center justify-center text-blue-300 hover:text-white transition cursor-pointer"
+              >
+                <Cloud className="w-4 h-4" />
+              </button>
+            )}
+
             {onOpenFeedback && (
               <button
                 type="button"

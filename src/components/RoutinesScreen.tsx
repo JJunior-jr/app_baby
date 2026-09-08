@@ -17,12 +17,14 @@ import {
   ChevronRight,
   ShieldCheck,
   MessageSquareHeart,
+  Cloud,
 } from 'lucide-react';
 
 interface RoutinesScreenProps {
   onOpenCalendarSync?: () => void;
   onOpenDiagnostics?: () => void;
   onOpenFeedback?: () => void;
+  onOpenOfflineSync?: () => void;
 }
 
 interface RoutineSchedule {
@@ -123,6 +125,7 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
   onOpenCalendarSync,
   onOpenDiagnostics,
   onOpenFeedback,
+  onOpenOfflineSync,
 }) => {
   const [routines, setRoutines] = useState<RoutineSchedule[]>(INITIAL_ROUTINES);
   const [filterPeriod, setFilterPeriod] = useState<string>('todos');
@@ -203,6 +206,17 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
         </div>
 
         <div className="flex items-center space-x-2">
+          {onOpenOfflineSync && (
+            <button
+              type="button"
+              onClick={onOpenOfflineSync}
+              title="Sincronização Offline e Nuvem"
+              className="p-2 rounded-xl bg-[#1e2238] hover:bg-[#2a2f4d] text-blue-300 border border-blue-500/20 flex items-center justify-center transition active:scale-95 cursor-pointer"
+            >
+              <Cloud className="w-4 h-4" />
+            </button>
+          )}
+
           {onOpenFeedback && (
             <button
               type="button"
