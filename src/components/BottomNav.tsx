@@ -26,7 +26,7 @@ const NAV_ITEMS: NavItem[] = [
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) => {
   return (
     <nav
-      className="relative w-full backdrop-blur-3xl border rounded-[30px] p-1.5 flex items-center justify-between gap-1 select-none shadow-[0_16px_45px_rgba(0,0,0,0.75),inset_0_1.5px_2px_rgba(255,255,255,0.28)] overflow-hidden touch-manipulation transition-colors duration-300"
+      className="relative w-full backdrop-blur-3xl border rounded-full p-1.5 flex items-center justify-between gap-1 select-none shadow-[0_16px_45px_rgba(0,0,0,0.75),inset_0_1.5px_2px_rgba(255,255,255,0.28)] overflow-hidden touch-manipulation transition-colors duration-300"
       style={{
         backgroundColor: 'var(--color-secondary)',
         borderColor: 'var(--color-border)',
@@ -45,9 +45,9 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
             key={item.id}
             type="button"
             onClick={() => onTabChange(item.id)}
-            className="relative flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-2xl transition-all duration-150 group z-10 touch-manipulation cursor-pointer active:scale-92 active:translate-y-0.5 focus:outline-hidden"
+            className="relative flex flex-col items-center justify-center flex-1 py-2 px-1 rounded-full transition-all duration-150 group z-10 touch-manipulation cursor-pointer active:scale-92 active:translate-y-0.5 focus:outline-hidden"
           >
-            {/* Liquid Morphing Pill for Active Tab */}
+            {/* Liquid Morphing Pill for Active Tab - Perfectly rounded bubble matching container */}
             {isActive && (
               <motion.div
                 layoutId="liquid-nav-indicator"
@@ -57,10 +57,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
                   damping: 35,
                   mass: 0.35,
                 }}
-                className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/35 via-purple-500/30 to-violet-700/40 border border-white/40 shadow-[0_6px_22px_rgba(147,51,234,0.5),inset_0_1.5px_2px_rgba(255,255,255,0.55),inset_0_-2px_4px_rgba(0,0,0,0.35)] backdrop-blur-xl overflow-hidden pointer-events-none"
+                className="absolute inset-0 rounded-full bg-gradient-to-b from-white/35 via-purple-500/30 to-violet-700/40 border border-white/40 shadow-[0_6px_22px_rgba(147,51,234,0.5),inset_0_1.5px_2px_rgba(255,255,255,0.55),inset_0_-2px_4px_rgba(0,0,0,0.35)] backdrop-blur-xl overflow-hidden pointer-events-none"
               >
                 {/* Liquid convex lens reflection arc */}
-                <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/45 via-white/15 to-transparent rounded-t-2xl pointer-events-none" />
+                <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/45 via-white/15 to-transparent rounded-t-full pointer-events-none" />
                 {/* Bottom caustic refraction glow */}
                 <div className="absolute -bottom-1 inset-x-2 h-2.5 bg-purple-400/60 rounded-full blur-xs pointer-events-none" />
               </motion.div>
