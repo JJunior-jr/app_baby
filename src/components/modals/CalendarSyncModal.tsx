@@ -21,13 +21,19 @@ import {
   CalendarProviderType,
   CalendarEventPayload,
 } from '../../services/calendarSync';
+import { feedbackService } from '../../services/feedback';
 
 interface CalendarSyncModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onTriggerFeedback?: () => void;
 }
 
-export const CalendarSyncModal: React.FC<CalendarSyncModalProps> = ({ isOpen, onClose }) => {
+export const CalendarSyncModal: React.FC<CalendarSyncModalProps> = ({
+  isOpen,
+  onClose,
+  onTriggerFeedback,
+}) => {
   const [settings, setSettings] = useState<CalendarIntegrationSettings>(
     calendarSyncService.getSettings()
   );
@@ -99,6 +105,12 @@ export const CalendarSyncModal: React.FC<CalendarSyncModalProps> = ({ isOpen, on
       const updated = calendarSyncService.getSettings();
       setSettings(updated);
       showToast('Arquivo .ics gerado! O Android abrirá seu calendário padrão.');
+
+      // Registra marco da feature de calendário
+      feedbackService.recordFeatureMilestone('calendario');
+      if (onTriggerFeedback) {
+        setTimeout(onTriggerFeedback, 1500);
+      }
     } catch {
       showToast('Erro ao exportar eventos para o Android.');
     } finally {

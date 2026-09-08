@@ -21,6 +21,7 @@ import {
   ExternalLink,
   Download,
   ShieldCheck,
+  MessageSquareHeart,
 } from 'lucide-react';
 import { CustomActivityDefinition } from '../../types';
 import { ThemeSelector } from '../ThemeSelector';
@@ -42,6 +43,7 @@ interface ManageActivitiesModalProps {
   onRemindersUpdated?: () => void;
   onOpenCalendarSync?: () => void;
   onOpenDiagnostics?: () => void;
+  onOpenFeedback?: () => void;
 }
 
 export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
@@ -53,6 +55,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
   onRemindersUpdated,
   onOpenCalendarSync,
   onOpenDiagnostics,
+  onOpenFeedback,
 }) => {
   const [reminders, setReminders] = useState<Record<string, ActivityReminderConfig>>({});
   const [activeTab, setActiveTab] = useState<'reminders' | 'palettes' | 'calendar'>('reminders');
@@ -234,21 +237,35 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
             <span className="text-[10px] text-gray-400">Lembretes regulares e personalização visual</span>
           </div>
 
-          {onOpenDiagnostics ? (
-            <button
-              type="button"
-              onClick={() => {
-                onClose();
-                onOpenDiagnostics();
-              }}
-              title="Permissões do Celular & Diagnóstico"
-              className="w-8 h-8 rounded-full bg-purple-500/20 hover:bg-purple-500/35 border border-purple-500/30 flex items-center justify-center text-purple-300 hover:text-white transition cursor-pointer"
-            >
-              <ShieldCheck className="w-4 h-4" />
-            </button>
-          ) : (
-            <div className="w-8 h-8" />
-          )}
+          <div className="flex items-center space-x-1.5">
+            {onOpenFeedback && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenFeedback();
+                }}
+                title="Opiniões & Sugestões"
+                className="w-8 h-8 rounded-full bg-purple-500/20 hover:bg-purple-500/35 border border-purple-500/30 flex items-center justify-center text-purple-300 hover:text-white transition cursor-pointer"
+              >
+                <MessageSquareHeart className="w-4 h-4" />
+              </button>
+            )}
+
+            {onOpenDiagnostics && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenDiagnostics();
+                }}
+                title="Permissões do Celular & Diagnóstico"
+                className="w-8 h-8 rounded-full bg-purple-500/20 hover:bg-purple-500/35 border border-purple-500/30 flex items-center justify-center text-purple-300 hover:text-white transition cursor-pointer"
+              >
+                <ShieldCheck className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </header>
 
         {/* Tab Switcher: Lembretes vs Cores vs Calendário Celular */}

@@ -16,6 +16,7 @@ import {
   Shirt,
   Moon,
   Volume2,
+  MessageSquareHeart,
 } from 'lucide-react';
 import { ActivityItem, CustomActivityDefinition, UserProfile } from '../types';
 import { FormulaDrawer } from './modals/FormulaDrawer';
@@ -35,6 +36,7 @@ interface HomeScreenProps {
   onQuickTrack: (type: 'sleep' | 'diaper_xixi' | 'diaper_coco' | 'custom', customName?: string) => void;
   onSaveFormula?: (data: any, notes?: string) => void;
   customActivities: CustomActivityDefinition[];
+  onOpenFeedback?: () => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -51,6 +53,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onQuickTrack,
   onSaveFormula,
   customActivities,
+  onOpenFeedback,
 }) => {
   // Sleep state and timers
   const [isSleeping, setIsSleeping] = useState<boolean>(true);
@@ -250,6 +253,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 <span className="text-[10px] font-black text-amber-300 tracking-wider">Baby</span>
                 <span className="text-[7.5px] text-purple-200 tracking-tighter">John</span>
               </div>
+            </button>
+          )}
+
+          {onOpenFeedback && (
+            <button
+              type="button"
+              onClick={onOpenFeedback}
+              title="Opiniões & Sugestões do App"
+              className="w-9 h-9 rounded-full bg-[#201738] border border-purple-500/30 flex items-center justify-center text-purple-300 hover:text-white transition active:scale-95 cursor-pointer shadow-xs"
+            >
+              <MessageSquareHeart className="w-4 h-4" />
             </button>
           )}
 

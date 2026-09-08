@@ -16,11 +16,13 @@ import {
   Smartphone,
   ChevronRight,
   ShieldCheck,
+  MessageSquareHeart,
 } from 'lucide-react';
 
 interface RoutinesScreenProps {
   onOpenCalendarSync?: () => void;
   onOpenDiagnostics?: () => void;
+  onOpenFeedback?: () => void;
 }
 
 interface RoutineSchedule {
@@ -120,6 +122,7 @@ const INITIAL_ROUTINES: RoutineSchedule[] = [
 export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
   onOpenCalendarSync,
   onOpenDiagnostics,
+  onOpenFeedback,
 }) => {
   const [routines, setRoutines] = useState<RoutineSchedule[]>(INITIAL_ROUTINES);
   const [filterPeriod, setFilterPeriod] = useState<string>('todos');
@@ -200,6 +203,17 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
         </div>
 
         <div className="flex items-center space-x-2">
+          {onOpenFeedback && (
+            <button
+              type="button"
+              onClick={onOpenFeedback}
+              title="Opiniões e Sugestões da Rotina"
+              className="p-2 rounded-xl bg-[#1e2238] hover:bg-[#2a2f4d] text-purple-300 border border-purple-500/20 flex items-center justify-center transition active:scale-95 cursor-pointer"
+            >
+              <MessageSquareHeart className="w-4 h-4" />
+            </button>
+          )}
+
           {onOpenDiagnostics && (
             <button
               type="button"

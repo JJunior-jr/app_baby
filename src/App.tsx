@@ -19,10 +19,13 @@ import { AuthModal } from './components/modals/AuthModal';
 import { DockerVpsGuideModal } from './components/modals/DockerVpsGuideModal';
 import { CalendarSyncModal } from './components/modals/CalendarSyncModal';
 import { PermissionsDiagnosticsModal } from './components/modals/PermissionsDiagnosticsModal';
+import { FeedbackPromptModal } from './components/modals/FeedbackPromptModal';
+import { FeedbackManagementModal } from './components/modals/FeedbackManagementModal';
 
 import { apiService } from './services/api';
 import { authService } from './services/auth';
 import { themeService, PaletteTheme } from './services/theme';
+import { feedbackService, FeedbackPromptTrigger } from './services/feedback';
 import {
   ActivityItem,
   ActivityType,
@@ -61,6 +64,29 @@ export default function App() {
   const [isDockerGuideOpen, setIsDockerGuideOpen] = useState(false);
   const [isCalendarSyncOpen, setIsCalendarSyncOpen] = useState(false);
   const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState(false);
+  const [isFeedbackPromptOpen, setIsFeedbackPromptOpen] = useState(false);
+  const [isFeedbackManagementOpen, setIsFeedbackManagementOpen] = useState(false);
+  const [feedbackTriggerContext, setFeedbackTriggerContext] = useState<FeedbackPromptTrigger | null>(null);
+
+  // Helper to trigger contextual feedback prompt based on user engagement & time
+  const checkForFeedbackPrompt = (type: 'activity' | 'calendar' | 'general', featureType?: string) => {
+    let trigger: FeedbackPromptTrigger | null = null;
+    if (type === 'activity' && featureType) {
+      trigger = feedbackService.recordActivityCreated(featureType);
+    } else if (type === 'calendar') {
+      trigger = feedbackService.recordFeatureMilestone('calendario');
+    } else {
+      trigger = feedbackService.recordInteraction();
+    }
+
+    if (trigger && trigger.shouldShow) {
+      setFeedbackTriggerContext(trigger);
+      // Pequeno delay suave para não interromper bruscamente o fluxo de salvamento
+      setTimeout(() => {
+        setIsFeedbackPromptOpen(true);
+      }, 900);
+    }
+  };
 
   // Initialize data and theme on mount
   useEffect(() => {
@@ -79,7 +105,19 @@ export default function App() {
     }
     setCurrentUser(user);
 
-    return unsub;
+    // Avaliação periódica suave de tempo de plataforma (a cada 45s)
+    const engagementInterval = setInterval(() => {
+      const trigger = feedbackService.recordInteraction();
+      if (trigger.shouldShow) {
+        setFeedbackTriggerContext(trigger);
+        setIsFeedbackPromptOpen(true);
+      }
+    }, 45000);
+
+    return () => {
+      unsub();
+      clearInterval(engagementInterval);
+    };
   }, []);
 
   const loadData = async () => {
@@ -153,6 +191,7 @@ export default function App() {
     });
     setActivities((prev) => [newAct, ...prev]);
     loadData();
+    checkForFeedbackPrompt('activity', 'amamentacao');
   };
 
   const handleSaveFormula = async (data: any, notes?: string) => {
@@ -188,6 +227,7 @@ export default function App() {
     });
     setActivities((prev) => [newAct, ...prev]);
     loadData();
+    checkForFeedbackPrompt('activity', 'amamentacao');
   };
 
   const handleSaveDiaper = async (data: any) => {
@@ -207,6 +247,7 @@ export default function App() {
     });
     setActivities((prev) => [newAct, ...prev]);
     loadData();
+    checkForFeedbackPrompt('activity', 'fralda');
   };
 
   const handleSaveSleep = async (data: any) => {
@@ -224,6 +265,7 @@ export default function App() {
     });
     setActivities((prev) => [newAct, ...prev]);
     loadData();
+    checkForFeedbackPrompt('activity', 'sono');
   };
 
   const handleSaveMeal = async (data: any) => {
@@ -240,6 +282,7 @@ export default function App() {
     });
     setActivities((prev) => [newAct, ...prev]);
     loadData();
+    checkForFeedbackPrompt('activity', 'comeu');
   };
 
   // Quick Action Tracking (from Home screen)
@@ -307,6 +350,8 @@ export default function App() {
     setIsDockerGuideOpen(false);
     setIsCalendarSyncOpen(false);
     setIsDiagnosticsOpen(false);
+    setIsFeedbackPromptOpen(false);
+    setIsFeedbackManagementOpen(false);
     setActiveTab(tab);
   };
 
@@ -344,6 +389,7 @@ export default function App() {
               onQuickTrack={handleQuickTrack}
               onSaveFormula={handleSaveFormula}
               customActivities={customActivities}
+              onOpenFeedback={() => setIsFeedbackManagementOpen(true)}
             />
           )}
 
@@ -367,6 +413,7 @@ export default function App() {
             <RoutinesScreen
               onOpenCalendarSync={() => setIsCalendarSyncOpen(true)}
               onOpenDiagnostics={() => setIsDiagnosticsOpen(true)}
+              onOpenFeedback={() => setIsFeedbackManagementOpen(true)}
             />
           )}
 
@@ -437,6 +484,10 @@ export default function App() {
             setIsManageActivitiesOpen(false);
             setIsDiagnosticsOpen(true);
           }}
+          onOpenFeedback={() => {
+            setIsManageActivitiesOpen(false);
+            setIsFeedbackManagementOpen(true);
+          }}
         />
 
         <NewActivityModal
@@ -460,12 +511,41 @@ export default function App() {
         <CalendarSyncModal
           isOpen={isCalendarSyncOpen}
           onClose={() => setIsCalendarSyncOpen(false)}
+          onTriggerFeedback={() => {
+            checkForFeedbackPrompt('calendar');
+          }}
         />
 
         <PermissionsDiagnosticsModal
           isOpen={isDiagnosticsOpen}
           onClose={() => setIsDiagnosticsOpen(false)}
           onOpenCalendarSync={() => setIsCalendarSyncOpen(true)}
+        />
+
+        <FeedbackPromptModal
+          isOpen={isFeedbackPromptOpen}
+          onClose={() => setIsFeedbackPromptOpen(false)}
+          triggerContext={feedbackTriggerContext}
+          userName={currentUser?.name || 'Papai/Mamãe'}
+          userEmail={currentUser?.email || ''}
+          onFeedbackSubmitted={() => {
+            // Recarrega ou notifica se necessário
+          }}
+        />
+
+        <FeedbackManagementModal
+          isOpen={isFeedbackManagementOpen}
+          onClose={() => setIsFeedbackManagementOpen(false)}
+          onOpenNewFeedback={() => {
+            setFeedbackTriggerContext({
+              shouldShow: true,
+              triggerReason: 'manual',
+              suggestedFeature: 'geral',
+              headline: 'Sua opinião é fundamental!',
+              subheadline: 'Compartilhe suas ideias e sugestões para o Baby John.',
+            });
+            setIsFeedbackPromptOpen(true);
+          }}
         />
       </main>
     </div>

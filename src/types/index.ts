@@ -102,3 +102,36 @@ export interface DailySummary {
   breastfeedingSessions: number;
   diaperChanges: number;
 }
+
+export type FeedbackTargetFeature =
+  | 'geral'
+  | 'amamentacao'
+  | 'sono'
+  | 'fralda'
+  | 'rotinas'
+  | 'calendario'
+  | 'ia_insights'
+  | 'lembretes';
+
+export interface UserFeedbackItem {
+  id: string;
+  rating: number; // 1 a 5 estrelas
+  category: 'elogio' | 'melhoria' | 'bug' | 'sugestao';
+  targetFeature: FeedbackTargetFeature;
+  comment: string;
+  sessionDurationMinutes: number;
+  interactionCount: number;
+  userName?: string;
+  userEmail?: string;
+  createdAt: string; // ISO string
+}
+
+export interface UserEngagementStats {
+  firstAccessTimestamp: number;
+  totalInteractionsCount: number;
+  activityCreatedCount: number;
+  calendarExportCount: number;
+  remindersConfiguredCount: number;
+  lastFeedbackPromptTimestamp?: number;
+  hasDismissedRecentPrompt?: boolean;
+}
