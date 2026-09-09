@@ -6,7 +6,6 @@ import {
   Utensils,
   Plus,
   Settings,
-  LayoutGrid,
   List,
   Sparkles,
   Send,
@@ -29,6 +28,7 @@ import { remindersService } from '../services/reminders';
 import { syncService } from '../services/syncService';
 import { SleepGaugeView } from './SleepGaugeView';
 import { BreastfeedingGaugeView } from './BreastfeedingGaugeView';
+import { DiaperGaugeView } from './DiaperGaugeView';
 
 interface HomeScreenProps {
   currentUser: UserProfile | null;
@@ -45,6 +45,7 @@ interface HomeScreenProps {
   onQuickTrack: (type: 'sleep' | 'diaper_xixi' | 'diaper_coco' | 'custom', customName?: string) => void;
   onSaveFormula?: (data: any, notes?: string) => void;
   onSaveBreastfeeding?: (data: any) => void;
+  onSaveDiaper?: (data: any) => void;
   customActivities: CustomActivityDefinition[];
   onOpenFeedback?: () => void;
   onOpenOfflineSync?: () => void;
@@ -65,6 +66,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onQuickTrack,
   onSaveFormula,
   onSaveBreastfeeding,
+  onSaveDiaper,
   customActivities,
   onOpenFeedback,
   onOpenOfflineSync,
@@ -74,16 +76,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [isSleeping, setIsSleeping] = useState<boolean>(true);
   const [sleepAnimation, setSleepAnimation] = useState<boolean>(false);
   const [sleepSeconds, setSleepSeconds] = useState<number>(14 * 60); // Starts at 14m in progress
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [homeViewType, setHomeViewType] = useState<'cards' | 'gauge'>(() => {
+  const [homeViewType, setHomeViewType] = useState<'list' | 'gauge'>(() => {
     try {
-      return (localStorage.getItem('babyjohn_home_view') as 'cards' | 'gauge') || 'cards';
+      const saved = localStorage.getItem('babyjohn_home_view');
+      return (saved === 'list' || saved === 'gauge') ? (saved as 'list' | 'gauge') : 'gauge';
     } catch {
-      return 'cards';
+      return 'gauge';
     }
   });
 
-  const handleSetHomeViewType = (type: 'cards' | 'gauge') => {
+  const handleSetHomeViewType = (type: 'list' | 'gauge') => {
     setHomeViewType(type);
     try {
       localStorage.setItem('babyjohn_home_view', type);
@@ -102,15 +104,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [nursingSeconds, setNursingSeconds] = useState<number>(0);
   const [leftNursingSeconds, setLeftNursingSeconds] = useState<number>(0);
   const [rightNursingSeconds, setRightNursingSeconds] = useState<number>(0);
-  const [gaugeSubView, setGaugeSubView] = useState<'sono' | 'amamentacao'>(() => {
+  const [gaugeSubView, setGaugeSubView] = useState<'sono' | 'amamentacao' | 'fralda'>(() => {
     try {
-      return (localStorage.getItem('babyjohn_gauge_subview') as 'sono' | 'amamentacao') || 'sono';
+      return (localStorage.getItem('babyjohn_gauge_subview') as 'sono' | 'amamentacao' | 'fralda') || 'sono';
     } catch {
       return 'sono';
     }
   });
 
-  const handleSetGaugeSubView = (sub: 'sono' | 'amamentacao') => {
+  const handleSetGaugeSubView = (sub: 'sono' | 'amamentacao' | 'fralda') => {
     setGaugeSubView(sub);
     try {
       localStorage.setItem('babyjohn_gauge_subview', sub);
@@ -409,8 +411,29 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             onSaveSession={handleSaveNursingSession}
             onOpenFormulaDrawer={() => setIsFormulaDrawerOpen(true)}
             onQuickSaveFormula={handleQuickSaveFormula}
-            onSwitchToCardsView={() => handleSetHomeViewType('cards')}
+            onSwitchToCardsView={() => handleSetHomeViewType('list')}
             onSwitchToSleepGauge={() => handleSetGaugeSubView('sono')}
+            onSwitchToDiaperGauge={() => handleSetGaugeSubView('fralda')}
+          />
+        ) : gaugeSubView === 'fralda' ? (
+          <DiaperGaugeView
+            currentUser={currentUser}
+            activities={activities}
+            onQuickSaveDiaper={(type, notes) => {
+              if (onSaveDiaper) {
+                onSaveDiaper({ diaperType: type, notes });
+              } else if (type === 'xixi') {
+                onQuickTrack('diaper_xixi');
+              } else if (type === 'coco') {
+                onQuickTrack('diaper_coco');
+              } else {
+                onQuickTrack('custom', 'Fralda (Xixi + Cocô)');
+              }
+            }}
+            onOpenDiaperModal={onOpenDiaperModal}
+            onSwitchToCardsView={() => handleSetHomeViewType('list')}
+            onSwitchToSleepGauge={() => handleSetGaugeSubView('sono')}
+            onSwitchToBreastfeedingGauge={() => handleSetGaugeSubView('amamentacao')}
           />
         ) : (
           <SleepGaugeView
@@ -421,8 +444,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             onOpenSleepModal={onOpenSleepModal}
             onOpenDiaperModal={onOpenDiaperModal}
             onOpenFormulaDrawer={() => setIsFormulaDrawerOpen(true)}
-            onSwitchToCardsView={() => handleSetHomeViewType('cards')}
+            onSwitchToCardsView={() => handleSetHomeViewType('list')}
             onSwitchToBreastfeedingGauge={() => handleSetGaugeSubView('amamentacao')}
+            onSwitchToDiaperGauge={() => handleSetGaugeSubView('fralda')}
           />
         )}
         {/* Formula Drawer can still be opened from quick action or popover */}
@@ -478,11 +502,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <h1 className="text-xl font-bold tracking-tight text-white leading-tight">
               Boa noite, {currentUser?.name || 'Papai'}!
             </h1>
-            <p className="text-xs text-[#8c91af] flex items-center gap-1 mt-0.5">
-              <span>{currentUser?.babyName || 'John'} está {isSleeping ? 'dormindo...' : 'acordado'}</span>
-              <span>{isSleeping ? '😴' : '👀'}</span>
-              {isSleeping && <span className="text-xs">🌙</span>}
-            </p>
           </div>
         </div>
 
@@ -559,17 +578,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </button>
           )}
 
-          {/* Quick toggle to Minimalist Gauge View */}
-          <button
-            type="button"
-            onClick={() => handleSetHomeViewType('gauge')}
-            title="Abrir Visão Minimalista em Gauge do Sono"
-            className="h-9 px-2.5 rounded-full bg-gradient-to-r from-purple-900/40 to-indigo-900/40 border border-purple-500/40 text-purple-200 hover:text-white flex items-center space-x-1.5 transition active:scale-95 cursor-pointer shadow-xs"
-          >
-            <span className="text-xs">⭕</span>
-            <span className="text-[11px] font-bold">Gauge</span>
-          </button>
-
           <button
             type="button"
             onClick={onOpenAuth}
@@ -619,25 +627,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               Próxima soneca <span className="font-extrabold text-white">00:44</span> · em 1h 40min
             </p>
           </div>
-          <div className="flex items-center space-x-2">
-            <button
-              type="button"
-              onClick={() => handleSetHomeViewType('gauge')}
-              className="px-2 py-0.5 rounded-lg bg-purple-900/40 hover:bg-purple-900/60 border border-purple-500/30 text-[10.5px] font-bold text-purple-200 hover:text-white transition flex items-center gap-1 cursor-pointer"
-              title="Abrir gráfico de gauge do sono"
-            >
-              <span>⭕</span>
-              <span>Visão Gauge</span>
-            </button>
-            <button
-              type="button"
-              onClick={onOpenSleepModal}
-              className="text-gray-400 hover:text-gray-200 p-0.5"
-              title="Detalhes do sono"
-            >
-              <Info className="w-4 h-4" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onOpenSleepModal}
+            className="text-gray-400 hover:text-gray-200 p-1 rounded-lg hover:bg-white/5 transition"
+            title="Detalhes do sono"
+          >
+            <Info className="w-4 h-4" />
+          </button>
         </section>
 
         {/* VIP AI Assistant Bar (Desativado da interface do usuário, código preservado) */}
@@ -700,358 +697,36 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               )}
             </button>
 
-            {/* View Mode Toggle */}
+            {/* View Mode Toggle: Lista vs Gauge */}
             <div className="flex bg-[#171a2d] border border-gray-800 p-0.5 rounded-xl">
               <button
                 type="button"
-                onClick={() => {
-                  setViewMode('grid');
-                  handleSetHomeViewType('cards');
-                }}
-                title="Grade de Cards 2x2"
-                className={`p-1.5 rounded-lg transition ${
-                  viewMode === 'grid' && homeViewType === 'cards' ? 'bg-[#7158e2] text-white' : 'text-gray-400 hover:text-gray-200'
-                }`}
-              >
-                <LayoutGrid className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setViewMode('list');
-                  handleSetHomeViewType('cards');
-                }}
+                onClick={() => handleSetHomeViewType('list')}
                 title="Lista de Atividades"
-                className={`p-1.5 rounded-lg transition ${
-                  viewMode === 'list' && homeViewType === 'cards' ? 'bg-[#7158e2] text-white' : 'text-gray-400 hover:text-gray-200'
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  homeViewType === 'list' ? 'bg-[#7158e2] text-white shadow-xs' : 'text-gray-400 hover:text-gray-200'
                 }`}
               >
                 <List className="w-3.5 h-3.5" />
+                <span>Lista</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleSetHomeViewType('gauge')}
-                title="Visão Minimalista / Gauge do Sono"
-                className="p-1.5 rounded-lg text-purple-300 hover:text-white hover:bg-purple-900/40 transition flex items-center justify-center text-xs font-bold"
+                title="Visão Minimalista / Gauge"
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  homeViewType === 'gauge' ? 'bg-gradient-to-r from-purple-700 to-indigo-700 text-white shadow-xs' : 'text-purple-300 hover:text-white'
+                }`}
               >
                 <span>⭕</span>
+                <span>Gauge</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* View Mode: Card (Grid 2x2: 2 em cima, 2 embaixo) vs List (um embaixo do outro) */}
-        {viewMode === 'grid' ? (
-          /* Strict 2x2 Grid: 4 Liquid Action Elements */
-          <div className="grid grid-cols-2 gap-3 w-full animate-in fade-in-50 duration-200">
-            
-            {/* Card 1: Sono (Liquid Gel Âmbar/Mel) */}
-            <motion.button
-              type="button"
-              onClick={handleSleepClick}
-              whileTap={{ scale: 0.93, y: 2 }}
-              whileHover={{ scale: 1.02, y: -2 }}
-              transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-              className={`h-36 rounded-3xl p-4 flex flex-col justify-between text-left relative overflow-hidden backdrop-blur-2xl group select-none ${
-                sleepAnimation
-                  ? 'bg-gradient-to-br from-emerald-400/40 via-teal-500/35 to-emerald-600/35 text-white shadow-[0_12px_35px_rgba(16,185,129,0.35),inset_0_1.5px_2px_rgba(255,255,255,0.5),inset_0_-2px_6px_rgba(0,0,0,0.25)] border border-emerald-300/60 ring-2 ring-emerald-400/60'
-                  : isSleeping
-                    ? 'bg-gradient-to-br from-emerald-500/30 via-teal-500/20 to-emerald-600/20 border border-emerald-300/45 shadow-[0_12px_32px_rgba(16,185,129,0.2),inset_0_1.5px_2px_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.25)] text-white hover:border-emerald-300/60'
-                    : 'bg-gradient-to-br from-amber-400/25 via-amber-500/18 to-yellow-600/12 border border-amber-300/40 hover:border-amber-300/60 shadow-[0_12px_32px_rgba(245,158,11,0.18),inset_0_1.5px_2px_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.25)] text-white'
-              }`}
-            >
-              {/* Liquid Upper Convex Lens Highlight */}
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/35 via-white/5 to-transparent rounded-t-3xl pointer-events-none" />
-              {/* Liquid Diagonal Shimmer Beam */}
-              <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-45 pointer-events-none opacity-40 group-hover:opacity-75 transition-opacity duration-300" />
-              {/* Bottom Caustic Glow */}
-              <div className={`absolute -bottom-2 inset-x-4 h-5 rounded-full blur-md pointer-events-none ${isSleeping ? 'bg-emerald-400/30' : 'bg-amber-400/30'}`} />
-
-              {sleepAnimation ? (
-                /* Animação Verde de Confirmação do Registro */
-                <div className="flex flex-col items-center justify-center my-auto w-full text-center space-y-2 animate-in zoom-in-75 duration-200 relative z-10">
-                  <div className="w-12 h-12 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center text-[#16a34a] shadow-[0_4px_16px_rgba(22,163,74,0.4)]">
-                    <CheckCircle2 className="w-8 h-8 fill-current stroke-white animate-bounce" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-black uppercase tracking-wider text-white drop-shadow">
-                      Registrado!
-                    </span>
-                    <span className="text-[11px] font-medium text-emerald-100">
-                      Soneca iniciada com sucesso
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                /* Card Sono em Vidro Líquido */
-                <>
-                  {/* Top row with title "Dormiu" + Gauge shortcut button */}
-                  <div className="flex items-center justify-between w-full relative z-10">
-                    <span className="text-base font-extrabold tracking-tight text-white drop-shadow-xs">
-                      Dormiu
-                    </span>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSetHomeViewType('gauge');
-                      }}
-                      title="Abrir no modo Gauge Minimalista"
-                      className="px-2 py-0.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/25 text-[10px] font-bold text-amber-100 hover:text-white flex items-center gap-1 transition shadow-xs"
-                    >
-                      <span>⭕</span>
-                      <span>Gauge</span>
-                    </button>
-                  </div>
-
-                  {/* Center Visual State: Lua 🌛 + Pill identificando estado */}
-                  <div className="flex items-center justify-center space-x-2.5 my-auto relative z-10">
-                    <span className="text-3xl drop-shadow-sm select-none group-hover:scale-110 transition-transform duration-200">🌛</span>
-                    {isSleeping ? (
-                      <div className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-black/30 backdrop-blur-md border border-white/25 text-white shadow-inner">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span className="text-xs font-bold tracking-tight">
-                          Em andamento 💤
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
-                        há agora
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Bottom Status Text */}
-                  <div className="flex items-center justify-between w-full text-[10.5px] font-medium text-amber-100/90 relative z-10">
-                    <span>
-                      {isSleeping
-                        ? `⏱️ Soneca: ${formatSleepTime(sleepSeconds)}`
-                        : 'Toque para iniciar'}
-                    </span>
-                    <span className="font-bold text-white">
-                      {isSleeping ? 'Toque p/ acordar' : 'Pendente'}
-                    </span>
-                  </div>
-                </>
-              )}
-            </motion.button>
-
-            {/* Card 2: Amamentação (Liquid Gel Lavanda/Violeta) */}
-            <motion.div
-              whileHover={{ scale: 1.02, y: -2 }}
-              transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-              className={`h-36 rounded-3xl p-3.5 bg-gradient-to-br from-violet-500/28 via-purple-500/18 to-indigo-500/18 backdrop-blur-2xl text-white flex flex-col justify-between relative cursor-pointer border overflow-hidden select-none group ${
-                activeBreastSide
-                  ? 'border-purple-300/90 ring-2 ring-purple-400/50 shadow-[0_12px_32px_rgba(139,92,246,0.3),inset_0_1.5px_2px_rgba(255,255,255,0.45),inset_0_-2px_6px_rgba(0,0,0,0.25)]'
-                  : 'border-purple-300/35 hover:border-purple-300/60 shadow-[0_12px_32px_rgba(139,92,246,0.18),inset_0_1.5px_2px_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.25)]'
-              }`}
-              onClick={onOpenBreastfeedingModal}
-            >
-              {/* Liquid Upper Convex Lens Highlight */}
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/35 via-white/5 to-transparent rounded-t-3xl pointer-events-none" />
-              {/* Liquid Diagonal Shimmer Beam */}
-              <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-45 pointer-events-none opacity-40 group-hover:opacity-75 transition-opacity duration-300" />
-              {/* Bottom Caustic Glow */}
-              <div className="absolute -bottom-2 inset-x-4 h-5 bg-purple-500/30 rounded-full blur-md pointer-events-none" />
-
-              <div className="flex items-center justify-between relative z-10">
-                <div className="flex items-center space-x-1.5 min-w-0">
-                  <span className="text-base font-extrabold tracking-tight truncate">Amamentação</span>
-                  {activeBreastSide && (
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
-                  )}
-                </div>
-                <div className="flex items-center space-x-1.5">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSetGaugeSubView('amamentacao');
-                      handleSetHomeViewType('gauge');
-                    }}
-                    title="Abrir no modo Gauge Minimalista da Amamentação"
-                    className="px-2 py-0.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/25 text-[10px] font-bold text-purple-100 hover:text-white flex items-center gap-1 transition shadow-xs cursor-pointer"
-                  >
-                    <span>⭕</span>
-                    <span>Gauge</span>
-                  </button>
-                  <Baby className="w-5 h-5 opacity-90 shrink-0 text-purple-200 group-hover:scale-110 transition-transform duration-200" />
-                </div>
-              </div>
-
-              {/* Quick side liquid buttons */}
-              <div className="grid grid-cols-3 gap-1.5 w-full pt-1 relative z-10" onClick={(e) => e.stopPropagation()}>
-                {/* Botão Esquerdo */}
-                <motion.button
-                  type="button"
-                  onClick={() => handleBreastSideClick('left')}
-                  whileTap={{ scale: 0.88 }}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  className={`w-full py-1.5 px-1 rounded-xl text-[10.5px] font-extrabold flex items-center justify-center space-x-1 backdrop-blur-md relative overflow-hidden shadow-xs ${
-                    activeBreastSide === 'left'
-                      ? 'bg-white/95 text-[#131127] shadow-[0_4px_12px_rgba(255,255,255,0.4)] ring-2 ring-white'
-                      : 'bg-white/15 hover:bg-white/25 text-purple-100 border border-white/25 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]'
-                  }`}
-                  title={activeBreastSide === 'left' ? 'Toque para pausar e registrar' : 'Iniciar amamentação lado esquerdo'}
-                >
-                  <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
-                  {activeBreastSide === 'left' && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse shrink-0" />
-                  )}
-                  <span className="truncate relative z-10">← Esq.</span>
-                </motion.button>
-
-                {/* Botão Direito */}
-                <motion.button
-                  type="button"
-                  onClick={() => handleBreastSideClick('right')}
-                  whileTap={{ scale: 0.88 }}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  className={`w-full py-1.5 px-1 rounded-xl text-[10.5px] font-extrabold flex items-center justify-center space-x-1 backdrop-blur-md relative overflow-hidden shadow-xs ${
-                    activeBreastSide === 'right'
-                      ? 'bg-white/95 text-[#131127] shadow-[0_4px_12px_rgba(255,255,255,0.4)] ring-2 ring-white'
-                      : 'bg-white/15 hover:bg-white/25 text-purple-100 border border-white/25 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]'
-                  }`}
-                  title={activeBreastSide === 'right' ? 'Toque para pausar e registrar' : 'Iniciar amamentação lado direito'}
-                >
-                  <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
-                  {activeBreastSide === 'right' && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse shrink-0" />
-                  )}
-                  <span className="truncate relative z-10">→ Dir.</span>
-                </motion.button>
-
-                {/* Botão Fórmula */}
-                <motion.button
-                  type="button"
-                  onClick={() => setIsFormulaDrawerOpen(true)}
-                  whileTap={{ scale: 0.88 }}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  className="w-full py-1.5 px-1 rounded-xl bg-white/15 hover:bg-white/25 text-[10.5px] font-extrabold text-purple-100 flex items-center justify-center space-x-0.5 border border-white/25 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] relative overflow-hidden"
-                  title="Escolher fórmula ou mamadeira"
-                >
-                  <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
-                  <span>🍼</span>
-                  <span className="truncate relative z-10">Fórm.</span>
-                </motion.button>
-              </div>
-
-              {/* Bottom Status text */}
-              <div className="flex items-center justify-between text-[10.5px] relative z-10">
-                {activeBreastSide ? (
-                  <span className="text-white font-bold flex items-center gap-1 truncate">
-                    <span>⏱️ {activeBreastSide === 'left' ? 'Esq:' : 'Dir:'}</span>
-                    <span className="text-amber-300 font-mono font-extrabold">{formatNursingTime(nursingSeconds)}</span>
-                  </span>
-                ) : (
-                  <span className="text-purple-200/90 font-medium truncate">
-                    Toque p/ cronometrar
-                  </span>
-                )}
-                <span className="text-[9.5px] text-purple-300 opacity-80 shrink-0 ml-1">
-                  {activeBreastSide ? 'Gravando ●' : 'Esq. há 23h'}
-                </span>
-              </div>
-            </motion.div>
-
-            {/* Card 3: Troca de fralda (Liquid Gel Menta/Turquesa) */}
-            <motion.div
-              whileHover={{ scale: 1.02, y: -2 }}
-              transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-              className="h-36 rounded-3xl p-3.5 bg-gradient-to-br from-teal-400/25 via-emerald-400/18 to-cyan-500/18 backdrop-blur-2xl text-teal-100 flex flex-col justify-between shadow-[0_12px_32px_rgba(20,184,166,0.18),inset_0_1.5px_2px_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.25)] border border-teal-300/40 hover:border-teal-300/60 cursor-pointer relative overflow-hidden select-none group"
-              onClick={onOpenDiaperModal}
-            >
-              {/* Liquid Upper Convex Lens Highlight */}
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/35 via-white/5 to-transparent rounded-t-3xl pointer-events-none" />
-              {/* Liquid Diagonal Shimmer Beam */}
-              <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-45 pointer-events-none opacity-40 group-hover:opacity-75 transition-opacity duration-300" />
-              {/* Bottom Caustic Glow */}
-              <div className="absolute -bottom-2 inset-x-4 h-5 bg-teal-400/30 rounded-full blur-md pointer-events-none" />
-
-              <div className="flex items-center justify-between relative z-10">
-                <span className="text-base font-extrabold tracking-tight text-white">
-                  Troca de fralda
-                </span>
-                <span className="text-xl group-hover:scale-110 transition-transform duration-200">🚼</span>
-              </div>
-
-              {/* Quick sub-actions: Xixi and Cocô (Liquid buttons) */}
-              <div className="flex items-center space-x-2 my-auto relative z-10" onClick={(e) => e.stopPropagation()}>
-                <motion.button
-                  type="button"
-                  onClick={() => {
-                    onQuickTrack('diaper_xixi');
-                    showToast('Troca de fralda (Xixi) registrada! 💧');
-                  }}
-                  whileTap={{ scale: 0.88 }}
-                  whileHover={{ scale: 1.06 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs font-bold backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.15),inset_0_1px_1px_rgba(255,255,255,0.35)] relative overflow-hidden"
-                >
-                  <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
-                  <span>💧</span>
-                  <span className="relative z-10">Xixi</span>
-                </motion.button>
-                <motion.button
-                  type="button"
-                  onClick={() => {
-                    onQuickTrack('diaper_coco');
-                    showToast('Troca de fralda (Cocô) registrada! 🚼');
-                  }}
-                  whileTap={{ scale: 0.88 }}
-                  whileHover={{ scale: 1.06 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs font-bold backdrop-blur-md shadow-[0_4px_12px_rgba(0,0,0,0.15),inset_0_1px_1px_rgba(255,255,255,0.35)] relative overflow-hidden"
-                >
-                  <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
-                  <span>🚼</span>
-                  <span className="relative z-10">Cocô</span>
-                </motion.button>
-              </div>
-
-              <span className="text-[10.5px] text-teal-200/90 font-medium relative z-10">
-                há 5h 36min
-              </span>
-            </motion.div>
-
-            {/* Card 4: Comeu (Liquid Gel Pêssego/Coral) */}
-            <motion.div
-              whileTap={{ scale: 0.93, y: 2 }}
-              whileHover={{ scale: 1.02, y: -2 }}
-              transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-              className="h-36 rounded-3xl p-3.5 bg-gradient-to-br from-rose-400/25 via-pink-500/18 to-orange-400/18 backdrop-blur-2xl text-rose-100 flex flex-col justify-between shadow-[0_12px_32px_rgba(244,63,94,0.18),inset_0_1.5px_2px_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.25)] border border-rose-300/40 hover:border-rose-300/60 cursor-pointer relative overflow-hidden select-none group"
-              onClick={onOpenMealModal}
-            >
-              {/* Liquid Upper Convex Lens Highlight */}
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/35 via-white/5 to-transparent rounded-t-3xl pointer-events-none" />
-              {/* Liquid Diagonal Shimmer Beam */}
-              <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-45 pointer-events-none opacity-40 group-hover:opacity-75 transition-opacity duration-300" />
-              {/* Bottom Caustic Glow */}
-              <div className="absolute -bottom-2 inset-x-4 h-5 bg-rose-400/30 rounded-full blur-md pointer-events-none" />
-
-              <div className="flex items-center justify-between relative z-10">
-                <span className="text-base font-extrabold tracking-tight text-white">Comeu</span>
-                <span className="text-xl group-hover:scale-110 transition-transform duration-200">🥣</span>
-              </div>
-
-              <div className="flex items-center space-x-2 my-auto relative z-10">
-                <span className="px-2.5 py-1 rounded-xl bg-white/15 border border-white/25 text-xs font-bold text-rose-100 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
-                  Janta · 17:27
-                </span>
-              </div>
-
-              <span className="text-[10.5px] text-rose-200/90 font-medium relative z-10">
-                Toque para registrar refeição
-              </span>
-            </motion.div>
-
-          </div>
-        ) : (
-          /* List Mode: 4 Liquid Elements One Below the Other */
-          <div className="flex flex-col gap-2.5 w-full animate-in fade-in-50 duration-200">
+        {/* View Mode: Lista de Atividades (4 elementos líquidos um abaixo do outro) */}
+        <div className="flex flex-col gap-2.5 w-full animate-in fade-in-50 duration-200">
             
             {/* List Item 1: Sono */}
             <motion.button
@@ -1060,7 +735,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               whileTap={{ scale: 0.95, y: 1 }}
               whileHover={{ scale: 1.015, y: -1 }}
               transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-              className={`w-full rounded-2xl p-3.5 flex items-center justify-between text-left relative overflow-hidden backdrop-blur-2xl group select-none ${
+              className={`w-full rounded-2xl p-3.5 min-h-[72px] flex items-center justify-between text-left relative overflow-hidden backdrop-blur-2xl group select-none ${
                 sleepAnimation
                   ? 'bg-gradient-to-r from-emerald-400/40 to-teal-500/35 text-white shadow-[0_8px_25px_rgba(16,185,129,0.3),inset_0_1.5px_2px_rgba(255,255,255,0.45)] ring-2 ring-emerald-400/60 border border-emerald-300/60'
                   : isSleeping
@@ -1085,52 +760,39 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center space-x-3 relative z-10">
+                  <div className="flex items-center space-x-3 relative z-10 min-w-0 flex-1">
                     <div className="w-11 h-11 rounded-2xl bg-white/15 border border-white/25 backdrop-blur-md flex items-center justify-center text-2xl shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
                       <span>🌛</span>
                     </div>
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-extrabold tracking-tight text-white">
-                          Dormiu
-                        </span>
-                        {isSleeping && (
-                          <span className="px-2 py-0.5 rounded-full bg-black/30 text-[10px] font-bold text-white border border-white/20 flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                            <span>Em andamento 💤</span>
-                          </span>
-                        )}
+                    <div className="flex flex-col min-w-0 flex-1 justify-center">
+                      <span className="text-sm font-extrabold tracking-tight text-white leading-tight">
+                        Dormiu
+                      </span>
+                      <div className="mt-1 flex items-center justify-between gap-2 min-w-0">
+                        <div className="text-xs font-medium text-amber-100/90 flex items-center gap-1.5 min-w-0">
+                          {isSleeping ? (
+                            <span className="inline-flex items-center gap-1.5 text-emerald-300 min-w-0 truncate whitespace-nowrap">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                              <span className="truncate">Soneca em andamento · {formatSleepTime(sleepSeconds)}</span>
+                            </span>
+                          ) : (
+                            <span className="truncate whitespace-nowrap">Toque para iniciar soneca</span>
+                          )}
+                        </div>
+
+                        <div className="shrink-0">
+                          {isSleeping ? (
+                            <span className="px-3 py-1 rounded-xl bg-black/30 text-white text-xs font-bold border border-white/25 shadow-inner whitespace-nowrap">
+                              Acordou?
+                            </span>
+                          ) : (
+                            <span className="px-3 py-1 rounded-xl bg-white/20 border border-white/30 text-white text-xs font-bold shadow-xs whitespace-nowrap">
+                              Iniciar
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-xs font-medium text-amber-100/90">
-                        {isSleeping
-                          ? `Soneca em andamento · ${formatSleepTime(sleepSeconds)}`
-                          : 'Toque para iniciar soneca'}
-                      </span>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2 shrink-0 relative z-10">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSetHomeViewType('gauge');
-                      }}
-                      title="Abrir no modo Gauge Minimalista"
-                      className="px-2 py-1 rounded-lg bg-white/15 hover:bg-white/25 border border-white/25 text-[10px] font-bold text-amber-100 hover:text-white flex items-center gap-1 transition"
-                    >
-                      <span>⭕</span>
-                      <span>Gauge</span>
-                    </button>
-                    {isSleeping ? (
-                      <span className="px-3 py-1.5 rounded-xl bg-black/30 text-white text-xs font-bold border border-white/25 shadow-inner">
-                        Acordou?
-                      </span>
-                    ) : (
-                      <span className="px-3 py-1.5 rounded-xl bg-white/20 border border-white/30 text-white text-xs font-bold shadow-xs">
-                        há agora
-                      </span>
-                    )}
                   </div>
                 </>
               )}
@@ -1147,7 +809,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             >
               <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-2xl pointer-events-none" />
 
-              <div className="flex items-center space-x-3 min-w-0 relative z-10">
+              <div className="flex items-center space-x-3 min-w-0 relative z-10 flex-1 mr-2">
                 <div className="w-11 h-11 rounded-2xl bg-white/15 border border-white/25 backdrop-blur-md flex items-center justify-center text-xl shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
                   <Baby className="w-6 h-6 text-purple-200" />
                 </div>
@@ -1158,7 +820,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
                     )}
                   </div>
-                  <span className="text-xs text-purple-200/90 font-medium">
+                  <span className="text-xs text-purple-200/90 font-medium truncate">
                     {activeBreastSide ? (
                       <span className="text-amber-300 font-mono font-bold">⏱️ {formatNursingTime(nursingSeconds)}</span>
                     ) : (
@@ -1168,7 +830,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 </div>
               </div>
 
-              {/* Quick side liquid buttons */}
+              {/* Quick side liquid buttons without redundant gauge button */}
               <div className="flex items-center gap-1.5 shrink-0 relative z-10" onClick={(e) => e.stopPropagation()}>
                 <motion.button
                   type="button"
@@ -1218,26 +880,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   whileTap={{ scale: 0.88 }}
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  className="px-2 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-[11px] font-bold text-purple-100 flex items-center gap-0.5 border border-white/25 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] relative overflow-hidden"
+                  className="px-2.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-[11px] font-bold text-purple-100 flex items-center gap-1 border border-white/25 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] relative overflow-hidden"
                   title="Escolher fórmula em drawer"
                 >
                   <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
                   <span>🍼</span>
                   <span>Fórm.</span>
                 </motion.button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSetGaugeSubView('amamentacao');
-                    handleSetHomeViewType('gauge');
-                  }}
-                  title="Abrir no modo Gauge Minimalista da Amamentação"
-                  className="px-2 py-1 rounded-lg bg-white/15 hover:bg-white/25 border border-white/25 text-[10px] font-bold text-purple-100 hover:text-white flex items-center gap-1 transition cursor-pointer"
-                >
-                  <span>⭕</span>
-                  <span>Gauge</span>
-                </button>
               </div>
             </motion.div>
 
@@ -1329,8 +978,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </motion.div>
 
           </div>
-        )}
-      </section>
+        </section>
 
       {/* Section: Atividades personalizadas */}
       <section className="space-y-2.5 pt-2">

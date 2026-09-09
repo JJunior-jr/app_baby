@@ -7,7 +7,7 @@ import {
   Volume2,
   VolumeX,
   Sparkles,
-  LayoutGrid,
+  List,
   Info,
   Clock,
   CheckCircle2,
@@ -27,6 +27,7 @@ interface SleepGaugeViewProps {
   onOpenFormulaDrawer: () => void;
   onSwitchToCardsView: () => void;
   onSwitchToBreastfeedingGauge?: () => void;
+  onSwitchToDiaperGauge?: () => void;
 }
 
 // Generate deterministic stars for the night sky backdrop
@@ -50,6 +51,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
   onOpenFormulaDrawer,
   onSwitchToCardsView,
   onSwitchToBreastfeedingGauge,
+  onSwitchToDiaperGauge,
 }) => {
   // Current real-time clock for the big display or elapsed sleep mode
   const [currentTimeStr, setCurrentTimeStr] = useState<string>(() => {
@@ -222,19 +224,11 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
       </div>
 
       {/* Top Header Bar inside Gauge View */}
-      <div className="relative z-20 px-5 pt-2 flex items-center justify-between">
-        {/* Left icon: Round glasses button just like in the screenshot */}
-        <button
-          type="button"
-          onClick={onSwitchToCardsView}
-          title="Alternar para Visão em Cards"
-          className="w-10 h-10 rounded-full bg-[#1b1e36]/80 border border-purple-500/30 backdrop-blur-md flex items-center justify-center text-purple-200 hover:text-white transition active:scale-95 shadow-lg shadow-black/40 cursor-pointer"
-        >
-          {/* Eyeglasses icon matching the screenshot glyph */}
-          <span className="text-base select-none">👓</span>
-        </button>
+      <div className="relative z-20 px-4 pt-2 flex items-center justify-between">
+        {/* Balanced left spacer replacing the deprecated cards button */}
+        <div className="w-14 hidden sm:block pointer-events-none" aria-hidden="true" />
 
-        {/* Center: Mode Selector (Sono vs Amamentação) */}
+        {/* Center: Mode Selector (Sono vs Amamentação vs Fralda) */}
         <div className="flex items-center space-x-1 bg-[#16182c]/90 border border-white/10 rounded-full p-1 shadow-lg backdrop-blur-md">
           <button
             type="button"
@@ -250,20 +244,30 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
               className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-400 hover:text-pink-300 transition flex items-center gap-1 cursor-pointer"
             >
               <span>🤱</span>
-              <span>Amamentação</span>
+              <span>Peito</span>
+            </button>
+          )}
+          {onSwitchToDiaperGauge && (
+            <button
+              type="button"
+              onClick={onSwitchToDiaperGauge}
+              className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-400 hover:text-teal-300 transition flex items-center gap-1 cursor-pointer"
+            >
+              <span>🧷</span>
+              <span>Fralda</span>
             </button>
           )}
         </div>
 
-        {/* Right: Quick Cards switch */}
+        {/* Right: Quick Lista switch */}
         <button
           type="button"
           onClick={onSwitchToCardsView}
           className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-300 hover:text-white bg-[#1b1e36]/80 border border-white/10 flex items-center gap-1 cursor-pointer"
-          title="Ver como Cards"
+          title="Ver como Lista"
         >
-          <LayoutGrid className="w-3 h-3" />
-          <span>Cards</span>
+          <List className="w-3 h-3" />
+          <span>Lista</span>
         </button>
       </div>
 
@@ -452,11 +456,11 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             )}
           </button>
 
-          {/* Action 3: Diaper / Fralda (with small lock glyph matching screenshot) */}
+          {/* Action 3: Diaper / Fralda */}
           <button
             type="button"
-            onClick={onOpenDiaperModal}
-            title="Registrar Troca de Fralda"
+            onClick={onSwitchToDiaperGauge || onOpenDiaperModal}
+            title="Abrir Medidor de Fralda"
             className="relative flex items-center justify-center w-12 h-12 rounded-full bg-[#241f35] border border-purple-500/20 text-purple-300 hover:text-white transition duration-200 active:scale-92 cursor-pointer shadow-md"
           >
             {/* Diaper shape emoji */}

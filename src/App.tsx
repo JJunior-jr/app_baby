@@ -403,6 +403,7 @@ export default function App() {
               onQuickTrack={handleQuickTrack}
               onSaveFormula={handleSaveFormula}
               onSaveBreastfeeding={handleSaveBreastfeeding}
+              onSaveDiaper={handleSaveDiaper}
               customActivities={customActivities}
               onOpenFeedback={() => setIsFeedbackManagementOpen(true)}
               onOpenOfflineSync={() => setIsOfflineSyncOpen(true)}

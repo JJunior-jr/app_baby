@@ -9,7 +9,7 @@ import {
   Milk,
   Heart,
   Clock,
-  LayoutGrid,
+  List,
   ChevronRight,
   Info,
   Sliders,
@@ -34,6 +34,7 @@ interface BreastfeedingGaugeViewProps {
   onQuickSaveFormula: (ml: number) => void;
   onSwitchToCardsView: () => void;
   onSwitchToSleepGauge: () => void;
+  onSwitchToDiaperGauge?: () => void;
 }
 
 // Background cosmic stars
@@ -64,13 +65,37 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
   onQuickSaveFormula,
   onSwitchToCardsView,
   onSwitchToSleepGauge,
+  onSwitchToDiaperGauge,
 }) => {
   // Popover state for formula / bottle
   const [isFormulaPopoverOpen, setIsFormulaPopoverOpen] = useState(false);
   const [isAdjust24hOpen, setIsAdjust24hOpen] = useState(false);
+  const [customMinutesInput, setCustomMinutesInput] = useState('');
   const [centerDisplayMode, setCenterDisplayMode] = useState<'24h' | 'session'>('24h');
   const popoverRef = useRef<HTMLDivElement>(null);
   const adjustRef = useRef<HTMLDivElement>(null);
+
+  const handleApplyCustomMinutes = (multiplier: 1 | -1) => {
+    const mins = parseInt(customMinutesInput, 10);
+    if (isNaN(mins) || mins <= 0) return;
+    if (onAdjust24hNursingSeconds) {
+      onAdjust24hNursingSeconds(mins * 60 * multiplier);
+    }
+    setCustomMinutesInput('');
+    setIsAdjust24hOpen(false);
+  };
+
+  const handleSetExactTotalMinutes = () => {
+    const mins = parseInt(customMinutesInput, 10);
+    if (isNaN(mins) || mins < 0) return;
+    const targetSeconds = mins * 60;
+    const diff = targetSeconds - total24hNursingSeconds;
+    if (onAdjust24hNursingSeconds) {
+      onAdjust24hNursingSeconds(diff);
+    }
+    setCustomMinutesInput('');
+    setIsAdjust24hOpen(false);
+  };
 
   // Close popovers when clicking outside
   useEffect(() => {
@@ -171,18 +196,11 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
       </div>
 
       {/* Top Header Bar inside Gauge View */}
-      <div className="relative z-20 px-5 pt-2 flex items-center justify-between">
-        {/* Left button: return to Cards */}
-        <button
-          type="button"
-          onClick={onSwitchToCardsView}
-          title="Voltar para Visão em Cards"
-          className="w-10 h-10 rounded-full bg-[#1b1e36]/80 border border-purple-500/30 backdrop-blur-md flex items-center justify-center text-purple-200 hover:text-white transition active:scale-95 shadow-lg shadow-black/40 cursor-pointer"
-        >
-          <span className="text-base select-none">👓</span>
-        </button>
+      <div className="relative z-20 px-4 pt-2 flex items-center justify-between">
+        {/* Balanced left spacer replacing the deprecated cards button */}
+        <div className="w-14 hidden sm:block pointer-events-none" aria-hidden="true" />
 
-        {/* Center: Gauge Selector (Sono vs Amamentação) */}
+        {/* Center: Gauge Selector (Sono vs Amamentação vs Fralda) */}
         <div className="flex items-center space-x-1 bg-[#16182c]/90 border border-white/10 rounded-full p-1 shadow-lg backdrop-blur-md">
           <button
             type="button"
@@ -197,11 +215,21 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
             className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 text-white border border-pink-400/40 shadow-xs flex items-center gap-1 cursor-default"
           >
             <span>🤱</span>
-            <span>Amamentação</span>
+            <span>Peito</span>
           </button>
+          {onSwitchToDiaperGauge && (
+            <button
+              type="button"
+              onClick={onSwitchToDiaperGauge}
+              className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-400 hover:text-teal-300 transition flex items-center gap-1 cursor-pointer"
+            >
+              <span>🧷</span>
+              <span>Fralda</span>
+            </button>
+          )}
         </div>
 
-        {/* Right: Quick adjustment for 24h baseline or switch to cards */}
+        {/* Right: Quick adjustment for 24h baseline or switch to list */}
         <div className="flex items-center space-x-1.5" ref={adjustRef}>
           <button
             type="button"
@@ -215,10 +243,10 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
             type="button"
             onClick={onSwitchToCardsView}
             className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-300 hover:text-white bg-[#1b1e36]/80 border border-white/10 flex items-center gap-1 cursor-pointer"
-            title="Ver como Cards"
+            title="Ver como Lista"
           >
-            <LayoutGrid className="w-3 h-3" />
-            <span>Cards</span>
+            <List className="w-3 h-3" />
+            <span>Lista</span>
           </button>
 
           {/* Popover to adjust 24h baseline */}
@@ -229,18 +257,18 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute top-12 right-4 w-64 bg-[#141629] border border-pink-500/40 rounded-2xl p-3 shadow-2xl shadow-black/90 z-50 backdrop-blur-2xl text-white"
+                className="absolute top-12 right-2 w-72 bg-[#141629] border border-pink-500/40 rounded-2xl p-3.5 shadow-2xl shadow-black/90 z-50 backdrop-blur-2xl text-white"
               >
                 <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
                   <span className="text-xs font-bold text-pink-200">Ajustar Total em 24h</span>
-                  <span className="text-[10px] text-gray-400">
+                  <span className="text-[10px] text-gray-400 font-mono">
                     {hoursInt}h {minsInt}m atuais
                   </span>
                 </div>
                 <p className="text-[10px] text-gray-300 mb-2.5 leading-relaxed">
                   Adicione ou subtraia tempo de peito já realizado nas 24h para acertar o gráfico:
                 </p>
-                <div className="grid grid-cols-2 gap-1.5 mb-2">
+                <div className="grid grid-cols-2 gap-1.5 mb-2.5">
                   <button
                     type="button"
                     onClick={() => {
@@ -280,6 +308,50 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
                     className="py-1 px-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-[11px] font-bold text-gray-300 cursor-pointer"
                   >
                     -15 min
+                  </button>
+                </div>
+
+                {/* Opção personalizada de tempo solicitado pelo usuário */}
+                <div className="border-t border-white/10 pt-2.5">
+                  <span className="text-[10px] font-bold text-pink-300 block mb-1.5">
+                    Ou tempo personalizado (em minutos):
+                  </span>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="Ex: 45"
+                      value={customMinutesInput}
+                      onChange={(e) => setCustomMinutesInput(e.target.value)}
+                      className="flex-1 bg-white/10 border border-white/20 rounded-xl px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-400 font-mono"
+                    />
+                    <span className="text-[11px] text-gray-400 font-medium">min</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5 mb-1.5">
+                    <button
+                      type="button"
+                      disabled={!customMinutesInput || parseInt(customMinutesInput, 10) <= 0}
+                      onClick={() => handleApplyCustomMinutes(1)}
+                      className="py-1 px-2 rounded-xl bg-pink-600/40 hover:bg-pink-600/60 disabled:opacity-40 disabled:cursor-not-allowed border border-pink-400/50 text-[10.5px] font-bold text-white transition active:scale-95 cursor-pointer"
+                    >
+                      + Adicionar
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!customMinutesInput || parseInt(customMinutesInput, 10) <= 0}
+                      onClick={() => handleApplyCustomMinutes(-1)}
+                      className="py-1 px-2 rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed border border-white/20 text-[10.5px] font-bold text-gray-300 transition active:scale-95 cursor-pointer"
+                    >
+                      - Subtrair
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={!customMinutesInput || parseInt(customMinutesInput, 10) < 0}
+                    onClick={handleSetExactTotalMinutes}
+                    className="w-full py-1 px-2 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 disabled:opacity-40 disabled:cursor-not-allowed border border-purple-400/40 text-[10px] font-bold text-purple-200 transition active:scale-95 cursor-pointer"
+                  >
+                    Definir total exato ({customMinutesInput || 0} min)
                   </button>
                 </div>
               </motion.div>
