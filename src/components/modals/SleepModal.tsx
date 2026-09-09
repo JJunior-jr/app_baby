@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { X, Moon, Sun, ArrowRight, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Moon, Sun, ArrowRight, CheckCircle2, Music, Sparkles } from 'lucide-react';
 import { isDaytimeInBrazil, getBrazilTimeString } from '../../services/brazilTime';
+import { whiteNoiseService, WhiteNoiseTrack } from '../../services/whiteNoiseAudio';
+import { WhiteNoisePlaylistModal } from './WhiteNoisePlaylistModal';
 
 interface SleepModalProps {
   isOpen: boolean;
@@ -25,6 +27,21 @@ export const SleepModal: React.FC<SleepModalProps> = ({ isOpen, onClose, onSave 
   const [isRegisteredGreen, setIsRegisteredGreen] = useState<boolean>(false);
   const [quality, setQuality] = useState<'ruim' | 'regular' | 'bom' | 'excelente'>('bom');
   const [notes, setNotes] = useState<string>('');
+  const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
+  const [isPlayingWhiteNoise, setIsPlayingWhiteNoise] = useState(() => whiteNoiseService.isPlaying());
+  const [currentTrack, setCurrentTrack] = useState<WhiteNoiseTrack>(() =>
+    whiteNoiseService.getCurrentTrack()
+  );
+
+  useEffect(() => {
+    const handleSoundState = () => {
+      setIsPlayingWhiteNoise(whiteNoiseService.isPlaying());
+      setCurrentTrack(whiteNoiseService.getCurrentTrack());
+    };
+    const unsub = whiteNoiseService.subscribe(handleSoundState);
+    handleSoundState();
+    return () => unsub();
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -194,6 +211,38 @@ export const SleepModal: React.FC<SleepModalProps> = ({ isOpen, onClose, onSave 
             </div>
           </section>
 
+          {/* Ruído Branco & Playlist */}
+          <section>
+            <div
+              onClick={() => setIsPlaylistModalOpen(true)}
+              className="p-3.5 rounded-2xl bg-[#181b2e] border border-purple-500/25 flex items-center justify-between cursor-pointer hover:border-purple-400/50 transition active:scale-[0.99]"
+            >
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-xl">
+                  {isPlayingWhiteNoise ? currentTrack.emoji : '🌧️'}
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs font-bold text-white">Ruído Branco & Playlist</span>
+                    {isPlayingWhiteNoise && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold uppercase">
+                        Tocando
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-gray-400">
+                    {isPlayingWhiteNoise
+                      ? `${currentTrack.name} · Toque para alterar ou pausar`
+                      : 'Escolha entre 6 ruídos calmantes para o sono'}
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-purple-300 font-semibold px-2.5 py-1 rounded-lg bg-white/5">
+                {isPlayingWhiteNoise ? 'Ajustar' : 'Escolher'}
+              </span>
+            </div>
+          </section>
+
           {/* Observações */}
           <section className="space-y-2">
             <h3 className="text-sm font-bold text-white tracking-wide">Observações (opcional)</h3>
@@ -237,6 +286,11 @@ export const SleepModal: React.FC<SleepModalProps> = ({ isOpen, onClose, onSave 
           </button>
         </footer>
 
+        {/* White Noise Playlist Modal */}
+        <WhiteNoisePlaylistModal
+          isOpen={isPlaylistModalOpen}
+          onClose={() => setIsPlaylistModalOpen(false)}
+        />
       </div>
     </div>
   );

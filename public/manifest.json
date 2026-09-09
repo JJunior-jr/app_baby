@@ -1,0 +1,21 @@
+{
+  "id": "/",
+  "name": "Baby John - Diário do Bebê",
+  "short_name": "Baby John",
+  "description": "Aplicativo mobile para rotina, sonecas, ruído branco e alertas do bebê John.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0c0d16",
+  "background_color": "#080913",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "parenting", "utilities"]
+}

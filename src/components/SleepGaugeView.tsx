@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Sun,
@@ -14,9 +14,16 @@ import {
   Play,
   Square,
   Lock,
+  Music,
+  BellRing,
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { isDaytimeInBrazil, getBrazilTimeString } from '../services/brazilTime';
+import {
+  whiteNoiseService,
+  WhiteNoiseTrack,
+} from '../services/whiteNoiseAudio';
+import { WhiteNoisePlaylistModal } from './modals/WhiteNoisePlaylistModal';
 
 interface SleepGaugeViewProps {
   currentUser: UserProfile | null;
@@ -29,6 +36,7 @@ interface SleepGaugeViewProps {
   onSwitchToCardsView: () => void;
   onSwitchToBreastfeedingGauge?: () => void;
   onSwitchToDiaperGauge?: () => void;
+  onOpenNotificationCenter?: () => void;
 }
 
 // Generate deterministic stars for the night sky backdrop
@@ -53,6 +61,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
   onSwitchToCardsView,
   onSwitchToBreastfeedingGauge,
   onSwitchToDiaperGauge,
+  onOpenNotificationCenter,
 }) => {
   // Current real-time clock for the big display or elapsed sleep mode (Brazil Time)
   const [currentTimeStr, setCurrentTimeStr] = useState<string>(() => getBrazilTimeString());
@@ -61,11 +70,24 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
   // Display mode inside the gauge: 'clock' (showing e.g. 21:46) vs 'timer' (showing e.g. 02:15)
   const [displayMode, setDisplayMode] = useState<'clock' | 'timer'>('clock');
   
-  // Soothing white noise / ambient lullaby sound generator
-  const [isPlayingSound, setIsPlayingSound] = useState(false);
+  // Soothing white noise playlist & ambient sound state
+  const [isPlayingSound, setIsPlayingSound] = useState(() => whiteNoiseService.isPlaying());
+  const [currentTrack, setCurrentTrack] = useState<WhiteNoiseTrack>(() =>
+    whiteNoiseService.getCurrentTrack()
+  );
+  const [isPlaylistOpen, setIsPlaylistOpen] = useState(false);
   const [soundFeedback, setSoundFeedback] = useState<string | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const noiseNodeRef = useRef<AudioNode | null>(null);
+
+  // Sync with whiteNoiseService
+  useEffect(() => {
+    const handleSoundChange = () => {
+      setIsPlayingSound(whiteNoiseService.isPlaying());
+      setCurrentTrack(whiteNoiseService.getCurrentTrack());
+    };
+    const unsubscribe = whiteNoiseService.subscribe(handleSoundChange);
+    handleSoundChange();
+    return () => unsubscribe();
+  }, []);
 
   // Update clock time and Brazil daytime status every 10 seconds
   useEffect(() => {
@@ -89,74 +111,9 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
     return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
-  // Web Audio API ambient white noise / gentle pink wave generator
-  const toggleSound = () => {
-    if (isPlayingSound) {
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close().catch(() => {});
-        audioCtxRef.current = null;
-      }
-      setIsPlayingSound(false);
-      setSoundFeedback('Ruído branco pausado');
-      setTimeout(() => setSoundFeedback(null), 2000);
-    } else {
-      try {
-        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-        if (!AudioContextClass) return;
-        const ctx = new AudioContextClass();
-        audioCtxRef.current = ctx;
-
-        // Create buffer with gentle pink/brown noise
-        const bufferSize = 2 * ctx.sampleRate;
-        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const output = noiseBuffer.getChannelData(0);
-        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
-        for (let i = 0; i < bufferSize; i++) {
-          const white = Math.random() * 2 - 1;
-          b0 = 0.99886 * b0 + white * 0.0555179;
-          b1 = 0.99332 * b1 + white * 0.0750759;
-          b2 = 0.96900 * b2 + white * 0.1538520;
-          b3 = 0.86650 * b3 + white * 0.3104856;
-          b4 = 0.55000 * b4 + white * 0.5329522;
-          b5 = -0.7616 * b5 - white * 0.0168980;
-          output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
-          b6 = white * 0.115926;
-        }
-
-        const whiteNoise = ctx.createBufferSource();
-        whiteNoise.buffer = noiseBuffer;
-        whiteNoise.loop = true;
-
-        // Lowpass filter for warm womb-like calming tone
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 500;
-
-        const gainNode = ctx.createGain();
-        gainNode.gain.setValueAtTime(0.12, ctx.currentTime);
-
-        whiteNoise.connect(filter);
-        filter.connect(gainNode);
-        gainNode.connect(ctx.destination);
-
-        whiteNoise.start(0);
-        noiseNodeRef.current = whiteNoise;
-        setIsPlayingSound(true);
-        setSoundFeedback('Ruído branco suave ativado 🌧️💤');
-        setTimeout(() => setSoundFeedback(null), 2500);
-      } catch {
-        setIsPlayingSound(false);
-      }
-    }
+  const handleOpenPlaylist = () => {
+    setIsPlaylistOpen(true);
   };
-
-  useEffect(() => {
-    return () => {
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close().catch(() => {});
-      }
-    };
-  }, []);
 
   // Arc Gauge Geometry (270 degrees total sweep, open at bottom)
   // Center (160, 160), radius = 118
@@ -464,18 +421,26 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             </div>
           </button>
 
-          {/* Action 2: Cloud / White Noise / Rain Sounds (Salmon/Pink cloud from screenshot) */}
+          {/* Action 2: Cloud / White Noise / Rain Sounds Playlist */}
           <button
             type="button"
-            onClick={toggleSound}
-            title={isPlayingSound ? 'Desligar som relaxante' : 'Ligar ruído branco para dormir'}
+            onClick={handleOpenPlaylist}
+            title={
+              isPlayingSound
+                ? `Tocando: ${currentTrack.name} (Toque para abrir playlist)`
+                : 'Abrir Playlist de Ruídos Brancos para Dormir'
+            }
             className={`relative flex items-center justify-center w-12 h-12 rounded-full transition duration-200 active:scale-92 cursor-pointer shadow-md ${
               isPlayingSound
                 ? 'bg-[#3b1d28] border border-rose-400/80 ring-2 ring-rose-400/70 shadow-[0_0_18px_rgba(244,63,94,0.45)] text-rose-300'
                 : 'bg-[#241f35] border border-purple-500/20 text-rose-300/80 hover:text-rose-200'
             }`}
           >
-            <CloudRain className="w-5 h-5 stroke-[2]" />
+            {isPlayingSound ? (
+              <span className="text-xl animate-pulse">{currentTrack.emoji}</span>
+            ) : (
+              <CloudRain className="w-5 h-5 stroke-[2]" />
+            )}
             {isPlayingSound && (
               <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-rose-400 animate-ping" />
             )}
@@ -510,8 +475,26 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
               <Lock className="w-2.5 h-2.5 text-gray-300" />
             </div>
           </button>
+
+          {/* Action 5: Alarm / Notifications */}
+          {onOpenNotificationCenter && (
+            <button
+              type="button"
+              onClick={onOpenNotificationCenter}
+              title="Central de Notificações & Alarmes em Segundo Plano"
+              className="relative flex items-center justify-center w-12 h-12 rounded-full bg-[#241f35] border border-purple-500/30 text-purple-300 hover:text-amber-300 transition duration-200 active:scale-92 cursor-pointer shadow-md"
+            >
+              <BellRing className="w-5 h-5 text-purple-300" />
+            </button>
+          )}
         </div>
       </div>
+
+      {/* White Noise Playlist Modal */}
+      <WhiteNoisePlaylistModal
+        isOpen={isPlaylistOpen}
+        onClose={() => setIsPlaylistOpen(false)}
+      />
     </div>
   );
 };

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#181a2f"/>
+      <stop offset="50%" stop-color="#241e45"/>
+      <stop offset="100%" stop-color="#0c0d16"/>
+    </linearGradient>
+    <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fcd34d"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded rectangle -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  <rect width="504" height="504" x="4" y="4" rx="108" fill="none" stroke="#7158e2" stroke-width="4" stroke-opacity="0.4" />
+
+  <!-- Moon silhouette -->
+  <path d="M290 120 C220 120 160 176 160 250 C160 324 220 380 290 380 C320 380 348 370 370 352 C320 345 280 302 280 250 C280 198 320 155 370 148 C348 130 320 120 290 120 Z" fill="url(#starGrad)" />
+
+  <!-- Little sparkle star -->
+  <path d="M375 160 L385 185 L410 195 L385 205 L375 230 L365 205 L340 195 L365 185 Z" fill="#fef08a" />
+  <path d="M190 170 L195 182 L207 187 L195 192 L190 204 L185 192 L173 187 L185 182 Z" fill="#fef08a" opacity="0.8" />
+
+  <!-- Cloud at bottom of moon -->
+  <path d="M170 370 C150 370 135 355 135 335 C135 318 147 304 163 301 C170 275 195 255 225 255 C250 255 272 269 281 290 C288 287 296 285 305 285 C327 285 345 303 345 325 C355 327 365 336 365 348 C365 360 355 370 343 370 Z" fill="url(#cloudGrad)" opacity="0.9" />
+
+  <!-- Baby sleeping face inside cloud -->
+  <ellipse cx="240" cy="320" rx="35" ry="32" fill="#fed7aa" />
+  <path d="M225 322 Q232 327 240 322" stroke="#9a3412" stroke-width="3" fill="none" stroke-linecap="round" />
+  <path d="M245 322 Q252 327 260 322" stroke="#9a3412" stroke-width="3" fill="none" stroke-linecap="round" />
+  <path d="M236 332 Q242 336 248 332" stroke="#e11d48" stroke-width="2.5" fill="none" stroke-linecap="round" />
+</svg>

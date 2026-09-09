@@ -30,6 +30,7 @@ import { isDaytimeInBrazil } from '../services/brazilTime';
 import { SleepGaugeView } from './SleepGaugeView';
 import { BreastfeedingGaugeView } from './BreastfeedingGaugeView';
 import { DiaperGaugeView } from './DiaperGaugeView';
+import { notificationService } from '../services/notificationService';
 
 interface HomeScreenProps {
   currentUser: UserProfile | null;
@@ -50,6 +51,7 @@ interface HomeScreenProps {
   customActivities: CustomActivityDefinition[];
   onOpenFeedback?: () => void;
   onOpenOfflineSync?: () => void;
+  onOpenNotificationCenter?: () => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -71,8 +73,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   customActivities,
   onOpenFeedback,
   onOpenOfflineSync,
+  onOpenNotificationCenter,
 }) => {
   const [syncStatus, setSyncStatus] = useState<SyncStatusState>(() => syncService.getSyncStatus());
+  const [pendingAlarmsCount, setPendingAlarmsCount] = useState<number>(() =>
+    notificationService.getPendingCount()
+  );
+
+  useEffect(() => {
+    notificationService.init();
+    const updateAlarms = () => {
+      setPendingAlarmsCount(notificationService.getPendingCount());
+    };
+    const unsub = notificationService.subscribe(updateAlarms);
+    return () => unsub();
+  }, []);
+
   // Sleep state and timers
   const [isSleeping, setIsSleeping] = useState<boolean>(true);
   const [sleepAnimation, setSleepAnimation] = useState<boolean>(false);
@@ -471,6 +487,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             onSwitchToCardsView={() => handleSetHomeViewType('list')}
             onSwitchToBreastfeedingGauge={() => handleSetGaugeSubView('amamentacao')}
             onSwitchToDiaperGauge={() => handleSetGaugeSubView('fralda')}
+            onOpenNotificationCenter={onOpenNotificationCenter}
           />
         )}
         {/* Formula Drawer can still be opened from quick action or popover */}
@@ -604,11 +621,24 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
           <button
             type="button"
-            onClick={onOpenAuth}
-            title="Notificações & JWT"
-            className="w-9 h-9 rounded-full bg-[#181a2d] border border-gray-800 flex items-center justify-center text-gray-300 hover:text-white transition"
+            onClick={onOpenNotificationCenter || onOpenAuth}
+            title={
+              pendingAlarmsCount > 0
+                ? `${pendingAlarmsCount} alarme(s) ativo(s) - Toque para gerenciar`
+                : 'Central de Notificações & Alarmes em Segundo Plano'
+            }
+            className={`relative w-9 h-9 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer ${
+              pendingAlarmsCount > 0
+                ? 'bg-purple-600/30 border border-purple-400 text-purple-200 shadow-[0_0_12px_rgba(168,85,247,0.4)]'
+                : 'bg-[#181a2d] border border-gray-800 text-gray-300 hover:text-white'
+            }`}
           >
             <Bell className="w-4 h-4" />
+            {pendingAlarmsCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 rounded-full bg-purple-500 border-2 border-[#0c0d16] text-[9px] font-black text-white flex items-center justify-center animate-pulse">
+                {pendingAlarmsCount}
+              </span>
+            )}
           </button>
         </div>
       </header>

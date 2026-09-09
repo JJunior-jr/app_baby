@@ -22,6 +22,7 @@ import { PermissionsDiagnosticsModal } from './components/modals/PermissionsDiag
 import { FeedbackPromptModal } from './components/modals/FeedbackPromptModal';
 import { FeedbackManagementModal } from './components/modals/FeedbackManagementModal';
 import { OfflineSyncModal } from './components/modals/OfflineSyncModal';
+import { NotificationCenterModal } from './components/modals/NotificationCenterModal';
 
 import { apiService } from './services/api';
 import { authService } from './services/auth';
@@ -70,6 +71,7 @@ export default function App() {
   const [isFeedbackManagementOpen, setIsFeedbackManagementOpen] = useState(false);
   const [feedbackTriggerContext, setFeedbackTriggerContext] = useState<FeedbackPromptTrigger | null>(null);
   const [isOfflineSyncOpen, setIsOfflineSyncOpen] = useState(false);
+  const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
 
   // Helper to trigger contextual feedback prompt based on user engagement & time
   const checkForFeedbackPrompt = (type: 'activity' | 'calendar' | 'general', featureType?: string) => {
@@ -407,6 +409,7 @@ export default function App() {
               customActivities={customActivities}
               onOpenFeedback={() => setIsFeedbackManagementOpen(true)}
               onOpenOfflineSync={() => setIsOfflineSyncOpen(true)}
+              onOpenNotificationCenter={() => setIsNotificationCenterOpen(true)}
             />
           )}
 
@@ -576,6 +579,11 @@ export default function App() {
           onSyncComplete={() => {
             loadData();
           }}
+        />
+
+        <NotificationCenterModal
+          isOpen={isNotificationCenterOpen}
+          onClose={() => setIsNotificationCenterOpen(false)}
         />
       </main>
     </div>
