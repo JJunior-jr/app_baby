@@ -27,6 +27,7 @@ import { ActivityItem, CustomActivityDefinition, UserProfile, SyncStatusState } 
 import { FormulaDrawer } from './modals/FormulaDrawer';
 import { remindersService } from '../services/reminders';
 import { syncService } from '../services/syncService';
+import { SleepGaugeView } from './SleepGaugeView';
 
 interface HomeScreenProps {
   currentUser: UserProfile | null;
@@ -69,6 +70,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [sleepAnimation, setSleepAnimation] = useState<boolean>(false);
   const [sleepSeconds, setSleepSeconds] = useState<number>(14 * 60); // Starts at 14m in progress
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [homeViewType, setHomeViewType] = useState<'cards' | 'gauge'>(() => {
+    try {
+      return (localStorage.getItem('babyjohn_home_view') as 'cards' | 'gauge') || 'cards';
+    } catch {
+      return 'cards';
+    }
+  });
+
+  const handleSetHomeViewType = (type: 'cards' | 'gauge') => {
+    setHomeViewType(type);
+    try {
+      localStorage.setItem('babyjohn_home_view', type);
+    } catch {}
+  };
   // UI Visibility Flags (preservando o código original intacto)
   const isAiAssistantVisible = false; // Desativado para não aparecer na interface do usuário
   const isBabyJohnVisible = false; // Desabilitado e sem ficar visível na interface do usuário
@@ -211,6 +226,37 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     showToast(`Mamadeira registrada: ${consumed}ml (${pct}%)! 🍼`);
   };
 
+  // If user selected minimalist sleep gauge view, render SleepGaugeView
+  if (homeViewType === 'gauge') {
+    return (
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
+        <SleepGaugeView
+          currentUser={currentUser}
+          isSleeping={isSleeping}
+          sleepSeconds={sleepSeconds}
+          onToggleSleep={handleSleepClick}
+          onOpenSleepModal={onOpenSleepModal}
+          onOpenDiaperModal={onOpenDiaperModal}
+          onOpenFormulaDrawer={() => setIsFormulaDrawerOpen(true)}
+          onSwitchToCardsView={() => handleSetHomeViewType('cards')}
+        />
+        {/* Formula Drawer can still be opened from quick action */}
+        <FormulaDrawer
+          isOpen={isFormulaDrawerOpen}
+          onClose={() => setIsFormulaDrawerOpen(false)}
+          onConfirm={handleConfirmFormula}
+        />
+        {/* Toast feedback notification */}
+        {toastMessage && (
+          <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl bg-[#7158e2] text-white text-xs font-bold shadow-2xl border border-purple-400 flex items-center space-x-2 animate-in fade-in slide-in-from-top-3">
+            <span>✨</span>
+            <span>{toastMessage}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 overflow-y-auto px-4 sm:px-6 landscape:px-6 pt-2 pb-6 space-y-4 no-scrollbar">
       
@@ -328,6 +374,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </button>
           )}
 
+          {/* Quick toggle to Minimalist Gauge View */}
+          <button
+            type="button"
+            onClick={() => handleSetHomeViewType('gauge')}
+            title="Abrir Visão Minimalista em Gauge do Sono"
+            className="h-9 px-2.5 rounded-full bg-gradient-to-r from-purple-900/40 to-indigo-900/40 border border-purple-500/40 text-purple-200 hover:text-white flex items-center space-x-1.5 transition active:scale-95 cursor-pointer shadow-xs"
+          >
+            <span className="text-xs">⭕</span>
+            <span className="text-[11px] font-bold">Gauge</span>
+          </button>
+
           <button
             type="button"
             onClick={onOpenAuth}
@@ -377,14 +434,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               Próxima soneca <span className="font-extrabold text-white">00:44</span> · em 1h 40min
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onOpenSleepModal}
-            className="text-gray-400 hover:text-gray-200 p-0.5"
-            title="Detalhes do sono"
-          >
-            <Info className="w-4 h-4" />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={() => handleSetHomeViewType('gauge')}
+              className="px-2 py-0.5 rounded-lg bg-purple-900/40 hover:bg-purple-900/60 border border-purple-500/30 text-[10.5px] font-bold text-purple-200 hover:text-white transition flex items-center gap-1 cursor-pointer"
+              title="Abrir gráfico de gauge do sono"
+            >
+              <span>⭕</span>
+              <span>Visão Gauge</span>
+            </button>
+            <button
+              type="button"
+              onClick={onOpenSleepModal}
+              className="text-gray-400 hover:text-gray-200 p-0.5"
+              title="Detalhes do sono"
+            >
+              <Info className="w-4 h-4" />
+            </button>
+          </div>
         </section>
 
         {/* VIP AI Assistant Bar (Desativado da interface do usuário, código preservado) */}
@@ -451,21 +519,37 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <div className="flex bg-[#171a2d] border border-gray-800 p-0.5 rounded-xl">
               <button
                 type="button"
-                onClick={() => setViewMode('grid')}
+                onClick={() => {
+                  setViewMode('grid');
+                  handleSetHomeViewType('cards');
+                }}
+                title="Grade de Cards 2x2"
                 className={`p-1.5 rounded-lg transition ${
-                  viewMode === 'grid' ? 'bg-[#7158e2] text-white' : 'text-gray-400 hover:text-gray-200'
+                  viewMode === 'grid' && homeViewType === 'cards' ? 'bg-[#7158e2] text-white' : 'text-gray-400 hover:text-gray-200'
                 }`}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
               </button>
               <button
                 type="button"
-                onClick={() => setViewMode('list')}
+                onClick={() => {
+                  setViewMode('list');
+                  handleSetHomeViewType('cards');
+                }}
+                title="Lista de Atividades"
                 className={`p-1.5 rounded-lg transition ${
-                  viewMode === 'list' ? 'bg-[#7158e2] text-white' : 'text-gray-400 hover:text-gray-200'
+                  viewMode === 'list' && homeViewType === 'cards' ? 'bg-[#7158e2] text-white' : 'text-gray-400 hover:text-gray-200'
                 }`}
               >
                 <List className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSetHomeViewType('gauge')}
+                title="Visão Minimalista / Gauge do Sono"
+                className="p-1.5 rounded-lg text-purple-300 hover:text-white hover:bg-purple-900/40 transition flex items-center justify-center text-xs font-bold"
+              >
+                <span>⭕</span>
               </button>
             </div>
           </div>
@@ -516,11 +600,23 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               ) : (
                 /* Card Sono em Vidro Líquido */
                 <>
-                  {/* Top row with title "Dormiu" */}
-                  <div className="flex items-center justify-center w-full relative z-10">
+                  {/* Top row with title "Dormiu" + Gauge shortcut button */}
+                  <div className="flex items-center justify-between w-full relative z-10">
                     <span className="text-base font-extrabold tracking-tight text-white drop-shadow-xs">
                       Dormiu
                     </span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSetHomeViewType('gauge');
+                      }}
+                      title="Abrir no modo Gauge Minimalista"
+                      className="px-2 py-0.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/25 text-[10px] font-bold text-amber-100 hover:text-white flex items-center gap-1 transition shadow-xs"
+                    >
+                      <span>⭕</span>
+                      <span>Gauge</span>
+                    </button>
                   </div>
 
                   {/* Center Visual State: Lua 🌛 + Pill identificando estado */}
@@ -814,6 +910,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   </div>
                   
                   <div className="flex items-center space-x-2 shrink-0 relative z-10">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSetHomeViewType('gauge');
+                      }}
+                      title="Abrir no modo Gauge Minimalista"
+                      className="px-2 py-1 rounded-lg bg-white/15 hover:bg-white/25 border border-white/25 text-[10px] font-bold text-amber-100 hover:text-white flex items-center gap-1 transition"
+                    >
+                      <span>⭕</span>
+                      <span>Gauge</span>
+                    </button>
                     {isSleeping ? (
                       <span className="px-3 py-1.5 rounded-xl bg-black/30 text-white text-xs font-bold border border-white/25 shadow-inner">
                         Acordou?
