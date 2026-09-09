@@ -1,8 +1,117 @@
+# Git Ignore - Root Level
+# Ignore environment files and secrets
+
+# ==================== ENVIRONMENT FILES ====================
+.env
+.env.local
+.env.prod
+.env.prod.local
+.env.*.local
+
+# ==================== SECRETS & CREDENTIALS ====================
+*.pem
+*.key
+*.cert
+*.crt
+ssl/
+secrets/
+credentials.json
+.aws/
+.ssh/
+
+# ==================== DEPENDENCIES ====================
 node_modules/
-build/
-dist/
-coverage/
+venv/
+ENV/
+env/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ==================== IDE & EDITOR ====================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
+Thumbs.db
+*.sublime-workspace
+.project
+.pydevproject
+.settings/
+*.iml
+
+# ==================== PYTHON ====================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ==================== TESTING ====================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# ==================== DOCKER ====================
+.dockerignore
+
+# ==================== LOGS & TEMP ====================
 *.log
-.env*
-!.env.example
+logs/
+*.tmp
+temp/
+tmp/
+*.bak
+*.swp
+
+# ==================== DATABASE ====================
+*.db
+*.sqlite
+*.sqlite3
+backup*.sql
+backup*.sql.gz
+
+# ==================== BUILD & ARTIFACTS ====================
+dist/
+build/
+*.egg-info/
+.cache/
+
+# ==================== OS ====================
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+
+# ==================== GITHUB/GIT ====================
+.git/
+.gitignore
+.github/
+
+# ==================== PROJECT SPECIFIC ====================
+*.orig
+*.rej
+merge-conflicts/

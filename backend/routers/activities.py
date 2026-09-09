@@ -1,108 +1,247 @@
-import uuid
+"""
+Router para atividades com banco de dados PostgreSQL
+Substitui MOCK_ACTIVITIES com queries seguras do SQLAlchemy
+Rate limiting e proteção contra SQL injection inclusos
+"""
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
+from sqlalchemy.orm import Session
+from datetime import datetime, timedelta
 from typing import List, Optional
-from fastapi import APIRouter, Depends, Query, HTTPException, status
-from schemas import ActivityCreate, ActivityResponse, DailySummaryResponse, UserResponse
+from slowapi.util import get_remote_address
+
+from database import get_db
+from crud import (
+    create_activity, get_activities, get_activity_by_id,
+    update_activity, delete_activity, get_daily_summary,
+    log_audit
+)
+from schemas import (
+    ActivityCreate, ActivityResponse, DailySummaryResponse
+)
 from auth import get_current_user
+from models import User
+from rate_limiter import limiter
 
-router = APIRouter()
+router = APIRouter(prefix="/api/activities", tags=["activities"])
 
-# In-memory mock database for fast execution (easily replaced with PostgreSQL / SQLite)
-MOCK_ACTIVITIES = [
-    {
-        "id": "act-1",
-        "type": "custom",
-        "title": "Tommy time botao estantaneo",
-        "timestamp": "2026-08-19T23:05:00",
-        "dateStr": "2026-08-19",
-        "timeStr": "23:05",
-        "period": "Noite",
-        "assignee": "Papai",
-    },
-    {
-        "id": "act-2",
-        "type": "custom",
-        "title": "Tammy time",
-        "subtitle": "tammy time",
-        "timestamp": "2026-08-19T23:05:00",
-        "dateStr": "2026-08-19",
-        "timeStr": "23:05",
-        "period": "Noite",
-        "isInProgress": True,
-        "assignee": "Papai",
-    },
-    {
-        "id": "act-4",
-        "type": "comeu",
-        "title": "Refeição",
-        "subtitle": "Comeu",
-        "timestamp": "2026-08-19T23:05:00",
-        "dateStr": "2026-08-19",
-        "timeStr": "23:05",
-        "period": "Noite",
-        "assignee": "Papai",
-    },
-    {
-        "id": "act-5",
-        "type": "fralda",
-        "title": "Fralda (Xixi + Cocô)",
-        "timestamp": "2026-08-19T23:05:00",
-        "dateStr": "2026-08-19",
-        "timeStr": "23:05",
-        "period": "Noite",
-        "assignee": "Papai",
-    }
-]
-
-@router.get("", response_model=List[ActivityResponse])
-def get_activities(
-    date: Optional[str] = Query(None, description="Data no formato YYYY-MM-DD"),
-    filter_type: Optional[str] = Query(None, description="Tipo de atividade (amamentacao, sono, fralda, comeu)"),
-    current_user: UserResponse = Depends(get_current_user)
-):
-    """Lista atividades do bebê com proteção JWT"""
-    results = MOCK_ACTIVITIES
-    if date:
-        results = [a for a in results if a.get("dateStr") == date]
-    if filter_type and filter_type != "all":
-        results = [a for a in results if a.get("type") == filter_type]
-    return results
+# ==================== CREATE ====================
 
 @router.post("", response_model=ActivityResponse, status_code=status.HTTP_201_CREATED)
-def create_activity(
+@limiter.limit("30/minute")
+async def create_new_activity(
     activity: ActivityCreate,
-    current_user: UserResponse = Depends(get_current_user)
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
-    """Registra uma nova atividade na rotina diária"""
-    new_id = f"act-{uuid.uuid4().hex[:8]}"
-    activity_dict = activity.model_dump()
-    activity_dict["id"] = new_id
-    MOCK_ACTIVITIES.insert(0, activity_dict)
-    return activity_dict
+    """
+    Criar nova atividade
+    - Validação automática pelo Pydantic
+    - Query parametrizada contra SQL injection
+    - Auditoria de criação
+    - Rate limit: 30 requisições por minuto
+    """
+    try:
+        db_activity = create_activity(db, current_user.id, activity)
+
+        # Log auditoria
+        log_audit(
+            db=db,
+            user_id=current_user.id,
+            action="CREATE",
+            resource_type="activity",
+            resource_id=db_activity.id,
+            ip_address=request.client.host if request else None,
+            user_agent=request.headers.get("user-agent") if request else None
+        )
+
+        return ActivityResponse.from_orm(db_activity)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+# ==================== READ ====================
+
+@router.get("", response_model=List[ActivityResponse])
+@limiter.limit("60/minute")
+async def list_activities(
+    request: Request,
+    date: Optional[str] = Query(None, description="Filtro por data (YYYY-MM-DD)"),
+    type: Optional[str] = Query(None, description="Filtro por tipo"),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Listar atividades do usuário com filtros opcionais
+    - Queries parametrizadas para todos os filtros
+    - Apenas retorna atividades do usuário autenticado
+    - Rate limit: 60 requisições por minuto
+    """
+    try:
+        activities = get_activities(
+            db=db,
+            user_id=current_user.id,
+            date_str=date,
+            activity_type=type
+        )
+        return [ActivityResponse.from_orm(a) for a in activities]
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+@router.get("/{activity_id}", response_model=ActivityResponse)
+@limiter.limit("60/minute")
+async def get_activity(
+    activity_id: str,
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Buscar atividade específica
+    - Verifica ownership antes de retornar
+    - Query parametrizada
+    - Rate limit: 60 requisições por minuto
+    """
+    try:
+        activity = get_activity_by_id(db, current_user.id, activity_id)
+
+        if not activity:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Atividade não encontrada"
+            )
+
+        return ActivityResponse.from_orm(activity)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+# ==================== UPDATE ====================
+
+@router.put("/{activity_id}", response_model=ActivityResponse)
+@limiter.limit("30/minute")
+async def update_activity_endpoint(
+    activity_id: str,
+    activity_data: ActivityCreate,
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Atualizar atividade existente
+    - Rate limit: 30 requisições por minuto
+    """
+    try:
+        updated = update_activity(
+            db=db,
+            user_id=current_user.id,
+            activity_id=activity_id,
+            activity_data=activity_data.dict()
+        )
+
+        if not updated:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Atividade não encontrada"
+            )
+
+        # Log auditoria
+        log_audit(
+            db=db,
+            user_id=current_user.id,
+            action="UPDATE",
+            resource_type="activity",
+            resource_id=activity_id,
+            ip_address=request.client.host if request else None,
+            user_agent=request.headers.get("user-agent") if request else None,
+            changes=activity_data.dict()
+        )
+
+        return ActivityResponse.from_orm(updated)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+# ==================== DELETE ====================
 
 @router.delete("/{activity_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_activity(
+@limiter.limit("30/minute")
+async def delete_activity_endpoint(
     activity_id: str,
-    current_user: UserResponse = Depends(get_current_user)
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
-    """Exclui uma atividade pelo ID"""
-    global MOCK_ACTIVITIES
-    MOCK_ACTIVITIES = [a for a in MOCK_ACTIVITIES if a["id"] != activity_id]
-    return None
+    """
+    Deletar atividade
+    - Rate limit: 30 requisições por minuto
+    """
+    try:
+        success = delete_activity(db, current_user.id, activity_id)
 
-@router.get("/summary/daily", response_model=DailySummaryResponse)
-def get_daily_summary(
-    date: str = Query(..., description="Data no formato YYYY-MM-DD"),
-    current_user: UserResponse = Depends(get_current_user)
-):
-    """Retorna métricas de sono, amamentação e fraldas para o dia selecionado"""
-    if date == "2026-08-19":
-        return DailySummaryResponse(
-            totalSleepMinutes=336, # 5h 36min
-            breastfeedingSessions=3,
-            diaperChanges=4
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Atividade não encontrada"
+            )
+
+        # Log auditoria
+        log_audit(
+            db=db,
+            user_id=current_user.id,
+            action="DELETE",
+            resource_type="activity",
+            resource_id=activity_id,
+            ip_address=request.client.host if request else None,
+            user_agent=request.headers.get("user-agent") if request else None
         )
-    return DailySummaryResponse(
-        totalSleepMinutes=0,
-        breastfeedingSessions=0,
-        diaperChanges=0
-    )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+# ==================== DAILY SUMMARY ====================
+
+@router.get("/daily-summary/{date}", response_model=DailySummaryResponse)
+@limiter.limit("60/minute")
+async def get_daily_summary_endpoint(
+    date: str,
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Obter resumo diário de atividades
+    Agregação segura com queries parametrizadas
+    - Rate limit: 60 requisições por minuto
+    """
+    try:
+        summary = get_daily_summary(db, current_user.id, date)
+        return DailySummaryResponse(**summary)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
