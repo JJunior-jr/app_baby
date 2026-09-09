@@ -26,6 +26,7 @@ interface SleepGaugeViewProps {
   onOpenDiaperModal: () => void;
   onOpenFormulaDrawer: () => void;
   onSwitchToCardsView: () => void;
+  onSwitchToBreastfeedingGauge?: () => void;
 }
 
 // Generate deterministic stars for the night sky backdrop
@@ -48,6 +49,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
   onOpenDiaperModal,
   onOpenFormulaDrawer,
   onSwitchToCardsView,
+  onSwitchToBreastfeedingGauge,
 }) => {
   // Current real-time clock for the big display or elapsed sleep mode
   const [currentTimeStr, setCurrentTimeStr] = useState<string>(() => {
@@ -232,24 +234,37 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
           <span className="text-base select-none">👓</span>
         </button>
 
-        {/* Center / Right: Quick View Switch Pill */}
+        {/* Center: Mode Selector (Sono vs Amamentação) */}
         <div className="flex items-center space-x-1 bg-[#16182c]/90 border border-white/10 rounded-full p-1 shadow-lg backdrop-blur-md">
           <button
             type="button"
-            onClick={onSwitchToCardsView}
-            className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-400 hover:text-white transition flex items-center gap-1 cursor-pointer"
+            className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-purple-600/70 text-white border border-purple-400/40 shadow-xs flex items-center gap-1 cursor-default"
           >
-            <LayoutGrid className="w-3 h-3" />
-            <span>Cards</span>
+            <span>🌙</span>
+            <span>Sono</span>
           </button>
-          <button
-            type="button"
-            className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-purple-600/60 text-white border border-purple-400/40 shadow-xs flex items-center gap-1 cursor-default"
-          >
-            <Clock className="w-3 h-3" />
-            <span>Gauge</span>
-          </button>
+          {onSwitchToBreastfeedingGauge && (
+            <button
+              type="button"
+              onClick={onSwitchToBreastfeedingGauge}
+              className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-400 hover:text-pink-300 transition flex items-center gap-1 cursor-pointer"
+            >
+              <span>🤱</span>
+              <span>Amamentação</span>
+            </button>
+          )}
         </div>
+
+        {/* Right: Quick Cards switch */}
+        <button
+          type="button"
+          onClick={onSwitchToCardsView}
+          className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-300 hover:text-white bg-[#1b1e36]/80 border border-white/10 flex items-center gap-1 cursor-pointer"
+          title="Ver como Cards"
+        >
+          <LayoutGrid className="w-3 h-3" />
+          <span>Cards</span>
+        </button>
       </div>
 
       {/* Sound Toast Feedback */}

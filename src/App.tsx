@@ -390,6 +390,7 @@ export default function App() {
           {activeTab === 'inicio' && (
             <HomeScreen
               currentUser={currentUser}
+              activities={activities}
               onOpenAuth={() => setIsAuthModalOpen(true)}
               onOpenDockerGuide={() => setIsDockerGuideOpen(true)}
               onOpenManageActivities={() => setIsManageActivitiesOpen(true)}
@@ -401,6 +402,7 @@ export default function App() {
               onOpenMealModal={() => setIsMealModalOpen(true)}
               onQuickTrack={handleQuickTrack}
               onSaveFormula={handleSaveFormula}
+              onSaveBreastfeeding={handleSaveBreastfeeding}
               customActivities={customActivities}
               onOpenFeedback={() => setIsFeedbackManagementOpen(true)}
               onOpenOfflineSync={() => setIsOfflineSyncOpen(true)}
