@@ -26,6 +26,7 @@ import { ActivityItem, CustomActivityDefinition, UserProfile, SyncStatusState } 
 import { FormulaDrawer } from './modals/FormulaDrawer';
 import { remindersService } from '../services/reminders';
 import { syncService } from '../services/syncService';
+import { isDaytimeInBrazil } from '../services/brazilTime';
 import { SleepGaugeView } from './SleepGaugeView';
 import { BreastfeedingGaugeView } from './BreastfeedingGaugeView';
 import { DiaperGaugeView } from './DiaperGaugeView';
@@ -122,6 +123,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [isFormulaDrawerOpen, setIsFormulaDrawerOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [activeRemindersCount, setActiveRemindersCount] = useState<number>(() => remindersService.getActiveCount());
+  const [isDaytime, setIsDaytime] = useState<boolean>(() => isDaytimeInBrazil());
+
+  useEffect(() => {
+    const checkTime = () => setIsDaytime(isDaytimeInBrazil());
+    checkTime();
+    const timer = setInterval(checkTime, 30000);
+    window.addEventListener('focus', checkTime);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('focus', checkTime);
+    };
+  }, []);
 
   useEffect(() => {
     const syncReminders = () => {
@@ -336,20 +349,29 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     showToast(`Mamada registrada: ${totalMin} min (Esq: ${leftMinutes}m · Dir: ${rightMinutes}m) 🤱✨`);
   };
 
-  const handleQuickSaveFormula = (ml: number) => {
+  const handleQuickSaveFormula = (ml: number, leftoverMl: number = 0) => {
+    const consumed = Math.max(0, ml - leftoverMl);
+    const pct = ml > 0 ? Math.round((consumed / ml) * 100) : 100;
     if (onSaveFormula) {
       onSaveFormula({
         offeredMl: ml,
-        leftoverMl: 0,
-        consumedMl: ml,
-        consumedPercentage: 100,
+        leftoverMl: leftoverMl,
+        consumedMl: consumed,
+        consumedPercentage: pct,
         milkType: 'formula',
-        notes: 'Registro rápido via Gauge',
+        notes:
+          leftoverMl > 0
+            ? `Ofertado: ${ml}ml · Sobrou: ${leftoverMl}ml`
+            : 'Registro rápido via Gauge',
       });
     } else {
-      onQuickTrack('custom', `Mamadeira (${ml}ml Fórmula)`);
+      onQuickTrack('custom', `Mamadeira (${consumed}ml Fórmula)`);
     }
-    showToast(`Mamadeira de ${ml}ml registrada! 🍼`);
+    showToast(
+      leftoverMl > 0
+        ? `Mamadeira registrada: ${consumed}ml bebidos (${leftoverMl}ml sobraram) 🍼`
+        : `Mamadeira de ${ml}ml registrada! 🍼`
+    );
   };
 
   // Handle sleep click with green animation, returning to yellow with in-progress status
@@ -360,7 +382,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       setIsSleeping(true);
       setSleepSeconds(0);
       onQuickTrack('sleep');
-      showToast('Soneca registrada! John começou a dormir 🌙💤');
+      const emoji = isDaytime ? '☀️' : '🌙';
+      const label = isDaytime ? 'Soneca diurna' : 'Sono noturno';
+      showToast(`${label} iniciada! John começou a dormir ${emoji}💤`);
       // After 1.4s, green animation ends and card returns to yellow showing "Em andamento"
       setTimeout(() => {
         setSleepAnimation(false);
@@ -370,7 +394,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       const durationText = formatSleepTime(sleepSeconds);
       setIsSleeping(false);
       setSleepSeconds(0);
-      showToast(`Soneca finalizada (${durationText})! John acordou ☀️`);
+      showToast(`Sono finalizado (${durationText})! John acordou 👶✨`);
     }
   };
 
@@ -754,7 +778,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                       Registrado!
                     </span>
                     <span className="text-[11px] text-emerald-100 font-medium">
-                      Soneca iniciada com sucesso
+                      {isDaytime ? 'Soneca' : 'Sono noturno'} iniciado com sucesso {isDaytime ? '☀️' : '🌙'}
                     </span>
                   </div>
                 </div>
@@ -762,21 +786,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 <>
                   <div className="flex items-center space-x-3 relative z-10 min-w-0 flex-1">
                     <div className="w-11 h-11 rounded-2xl bg-white/15 border border-white/25 backdrop-blur-md flex items-center justify-center text-2xl shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
-                      <span>🌛</span>
+                      <span>{isDaytime ? '☀️' : '🌙'}</span>
                     </div>
                     <div className="flex flex-col min-w-0 flex-1 justify-center">
                       <span className="text-sm font-extrabold tracking-tight text-white leading-tight">
-                        Dormiu
+                        {isSleeping ? (isDaytime ? 'Soneca' : 'Sono Noturno') : (isDaytime ? 'Soneca (Dormir)' : 'Sono Noturno')}
                       </span>
                       <div className="mt-1 flex items-center justify-between gap-2 min-w-0">
                         <div className="text-xs font-medium text-amber-100/90 flex items-center gap-1.5 min-w-0">
                           {isSleeping ? (
                             <span className="inline-flex items-center gap-1.5 text-emerald-300 min-w-0 truncate whitespace-nowrap">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-                              <span className="truncate">Soneca em andamento · {formatSleepTime(sleepSeconds)}</span>
+                              <span className="truncate">
+                                {isDaytime ? 'Soneca' : 'Sono'} em andamento · {formatSleepTime(sleepSeconds)}
+                              </span>
                             </span>
                           ) : (
-                            <span className="truncate whitespace-nowrap">Toque para iniciar soneca</span>
+                            <span className="truncate whitespace-nowrap">
+                              Toque para iniciar {isDaytime ? 'soneca ☀️' : 'sono 🌙'}
+                            </span>
                           )}
                         </div>
 

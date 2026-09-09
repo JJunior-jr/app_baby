@@ -712,24 +712,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
           </div>
         </div>
 
-        {/* Quick prompt button if diaper is overdue or user wants to register right away */}
-        <div className="mt-2 flex items-center space-x-2">
-          <button
-            type="button"
-            onClick={() => handleQuickChange('xixi')}
-            className="px-3.5 py-1 rounded-full bg-teal-500/20 hover:bg-teal-500/30 border border-teal-400/40 text-teal-200 text-[11px] font-bold flex items-center gap-1.5 active:scale-95 transition cursor-pointer shadow-sm"
-          >
-            <Check className="w-3 h-3 text-teal-300 stroke-[3]" />
-            <span>Troquei agora (Xixi 💧)</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => handleQuickChange('coco')}
-            className="px-3 py-1 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-200 text-[11px] font-bold flex items-center gap-1.5 active:scale-95 transition cursor-pointer shadow-sm"
-          >
-            <span>💩 Cocô</span>
-          </button>
-        </div>
+
       </div>
 
       {/* Bottom Controls: 3 Liquid Glass Action Buttons (Xixi, Cocô, Detalhes/Ambos) */}

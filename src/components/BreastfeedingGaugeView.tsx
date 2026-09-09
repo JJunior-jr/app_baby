@@ -31,7 +31,7 @@ interface BreastfeedingGaugeViewProps {
   onResetTimers: () => void;
   onSaveSession: (leftMinutes: number, rightMinutes: number) => void;
   onOpenFormulaDrawer: () => void;
-  onQuickSaveFormula: (ml: number) => void;
+  onQuickSaveFormula: (ml: number, leftoverMl?: number) => void;
   onSwitchToCardsView: () => void;
   onSwitchToSleepGauge: () => void;
   onSwitchToDiaperGauge?: () => void;
@@ -51,6 +51,9 @@ const STARS = Array.from({ length: 42 }).map((_, i) => ({
 // Scale of 24 Hours in Seconds
 const SCALE_24H_SECONDS = 24 * 3600; // 86,400 seconds
 
+const QUICK_FORMULA_OFFERED = [60, 90, 120, 150, 180, 210];
+const QUICK_FORMULA_LEFTOVER = [0, 10, 20, 30, 40, 50];
+
 export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
   currentUser,
   leftSeconds,
@@ -69,6 +72,8 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
 }) => {
   // Popover state for formula / bottle
   const [isFormulaPopoverOpen, setIsFormulaPopoverOpen] = useState(false);
+  const [quickOffered, setQuickOffered] = useState<number>(120);
+  const [quickLeftover, setQuickLeftover] = useState<number>(0);
   const [isAdjust24hOpen, setIsAdjust24hOpen] = useState(false);
   const [customMinutesInput, setCustomMinutesInput] = useState('');
   const [centerDisplayMode, setCenterDisplayMode] = useState<'24h' | 'session'>('24h');
@@ -704,40 +709,101 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Quick ML Presets */}
-                  <div className="space-y-1.5 mb-3">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                      Volumes Rápidos:
-                    </span>
-                    <div className="grid grid-cols-4 gap-1.5">
-                      {[60, 90, 120, 150].map((ml) => (
-                        <button
-                          key={ml}
-                          type="button"
-                          onClick={() => {
-                            onQuickSaveFormula(ml);
-                            setIsFormulaPopoverOpen(false);
-                          }}
-                          className="py-1.5 rounded-xl bg-teal-500/15 hover:bg-teal-500/30 border border-teal-500/30 text-teal-200 hover:text-white text-xs font-extrabold transition active:scale-95 cursor-pointer"
-                        >
-                          {ml}ml
-                        </button>
-                      ))}
+                  {/* 2 Vertical Columns: Ofertado & Sobrou (diminished vertical buttons) */}
+                  <div className="grid grid-cols-2 gap-2 mb-2.5">
+                    {/* Column 1: Ofertado */}
+                    <div className="flex flex-col">
+                      <div className="flex items-center justify-between mb-1 px-0.5">
+                        <span className="text-[10px] font-bold text-teal-300 uppercase tracking-wider">
+                          Ofertado:
+                        </span>
+                        <span className="text-[11px] font-mono font-extrabold text-white">
+                          {quickOffered}ml
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        {QUICK_FORMULA_OFFERED.map((ml) => {
+                          const isSelected = quickOffered === ml;
+                          return (
+                            <button
+                              key={`offered-${ml}`}
+                              type="button"
+                              onClick={() => setQuickOffered(ml)}
+                              className={`py-1 px-2 rounded-lg text-xs font-bold transition flex items-center justify-between border active:scale-95 cursor-pointer ${
+                                isSelected
+                                  ? 'bg-teal-500 border-teal-400 text-[#0c0d16] font-black shadow-xs'
+                                  : 'bg-teal-500/10 hover:bg-teal-500/20 border-teal-500/25 text-teal-200'
+                              }`}
+                            >
+                              <span>{ml} ml</span>
+                              {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Column 2: Sobrou */}
+                    <div className="flex flex-col">
+                      <div className="flex items-center justify-between mb-1 px-0.5">
+                        <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider">
+                          Sobrou:
+                        </span>
+                        <span className="text-[11px] font-mono font-extrabold text-white">
+                          {quickLeftover}ml
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        {QUICK_FORMULA_LEFTOVER.map((ml) => {
+                          const isSelected = quickLeftover === ml;
+                          return (
+                            <button
+                              key={`leftover-${ml}`}
+                              type="button"
+                              onClick={() => setQuickLeftover(ml)}
+                              className={`py-1 px-2 rounded-lg text-xs font-bold transition flex items-center justify-between border active:scale-95 cursor-pointer ${
+                                isSelected
+                                  ? 'bg-amber-400 border-amber-300 text-[#0c0d16] font-black shadow-xs'
+                                  : 'bg-amber-500/10 hover:bg-amber-500/20 border-amber-500/25 text-amber-200'
+                              }`}
+                            >
+                              <span>{ml === 0 ? '0 ml (tudo)' : `${ml} ml`}</span>
+                              {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Direct button to open full Formula Drawer / Info screen */}
+                  {/* Quick Save button with net consumed amount */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onQuickSaveFormula(quickOffered, quickLeftover);
+                      setIsFormulaPopoverOpen(false);
+                    }}
+                    className="w-full py-2 px-3 mb-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-[#0c0d16] font-black text-xs flex items-center justify-center space-x-1.5 shadow-md active:scale-95 transition cursor-pointer"
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                    <span>
+                      Salvar {Math.max(0, quickOffered - quickLeftover)}ml tomados
+                      {quickLeftover > 0 ? ` (${quickOffered} - ${quickLeftover}ml)` : ''}
+                    </span>
+                  </button>
+
+                  {/* Diminished button to open full Formula Drawer / Detailed info */}
                   <button
                     type="button"
                     onClick={() => {
                       setIsFormulaPopoverOpen(false);
                       onOpenFormulaDrawer();
                     }}
-                    className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-[#0c0d16] font-black text-xs flex items-center justify-center space-x-1.5 shadow-md active:scale-95 transition cursor-pointer"
+                    className="w-full py-1.5 px-2 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white text-[11px] font-semibold flex items-center justify-center space-x-1.5 border border-white/10 active:scale-95 transition cursor-pointer"
                   >
-                    <Sliders className="w-3.5 h-3.5 stroke-[2.5]" />
-                    <span>Inserir Informações Detalhadas</span>
-                    <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
+                    <Sliders className="w-3 h-3 text-teal-300" />
+                    <span>Inserir informações detalhadas</span>
+                    <ChevronRight className="w-3 h-3 text-gray-400" />
                   </button>
                 </motion.div>
               )}

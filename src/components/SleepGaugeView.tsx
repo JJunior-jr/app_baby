@@ -16,6 +16,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { UserProfile } from '../types';
+import { isDaytimeInBrazil, getBrazilTimeString } from '../services/brazilTime';
 
 interface SleepGaugeViewProps {
   currentUser: UserProfile | null;
@@ -53,11 +54,9 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
   onSwitchToBreastfeedingGauge,
   onSwitchToDiaperGauge,
 }) => {
-  // Current real-time clock for the big display or elapsed sleep mode
-  const [currentTimeStr, setCurrentTimeStr] = useState<string>(() => {
-    const now = new Date();
-    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  });
+  // Current real-time clock for the big display or elapsed sleep mode (Brazil Time)
+  const [currentTimeStr, setCurrentTimeStr] = useState<string>(() => getBrazilTimeString());
+  const [isDaytime, setIsDaytime] = useState<boolean>(() => isDaytimeInBrazil());
 
   // Display mode inside the gauge: 'clock' (showing e.g. 21:46) vs 'timer' (showing e.g. 02:15)
   const [displayMode, setDisplayMode] = useState<'clock' | 'timer'>('clock');
@@ -68,12 +67,13 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
   const audioCtxRef = useRef<AudioContext | null>(null);
   const noiseNodeRef = useRef<AudioNode | null>(null);
 
-  // Update clock time every minute
+  // Update clock time and Brazil daytime status every 10 seconds
   useEffect(() => {
     const updateTime = () => {
-      const now = new Date();
-      setCurrentTimeStr(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      setCurrentTimeStr(getBrazilTimeString());
+      setIsDaytime(isDaytimeInBrazil());
     };
+    updateTime();
     const timer = setInterval(updateTime, 10000);
     return () => clearInterval(timer);
   }, []);
@@ -360,7 +360,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             <span className="text-xs sm:text-sm font-medium text-gray-300 tracking-wide mb-1 group-hover:text-purple-300 transition">
               {isSleeping
                 ? displayMode === 'clock'
-                  ? 'Dormindo agora'
+                  ? isDaytime ? 'Soneca diurna' : 'Sono noturno'
                   : 'Tempo de sono'
                 : 'Agora mesmo'}
             </span>
@@ -371,7 +371,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
                 {displayMode === 'clock' ? currentTimeStr : formatTimer(sleepSeconds)}
               </span>
               <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 text-[9px] text-gray-400 uppercase tracking-widest font-mono opacity-60 group-hover:opacity-100 transition">
-                {displayMode === 'clock' ? 'horário' : 'cronômetro'}
+                {displayMode === 'clock' ? 'horário (BR)' : 'cronômetro'}
               </span>
             </div>
 
@@ -379,7 +379,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             <p className="text-[11.5px] sm:text-[12px] text-gray-300/90 font-normal leading-relaxed mt-4 mb-2">
               {isSleeping ? (
                 <>
-                  {babyName} está dormindo tranquilamente há{' '}
+                  {babyName} está {isDaytime ? 'em uma soneca' : 'dormindo'} tranquilamente há{' '}
                   <strong className="text-white">{formatTimer(sleepSeconds)}</strong>.
                 </>
               ) : (
@@ -390,15 +390,21 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
               )}
             </p>
 
-            {/* Center Icon: Sun ☀️ or Moon 🌙 */}
+            {/* Center Icon: Sun ☀️ or Moon 🌙 dynamic based on Brazil time */}
             <div className="flex items-center justify-center mt-0.5">
               {isSleeping ? (
-                <span className="text-lg animate-pulse" title="Dormindo">
-                  🌙
+                <span
+                  className="text-lg animate-pulse"
+                  title={isDaytime ? 'Soneca diurna (Dormindo)' : 'Sono noturno (Dormindo)'}
+                >
+                  {isDaytime ? '☀️' : '🌙'}
                 </span>
               ) : (
-                <span className="text-lg drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" title="Acordado">
-                  ☀️
+                <span
+                  className="text-lg drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+                  title={isDaytime ? 'Acordado (Dia)' : 'Acordado (Noite)'}
+                >
+                  {isDaytime ? '☀️' : '🌙'}
                 </span>
               )}
             </div>
@@ -413,7 +419,9 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
         >
           <Info className="w-3.5 h-3.5 text-purple-400" />
           <span>
-            {isSleeping ? 'Detalhes da Soneca' : 'Configurar Horário Manualmente'}
+            {isSleeping
+              ? isDaytime ? 'Detalhes da Soneca ☀️' : 'Detalhes do Sono 🌙'
+              : 'Configurar Horário Manualmente'}
           </span>
         </button>
       </div>
@@ -421,21 +429,38 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
       {/* Bottom Floating Quick Actions: 4 Circles matching the screenshot */}
       <div className="relative z-20 pb-4 px-6">
         <div className="flex items-center justify-center space-x-5 sm:space-x-6">
-          {/* Action 1: Sun/Sunrise Button with Golden Glowing Halo (as highlighted in screenshot) */}
+          {/* Action 1: Sun or Moon Button depending on Brazil time */}
           <button
             type="button"
             onClick={onToggleSleep}
-            title={isSleeping ? 'Registrar que o bebê acordou' : 'Iniciar modo soneca'}
+            title={
+              isSleeping
+                ? 'Registrar que o bebê acordou'
+                : isDaytime
+                  ? 'Iniciar modo soneca diurna'
+                  : 'Iniciar modo sono noturno'
+            }
             className={`relative flex items-center justify-center w-13 h-13 rounded-full transition duration-200 active:scale-92 cursor-pointer shadow-lg ${
               !isSleeping
-                ? 'bg-[#211e2f] border border-amber-500/70 ring-3 ring-amber-400/90 shadow-[0_0_24px_rgba(251,191,36,0.55)] text-amber-300'
+                ? isDaytime
+                  ? 'bg-[#211e2f] border border-amber-500/70 ring-3 ring-amber-400/90 shadow-[0_0_24px_rgba(251,191,36,0.55)] text-amber-300'
+                  : 'bg-[#1e1c33] border border-indigo-500/70 ring-3 ring-indigo-400/90 shadow-[0_0_24px_rgba(129,140,248,0.55)] text-indigo-300'
                 : 'bg-[#1b223d] border border-cyan-400/70 ring-3 ring-cyan-400/80 shadow-[0_0_24px_rgba(56,189,248,0.5)] text-cyan-300'
             }`}
           >
-            {/* Sunrise icon with horizontal dawn ray line */}
+            {/* Sun or Moon icon */}
             <div className="flex flex-col items-center justify-center">
-              <Sun className="w-6 h-6 stroke-[2.2] animate-spin-slow" />
-              <div className="w-5 h-0.5 bg-current rounded-full mt-0.5 opacity-80" />
+              {isDaytime ? (
+                <>
+                  <Sun className="w-6 h-6 stroke-[2.2] animate-spin-slow" />
+                  <div className="w-5 h-0.5 bg-current rounded-full mt-0.5 opacity-80" />
+                </>
+              ) : (
+                <>
+                  <Moon className="w-6 h-6 stroke-[2.2]" />
+                  <div className="w-5 h-0.5 bg-current rounded-full mt-0.5 opacity-80" />
+                </>
+              )}
             </div>
           </button>
 

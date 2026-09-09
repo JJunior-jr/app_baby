@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Moon, Sun, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { isDaytimeInBrazil, getBrazilTimeString } from '../../services/brazilTime';
 
 interface SleepModalProps {
   isOpen: boolean;
@@ -15,8 +16,10 @@ interface SleepModalProps {
 }
 
 export const SleepModal: React.FC<SleepModalProps> = ({ isOpen, onClose, onSave }) => {
-  const [sleepType, setSleepType] = useState<'noturno' | 'soneca'>('noturno');
-  const [startTime] = useState('22:38');
+  const [sleepType, setSleepType] = useState<'noturno' | 'soneca'>(() =>
+    isDaytimeInBrazil() ? 'soneca' : 'noturno'
+  );
+  const [startTime] = useState(() => getBrazilTimeString());
   const [endTime] = useState('23:08');
   const [isInProgress, setIsInProgress] = useState<boolean>(true);
   const [isRegisteredGreen, setIsRegisteredGreen] = useState<boolean>(false);
@@ -59,28 +62,30 @@ export const SleepModal: React.FC<SleepModalProps> = ({ isOpen, onClose, onSave 
           </button>
           <div className="text-center">
             <h1 className="text-base font-bold text-white tracking-wide flex items-center justify-center gap-1.5">
-              <span>Registrar Sono</span>
-              <span>🌙</span>
+              <span>{sleepType === 'soneca' ? 'Registrar Soneca' : 'Registrar Sono'}</span>
+              <span>{sleepType === 'soneca' ? '☀️' : '🌙'}</span>
             </h1>
             <p className="text-xs text-gray-400 font-medium">Hoje · {startTime}</p>
           </div>
-          <div className="w-6 h-6 text-xl">🌙</div>
+          <div className="w-6 h-6 text-xl">{sleepType === 'soneca' ? '☀️' : '🌙'}</div>
         </header>
 
         {/* Form Body */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 no-scrollbar">
-          {/* Section Header with Moon Emoji */}
+          {/* Section Header with Dynamic Emoji */}
           <section className="flex items-center gap-3.5 pt-1">
             <div className="w-12 h-12 rounded-2xl bg-[#232029] border border-amber-500/30 flex items-center justify-center text-2xl shadow-inner">
-              🌙
+              {sleepType === 'soneca' ? '☀️' : '🌙'}
             </div>
             <div>
               <h2 className="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                <span>Sono</span>
-                <span className="text-lg">🌙</span>
+                <span>{sleepType === 'soneca' ? 'Soneca' : 'Sono'}</span>
+                <span className="text-lg">{sleepType === 'soneca' ? '☀️' : '🌙'}</span>
               </h2>
               <p className="text-xs text-gray-400 font-medium">
-                {isInProgress ? 'Início do sono registrado (em andamento)' : 'Registrar período de descanso do John'}
+                {isInProgress
+                  ? `Início d${sleepType === 'soneca' ? 'a soneca' : 'o sono'} registrado (em andamento)`
+                  : 'Registrar período de descanso do John'}
               </p>
             </div>
           </section>
@@ -218,12 +223,15 @@ export const SleepModal: React.FC<SleepModalProps> = ({ isOpen, onClose, onSave 
             {isRegisteredGreen || isInProgress ? (
               <>
                 <CheckCircle2 className="w-5 h-5 fill-current text-white animate-in zoom-in-75" />
-                <span>Registrado como Sono em Andamento 🌙</span>
+                <span>
+                  Registrado como {sleepType === 'soneca' ? 'Soneca' : 'Sono'} em Andamento{' '}
+                  {sleepType === 'soneca' ? '☀️' : '🌙'}
+                </span>
               </>
             ) : (
               <>
-                <span>🌙</span>
-                <span>Registrar Sono Finalizado</span>
+                <span>{sleepType === 'soneca' ? '☀️' : '🌙'}</span>
+                <span>Registrar {sleepType === 'soneca' ? 'Soneca Finalizada' : 'Sono Finalizado'}</span>
               </>
             )}
           </button>
