@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
-  Bell,
   Baby,
   Utensils,
   Plus,
-  Settings,
   List,
   Sparkles,
   Send,
@@ -15,12 +13,9 @@ import {
   Shirt,
   Moon,
   Volume2,
-  MessageSquareHeart,
-  Wifi,
   WifiOff,
-  Cloud,
-  CloudOff,
   RefreshCw,
+  Sliders,
 } from 'lucide-react';
 import { ActivityItem, CustomActivityDefinition, UserProfile, SyncStatusState } from '../types';
 import { FormulaDrawer } from './modals/FormulaDrawer';
@@ -518,128 +513,46 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       )}
 
-      {/* Top Header: Baby Avatar + Greeting + Baby John Badge + Notifications */}
+      {/* Top Header: Sidebar Menu + Baby Avatar + Greeting + Baby John Badge + Notifications */}
       <header className="flex items-center justify-between pt-1">
-        {/* Left: Avatar & Greeting */}
-        <div className="flex items-center space-x-3">
-          <div className="relative">
+        {/* Left: Sidebar Trigger & Avatar with Greeting */}
+        <div className="flex items-center space-x-2.5">
+          <button
+            type="button"
+            onClick={onOpenManageActivities}
+            title="Abrir Menu Lateral de Configurações"
+            className="relative w-10 h-10 rounded-2xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 flex items-center justify-center text-purple-300 hover:text-white transition active:scale-95 cursor-pointer shadow-xs shrink-0"
+          >
+            <Sliders className="w-4 h-4" />
+            {(activeRemindersCount > 0 || pendingAlarmsCount > 0 || syncStatus.pendingCount > 0) && (
+              <span className="absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 rounded-full bg-purple-500 border-2 border-[#0c0d16] text-[9px] font-black text-white flex items-center justify-center shadow-sm animate-pulse">
+                {activeRemindersCount + pendingAlarmsCount + (syncStatus.pendingCount > 0 ? syncStatus.pendingCount : 0)}
+              </span>
+            )}
+          </button>
+
+          <div className="relative shrink-0">
             <button
               type="button"
               onClick={onOpenAuth}
               title="Gerenciar Conta & JWT"
-              className="w-13 h-13 rounded-full bg-[#242842] border-2 border-purple-500/40 flex items-center justify-center text-2xl shadow-md active:scale-95 transition"
+              className="w-11 h-11 rounded-full bg-[#242842] border-2 border-purple-500/40 flex items-center justify-center text-xl shadow-md active:scale-95 transition"
             >
               👶
             </button>
             <button
               type="button"
               onClick={onOpenAuth}
-              className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-[#7158e2] border-2 border-[#0c0d16] flex items-center justify-center text-white text-xs font-bold"
+              className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#7158e2] border-2 border-[#0c0d16] flex items-center justify-center text-white text-[9px] font-bold"
             >
               +
             </button>
           </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-white leading-tight">
+          <div className="min-w-0">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-white leading-tight truncate">
               Boa noite, {currentUser?.name || 'Papai'}!
             </h1>
           </div>
-        </div>
-
-        {/* Right: Baby John badge (desabilitado e invisível na UI, código preservado) + Bell */}
-        <div className="flex items-center space-x-2">
-          {isBabyJohnVisible && (
-            <button
-              type="button"
-              disabled
-              onClick={onOpenDockerGuide}
-              className="hidden pointer-events-none items-center space-x-1.5 px-2.5 py-1.5 rounded-full bg-[#201d42] border border-[#52449a]/60 text-xs font-bold text-white shadow-sm hover:border-purple-400 transition"
-              aria-hidden="true"
-            >
-              <span className="text-amber-400 text-xs">👶</span>
-              <div className="flex flex-col text-left leading-none">
-                <span className="text-[10px] font-black text-amber-300 tracking-wider">Baby</span>
-                <span className="text-[7.5px] text-purple-200 tracking-tighter">John</span>
-              </div>
-            </button>
-          )}
-
-          {onOpenFeedback && (
-            <button
-              type="button"
-              onClick={onOpenFeedback}
-              title="Opiniões & Sugestões do App"
-              className="w-9 h-9 rounded-full bg-[#201738] border border-purple-500/30 flex items-center justify-center text-purple-300 hover:text-white transition active:scale-95 cursor-pointer shadow-xs"
-            >
-              <MessageSquareHeart className="w-4 h-4" />
-            </button>
-          )}
-
-          {onOpenOfflineSync && (
-            <button
-              type="button"
-              onClick={onOpenOfflineSync}
-              title={
-                syncStatus.isSyncing
-                  ? 'Sincronizando dados com o banco...'
-                  : syncStatus.isOnline
-                  ? 'Online: Sincronização com o Banco Ativa'
-                  : 'Modo Offline: Clique para gerenciar a fila'
-              }
-              className={`h-9 px-2.5 rounded-full flex items-center space-x-1.5 transition active:scale-95 cursor-pointer shadow-xs ${
-                syncStatus.isSyncing
-                  ? 'bg-blue-500/20 border border-blue-500/40 text-blue-300'
-                  : !syncStatus.isOnline
-                  ? 'bg-amber-500/20 border border-amber-500/40 text-amber-300'
-                  : syncStatus.pendingCount > 0
-                  ? 'bg-purple-500/20 border border-purple-500/40 text-purple-300'
-                  : 'bg-[#181a2d] border border-gray-800 text-emerald-400 hover:text-white'
-              }`}
-            >
-              {syncStatus.isSyncing ? (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-300" />
-                  <span className="text-[11px] font-bold">Gravando</span>
-                </>
-              ) : !syncStatus.isOnline ? (
-                <>
-                  <WifiOff className="w-3.5 h-3.5 text-amber-300" />
-                  <span className="text-[11px] font-bold">
-                    Offline{syncStatus.pendingCount > 0 ? ` (${syncStatus.pendingCount})` : ''}
-                  </span>
-                </>
-              ) : syncStatus.pendingCount > 0 ? (
-                <>
-                  <Cloud className="w-3.5 h-3.5 text-purple-300" />
-                  <span className="text-[11px] font-bold">{syncStatus.pendingCount} pendentes</span>
-                </>
-              ) : (
-                <Cloud className="w-4 h-4 text-emerald-400" />
-              )}
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={onOpenNotificationCenter || onOpenAuth}
-            title={
-              pendingAlarmsCount > 0
-                ? `${pendingAlarmsCount} alarme(s) ativo(s) - Toque para gerenciar`
-                : 'Central de Notificações & Alarmes em Segundo Plano'
-            }
-            className={`relative w-9 h-9 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer ${
-              pendingAlarmsCount > 0
-                ? 'bg-purple-600/30 border border-purple-400 text-purple-200 shadow-[0_0_12px_rgba(168,85,247,0.4)]'
-                : 'bg-[#181a2d] border border-gray-800 text-gray-300 hover:text-white'
-            }`}
-          >
-            <Bell className="w-4 h-4" />
-            {pendingAlarmsCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 rounded-full bg-purple-500 border-2 border-[#0c0d16] text-[9px] font-black text-white flex items-center justify-center animate-pulse">
-                {pendingAlarmsCount}
-              </span>
-            )}
-          </button>
         </div>
       </header>
 
@@ -730,27 +643,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         )}
       </div>
 
-      {/* Section: "O que aconteceu agora?" + Settings Gear & Grid Toggle */}
+      {/* Section: "O que aconteceu agora?" + Grid Toggle */}
       <section className="space-y-3 pt-1">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-white tracking-tight">O que aconteceu agora?</h2>
           
           <div className="flex items-center space-x-1.5">
-            {/* Settings button with dynamic active reminders badge */}
-            <button
-              type="button"
-              onClick={onOpenManageActivities}
-              title="Gerenciar Atividades & Lembretes"
-              className="relative p-2 rounded-xl bg-[#171a2d] border border-gray-800 text-gray-300 hover:text-white transition"
-            >
-              <Settings className="w-4 h-4" />
-              {activeRemindersCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-purple-600 text-white text-[9px] font-bold flex items-center justify-center border border-[#0c0d16]">
-                  {activeRemindersCount}
-                </span>
-              )}
-            </button>
-
             {/* View Mode Toggle: Lista vs Gauge */}
             <div className="flex bg-[#171a2d] border border-gray-800 p-0.5 rounded-xl">
               <button

@@ -157,10 +157,11 @@ export const CalendarSyncModal: React.FC<CalendarSyncModalProps> = ({
       <section
         aria-modal="true"
         role="dialog"
-        className="relative z-10 w-full max-w-[460px] landscape:max-w-xl rounded-3xl flex flex-col justify-between overflow-hidden shadow-2xl border animate-in zoom-in-95 duration-200 transition-colors max-h-[92vh]"
+        className="relative z-10 w-full max-w-[460px] landscape:max-w-xl flex flex-col justify-between overflow-hidden shadow-2xl border animate-in zoom-in-95 duration-200 transition-colors max-h-[92vh]"
         style={{
           backgroundColor: 'var(--color-dominant)',
           borderColor: 'var(--color-border)',
+          borderRadius: 'var(--app-card-radius)',
         }}
       >
         {/* Navigation Header */}

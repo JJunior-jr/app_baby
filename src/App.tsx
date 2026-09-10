@@ -23,12 +23,15 @@ import { FeedbackPromptModal } from './components/modals/FeedbackPromptModal';
 import { FeedbackManagementModal } from './components/modals/FeedbackManagementModal';
 import { OfflineSyncModal } from './components/modals/OfflineSyncModal';
 import { NotificationCenterModal } from './components/modals/NotificationCenterModal';
+import { SettingsSidebar, SettingsSection } from './components/SettingsSidebar';
 
 import { apiService } from './services/api';
 import { authService } from './services/auth';
 import { themeService, PaletteTheme } from './services/theme';
 import { feedbackService, FeedbackPromptTrigger } from './services/feedback';
 import { syncService } from './services/syncService';
+import { remindersService } from './services/reminders';
+import { notificationService } from './services/notificationService';
 import {
   ActivityItem,
   ActivityType,
@@ -72,6 +75,13 @@ export default function App() {
   const [feedbackTriggerContext, setFeedbackTriggerContext] = useState<FeedbackPromptTrigger | null>(null);
   const [isOfflineSyncOpen, setIsOfflineSyncOpen] = useState(false);
   const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
+  const [isSettingsSidebarOpen, setIsSettingsSidebarOpen] = useState(false);
+  const [manageActivitiesInitialTab, setManageActivitiesInitialTab] = useState<'reminders' | 'palettes' | 'calendar'>('reminders');
+  const [manageActivitiesInitialSubTab, setManageActivitiesInitialSubTab] = useState<'colors' | 'typography' | 'shapes'>('colors');
+  const [syncStatus, setSyncStatus] = useState(() => syncService.getSyncStatus());
+  const [pendingAlarmsCount, setPendingAlarmsCount] = useState<number>(() =>
+    notificationService.getPendingCount()
+  );
 
   // Helper to trigger contextual feedback prompt based on user engagement & time
   const checkForFeedbackPrompt = (type: 'activity' | 'calendar' | 'general', featureType?: string) => {
@@ -140,14 +150,22 @@ export default function App() {
     }
   };
 
-  // Observa sincronização offline para atualizar automaticamente a tela quando os dados forem gravados
+  // Observa sincronização offline e notificações para atualizar a UI em tempo real
   useEffect(() => {
-    const unsubscribe = syncService.subscribe((status) => {
+    notificationService.init();
+    const unsubSync = syncService.subscribe((status) => {
+      setSyncStatus(status);
       if (!status.isSyncing && status.pendingCount === 0) {
         loadData();
       }
     });
-    return () => unsubscribe();
+    const unsubNotif = notificationService.subscribe(() => {
+      setPendingAlarmsCount(notificationService.getPendingCount());
+    });
+    return () => {
+      unsubSync();
+      unsubNotif();
+    };
   }, [selectedDate]);
 
   // Activity Sheet selection handler
@@ -367,7 +385,42 @@ export default function App() {
     setIsDiagnosticsOpen(false);
     setIsFeedbackPromptOpen(false);
     setIsFeedbackManagementOpen(false);
+    setIsSettingsSidebarOpen(false);
     setActiveTab(tab);
+  };
+
+  // Navigate to corresponding screen/tab directly from the Settings Sidebar
+  const handleNavigateFromSettingsSidebar = (section: SettingsSection) => {
+    setIsSettingsSidebarOpen(false);
+    if (section === 'colors') {
+      setManageActivitiesInitialTab('palettes');
+      setManageActivitiesInitialSubTab('colors');
+      setIsManageActivitiesOpen(true);
+    } else if (section === 'typography') {
+      setManageActivitiesInitialTab('palettes');
+      setManageActivitiesInitialSubTab('typography');
+      setIsManageActivitiesOpen(true);
+    } else if (section === 'shapes') {
+      setManageActivitiesInitialTab('palettes');
+      setManageActivitiesInitialSubTab('shapes');
+      setIsManageActivitiesOpen(true);
+    } else if (section === 'reminders') {
+      setManageActivitiesInitialTab('reminders');
+      setIsManageActivitiesOpen(true);
+    } else if (section === 'calendar') {
+      setManageActivitiesInitialTab('calendar');
+      setIsManageActivitiesOpen(true);
+    } else if (section === 'diagnostics') {
+      setIsDiagnosticsOpen(true);
+    } else if (section === 'notifications') {
+      setIsNotificationCenterOpen(true);
+    } else if (section === 'sync' || section === 'offline') {
+      setIsOfflineSyncOpen(true);
+    } else if (section === 'feedback' || section === 'suggestions') {
+      setIsFeedbackManagementOpen(true);
+    } else if (section === 'docker') {
+      setIsDockerGuideOpen(true);
+    }
   };
 
   return (
@@ -395,7 +448,7 @@ export default function App() {
               activities={activities}
               onOpenAuth={() => setIsAuthModalOpen(true)}
               onOpenDockerGuide={() => setIsDockerGuideOpen(true)}
-              onOpenManageActivities={() => setIsManageActivitiesOpen(true)}
+              onOpenManageActivities={() => setIsSettingsSidebarOpen(true)}
               onOpenNewActivity={() => setIsNewActivityModalOpen(true)}
               onOpenActivitySheet={() => setIsActivitySheetOpen(true)}
               onOpenSleepModal={() => setIsSleepModalOpen(true)}
@@ -513,6 +566,12 @@ export default function App() {
             setIsManageActivitiesOpen(false);
             setIsOfflineSyncOpen(true);
           }}
+          initialTab={manageActivitiesInitialTab}
+          initialSubTab={manageActivitiesInitialSubTab}
+          onOpenSidebar={() => {
+            setIsManageActivitiesOpen(false);
+            setIsSettingsSidebarOpen(true);
+          }}
         />
 
         <NewActivityModal
@@ -584,6 +643,18 @@ export default function App() {
         <NotificationCenterModal
           isOpen={isNotificationCenterOpen}
           onClose={() => setIsNotificationCenterOpen(false)}
+        />
+
+        {/* Lateral Settings Sidebar / Navbar */}
+        <SettingsSidebar
+          isOpen={isSettingsSidebarOpen}
+          onClose={() => setIsSettingsSidebarOpen(false)}
+          onNavigateTo={handleNavigateFromSettingsSidebar}
+          activeRemindersCount={remindersService.getActiveCount()}
+          pendingAlarmsCount={pendingAlarmsCount}
+          syncPendingCount={syncStatus.pendingCount}
+          isOnline={syncStatus.isOnline}
+          isSyncing={syncStatus.isSyncing}
         />
       </main>
     </div>

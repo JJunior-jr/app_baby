@@ -15,9 +15,6 @@ import {
   Calendar,
   Smartphone,
   ChevronRight,
-  ShieldCheck,
-  MessageSquareHeart,
-  Cloud,
 } from 'lucide-react';
 
 interface RoutinesScreenProps {
@@ -206,39 +203,6 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
         </div>
 
         <div className="flex items-center space-x-2">
-          {onOpenOfflineSync && (
-            <button
-              type="button"
-              onClick={onOpenOfflineSync}
-              title="Sincronização Offline e Nuvem"
-              className="p-2 rounded-xl bg-[#1e2238] hover:bg-[#2a2f4d] text-blue-300 border border-blue-500/20 flex items-center justify-center transition active:scale-95 cursor-pointer"
-            >
-              <Cloud className="w-4 h-4" />
-            </button>
-          )}
-
-          {onOpenFeedback && (
-            <button
-              type="button"
-              onClick={onOpenFeedback}
-              title="Opiniões e Sugestões da Rotina"
-              className="p-2 rounded-xl bg-[#1e2238] hover:bg-[#2a2f4d] text-purple-300 border border-purple-500/20 flex items-center justify-center transition active:scale-95 cursor-pointer"
-            >
-              <MessageSquareHeart className="w-4 h-4" />
-            </button>
-          )}
-
-          {onOpenDiagnostics && (
-            <button
-              type="button"
-              onClick={onOpenDiagnostics}
-              title="Diagnóstico e Permissões do Celular"
-              className="p-2 rounded-xl bg-[#1e2238] hover:bg-[#2a2f4d] text-purple-300 border border-purple-500/20 flex items-center justify-center transition active:scale-95 cursor-pointer"
-            >
-              <ShieldCheck className="w-4 h-4" />
-            </button>
-          )}
-
           <button
             type="button"
             onClick={() => setIsAdding(!isAdding)}

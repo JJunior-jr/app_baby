@@ -57,12 +57,19 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
                   damping: 35,
                   mass: 0.35,
                 }}
-                className="absolute inset-0 rounded-full bg-gradient-to-b from-white/35 via-purple-500/30 to-violet-700/40 border border-white/40 shadow-[0_6px_22px_rgba(147,51,234,0.5),inset_0_1.5px_2px_rgba(255,255,255,0.55),inset_0_-2px_4px_rgba(0,0,0,0.35)] backdrop-blur-xl overflow-hidden pointer-events-none"
+                className="absolute inset-0 rounded-full border border-white/40 shadow-[0_6px_22px_rgba(0,0,0,0.5),inset_0_1.5px_2px_rgba(255,255,255,0.55),inset_0_-2px_4px_rgba(0,0,0,0.35)] backdrop-blur-xl overflow-hidden pointer-events-none"
+                style={{
+                  backgroundColor: 'var(--color-accent)',
+                  boxShadow: '0 6px 20px var(--color-accent)',
+                }}
               >
                 {/* Liquid convex lens reflection arc */}
-                <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/45 via-white/15 to-transparent rounded-t-full pointer-events-none" />
+                <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/40 via-white/10 to-transparent rounded-t-full pointer-events-none" />
                 {/* Bottom caustic refraction glow */}
-                <div className="absolute -bottom-1 inset-x-2 h-2.5 bg-purple-400/60 rounded-full blur-xs pointer-events-none" />
+                <div
+                  className="absolute -bottom-1 inset-x-2 h-2.5 rounded-full blur-xs pointer-events-none opacity-80"
+                  style={{ backgroundColor: 'var(--color-accent)' }}
+                />
               </motion.div>
             )}
 

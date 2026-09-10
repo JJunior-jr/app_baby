@@ -85,7 +85,14 @@ export const BreastfeedingModal: React.FC<BreastfeedingModalProps> = ({
       {/* Click outside backdrop */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      <div className="relative z-10 w-full max-w-[430px] landscape:max-w-lg h-auto max-h-[90vh] bg-[#0d0f1e] rounded-3xl flex flex-col justify-between overflow-y-auto shadow-2xl border border-gray-800 animate-in zoom-in-95 duration-200">
+      <div
+        className="relative z-10 w-full max-w-[430px] landscape:max-w-lg h-auto max-h-[90vh] flex flex-col justify-between overflow-y-auto shadow-2xl border transition-colors animate-in zoom-in-95 duration-200"
+        style={{
+          backgroundColor: 'var(--color-dominant)',
+          borderColor: 'var(--color-border)',
+          borderRadius: 'var(--app-card-radius)',
+        }}
+      >
         
         {/* Navigation Header */}
         <header className="relative px-5 pt-4 pb-3 flex items-center justify-between border-b border-white/5">
@@ -453,12 +460,23 @@ export const BreastfeedingModal: React.FC<BreastfeedingModalProps> = ({
           </section>
         </div>
 
-        {/* Bottom CTA Button */}
-        <footer className="p-5 pt-2 pb-5 bg-[#0d0f1e] border-t border-white/5">
+        {/* Bottom CTA Button (10% Accent token) */}
+        <footer
+          className="p-5 pt-2 pb-5 border-t transition-colors"
+          style={{
+            backgroundColor: 'var(--color-dominant)',
+            borderColor: 'var(--color-border)',
+          }}
+        >
           <button
             type="button"
             onClick={handleSave}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#7158e2] to-[#9a7ffc] hover:opacity-95 active:scale-[0.99] text-[#0d0f1e] font-black text-sm tracking-wide shadow-lg shadow-purple-700/30 flex items-center justify-center transition"
+            className="w-full py-4 font-black text-sm tracking-wide shadow-lg flex items-center justify-center transition active:scale-[0.99] cursor-pointer"
+            style={{
+              backgroundColor: 'var(--color-accent)',
+              color: 'var(--color-accent-text)',
+              borderRadius: 'var(--app-card-radius)',
+            }}
           >
             {mode === 'peito'
               ? `Salvar Amamentação (${leftMinutes + rightMinutes} min)`

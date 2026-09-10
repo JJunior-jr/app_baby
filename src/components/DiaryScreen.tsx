@@ -190,10 +190,19 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
           type="button"
           onClick={onOpenFilterModal}
           className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-full text-xs font-semibold transition shrink-0 ${
-            selectedFilter !== 'all'
-              ? 'bg-[#7158e2] text-white shadow-sm'
-              : 'bg-[#181a2d] border border-[#272a44] text-gray-200 hover:border-purple-400/50'
+            selectedFilter !== 'all' ? 'shadow-sm' : 'text-gray-200 hover:border-purple-400/50'
           }`}
+          style={
+            selectedFilter !== 'all'
+              ? {
+                  backgroundColor: 'var(--color-accent)',
+                  color: 'var(--color-accent-text)',
+                }
+              : {
+                  backgroundColor: 'var(--color-secondary)',
+                  borderColor: 'var(--color-border)',
+                }
+          }
         >
           <Filter className="w-3.5 h-3.5" />
           <span>{getFilterLabel()}</span>
@@ -203,7 +212,11 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
         <button
           type="button"
           onClick={() => setIsCalendarModalOpen(true)}
-          className="flex items-center space-x-1.5 px-3.5 py-1.8 rounded-full bg-[#181a2d] border border-[#272a44] text-xs font-semibold text-gray-200 shrink-0 hover:border-purple-400/50 hover:bg-[#20233d] transition cursor-pointer"
+          className="flex items-center space-x-1.5 px-3.5 py-1.8 rounded-full border text-xs font-semibold text-gray-200 shrink-0 hover:border-purple-400/50 transition cursor-pointer"
+          style={{
+            backgroundColor: 'var(--color-secondary)',
+            borderColor: 'var(--color-border)',
+          }}
         >
           <Calendar className="w-3.5 h-3.5 text-purple-400" />
           <span>{formattedDateLabel}</span>
@@ -211,14 +224,25 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
       </section>
 
       {/* Week Day Strip Selector - Swipeable & Floating */}
-      <section className="px-3.5 py-2.5 flex items-center shrink-0 bg-[#0c0d16]/90 border-b border-[#1b1e33] backdrop-blur-lg gap-2">
+      <section
+        className="px-3.5 py-2.5 flex items-center shrink-0 border-b backdrop-blur-lg gap-2 transition-colors"
+        style={{
+          backgroundColor: 'var(--color-dominant)',
+          borderColor: 'var(--color-border)',
+        }}
+      >
         {/* Open Calendar Month Picker Button */}
         <button
           type="button"
           onClick={() => setIsCalendarModalOpen(true)}
           aria-label="Abrir calendário completo"
           title="Ver calendário do mês"
-          className="w-11 h-16 rounded-2xl bg-[#151728]/90 border border-purple-500/25 flex flex-col items-center justify-center text-purple-300 hover:text-white hover:border-purple-400/60 hover:bg-[#1d213d] shrink-0 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_6px_16px_rgba(154,127,252,0.25)] active:scale-92 group cursor-pointer"
+          className="w-11 h-16 rounded-2xl border flex flex-col items-center justify-center text-purple-300 hover:text-white shrink-0 transition-all duration-300 hover:-translate-y-1 active:scale-92 group cursor-pointer"
+          style={{
+            backgroundColor: 'var(--color-secondary)',
+            borderColor: 'var(--color-border)',
+            borderRadius: 'var(--app-card-radius)',
+          }}
         >
           <Calendar className="w-5 h-5 group-hover:scale-110 transition-transform" />
           <span className="text-[8.5px] font-extrabold text-purple-300 mt-1 uppercase tracking-tighter">
@@ -242,11 +266,17 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                 ref={isSelected ? selectedDayRef : null}
                 type="button"
                 onClick={() => onSelectDate(d.dateStr)}
-                className={`relative shrink-0 w-12 h-16 rounded-2xl flex flex-col items-center justify-between py-2 px-1 transition-all duration-300 ease-out snap-center cursor-pointer select-none overflow-hidden ${
+                className={`relative shrink-0 w-12 h-16 flex flex-col items-center justify-between py-2 px-1 transition-all duration-300 ease-out snap-center cursor-pointer select-none overflow-hidden ${
                   isSelected
-                    ? 'bg-gradient-to-b from-[#af95fc] via-[#9273fa] to-[#7854f7] text-[#0f0c22] font-black scale-105 -translate-y-1 shadow-[0_10px_25px_rgba(146,115,250,0.5)] ring-2 ring-purple-300/80 border-t border-white/40'
-                    : 'bg-[#151728]/80 hover:bg-[#1c2038]/90 text-gray-400 hover:text-white border border-[#232742] shadow-[0_4px_12px_rgba(0,0,0,0.3)] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(154,127,252,0.2)] active:scale-92 active:translate-y-0'
+                    ? 'font-black scale-105 -translate-y-1 shadow-lg ring-2 ring-purple-300/80'
+                    : 'text-gray-400 hover:text-white border hover:-translate-y-1 active:scale-92'
                 }`}
+                style={{
+                  backgroundColor: isSelected ? 'var(--color-accent)' : 'var(--color-secondary)',
+                  color: isSelected ? 'var(--color-accent-text)' : undefined,
+                  borderColor: isSelected ? 'transparent' : 'var(--color-border)',
+                  borderRadius: 'var(--app-card-radius)',
+                }}
               >
                 {/* Floating specular top highlight for liquid glass reflection */}
                 <div className="absolute inset-x-0 top-0 h-1/2 rounded-t-2xl bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
@@ -370,13 +400,18 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
 
                         {/* Card Container */}
                         <div
-                          className={`bg-[#151728] rounded-2xl p-3.5 border transition relative ${
+                          className={`p-3.5 border transition relative ${
                             act.type === 'fralda'
-                              ? 'border-dashed border-teal-500/40 bg-[#121b24]/90'
+                              ? 'border-dashed border-teal-500/40'
                               : act.isInProgress
                               ? 'border-[#7663e8]/70 shadow-[0_0_12px_rgba(118,99,232,0.15)]'
-                              : 'border-[#22253d]'
+                              : ''
                           }`}
+                          style={{
+                            backgroundColor: 'var(--color-secondary)',
+                            borderColor: act.type === 'fralda' || act.isInProgress ? undefined : 'var(--color-border)',
+                            borderRadius: 'var(--app-card-radius)',
+                          }}
                         >
                           <div className="flex items-center justify-between">
                             {/* Title & Icon */}

@@ -332,8 +332,13 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
 
   return (
     <div className="relative w-full h-full flex flex-col justify-between select-none overflow-hidden bg-[#0a0d18] text-white">
-      {/* Background Deep Cosmic Gradient with Emerald / Teal hint */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0b171f] via-[#091018] to-[#06080e] pointer-events-none" />
+      {/* Background Deep Cosmic Gradient (60% Dominant token) */}
+      <div
+        className="absolute inset-0 pointer-events-none transition-colors duration-300"
+        style={{
+          background: 'radial-gradient(ellipse at top, var(--color-secondary) 0%, var(--color-dominant) 100%)',
+        }}
+      />
 
       {/* Gentle Radial Atmosphere Glow behind Gauge in soft Mint / Cyan */}
       <div
@@ -368,13 +373,19 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
         ))}
       </div>
 
-      {/* Top Header Bar inside Gauge View */}
+      {/* Top Header Bar inside Gauge View (30% Secondary token) */}
       <div className="relative z-20 px-4 pt-2 flex items-center justify-between">
         {/* Balanced left spacer replacing the deprecated cards button */}
         <div className="w-14 hidden sm:block pointer-events-none" aria-hidden="true" />
 
         {/* Center: Gauge Selector (Sono vs Amamentação vs Fralda) */}
-        <div className="flex items-center space-x-1 bg-[#0f1724]/90 border border-white/10 rounded-full p-1 shadow-lg backdrop-blur-md">
+        <div
+          className="flex items-center space-x-1 rounded-full p-1 shadow-lg backdrop-blur-md border transition-colors"
+          style={{
+            backgroundColor: 'var(--color-secondary)',
+            borderColor: 'var(--color-border)',
+          }}
+        >
           <button
             type="button"
             onClick={onSwitchToSleepGauge}
@@ -393,7 +404,11 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
           </button>
           <button
             type="button"
-            className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-gradient-to-r from-teal-600 to-emerald-600 text-white border border-teal-400/40 shadow-xs flex items-center gap-1 cursor-default"
+            className="px-2.5 py-1 rounded-full text-[11px] font-extrabold shadow-xs flex items-center gap-1 cursor-default transition-all"
+            style={{
+              backgroundColor: 'var(--color-accent)',
+              color: 'var(--color-accent-text)',
+            }}
           >
             <span>🧷</span>
             <span>Fralda</span>
@@ -406,14 +421,22 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
             type="button"
             onClick={() => setIsAdjustPopoverOpen(!isAdjustPopoverOpen)}
             title="Ajustar horário da última troca"
-            className="p-2 rounded-full text-xs font-bold text-gray-300 hover:text-white bg-[#141b29]/80 border border-white/10 hover:border-teal-500/40 transition active:scale-95 cursor-pointer"
+            className="p-2 rounded-full text-xs font-bold text-gray-300 hover:text-white border transition active:scale-95 cursor-pointer"
+            style={{
+              backgroundColor: 'var(--color-secondary)',
+              borderColor: 'var(--color-border)',
+            }}
           >
             <Settings2 className="w-4 h-4 text-teal-300" />
           </button>
           <button
             type="button"
             onClick={onSwitchToCardsView}
-            className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-300 hover:text-white bg-[#141b29]/80 border border-white/10 flex items-center gap-1 cursor-pointer"
+            className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-300 hover:text-white border flex items-center gap-1 cursor-pointer transition-colors"
+            style={{
+              backgroundColor: 'var(--color-secondary)',
+              borderColor: 'var(--color-border)',
+            }}
             title="Ver como Lista"
           >
             <List className="w-3 h-3" />

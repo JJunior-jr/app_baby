@@ -23,9 +23,11 @@ import {
   ShieldCheck,
   MessageSquareHeart,
   Cloud,
+  Sliders,
 } from 'lucide-react';
 import { CustomActivityDefinition } from '../../types';
 import { ThemeSelector } from '../ThemeSelector';
+import { GooeyTabs } from '../GooeyTabs';
 import { calendarSyncService } from '../../services/calendarSync';
 import {
   remindersService,
@@ -46,6 +48,9 @@ interface ManageActivitiesModalProps {
   onOpenDiagnostics?: () => void;
   onOpenFeedback?: () => void;
   onOpenOfflineSync?: () => void;
+  initialTab?: 'reminders' | 'palettes' | 'calendar';
+  initialSubTab?: 'colors' | 'typography' | 'shapes';
+  onOpenSidebar?: () => void;
 }
 
 export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
@@ -59,11 +64,20 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
   onOpenDiagnostics,
   onOpenFeedback,
   onOpenOfflineSync,
+  initialTab = 'reminders',
+  initialSubTab = 'colors',
+  onOpenSidebar,
 }) => {
   const [reminders, setReminders] = useState<Record<string, ActivityReminderConfig>>({});
-  const [activeTab, setActiveTab] = useState<'reminders' | 'palettes' | 'calendar'>('reminders');
+  const [activeTab, setActiveTab] = useState<'reminders' | 'palettes' | 'calendar'>(initialTab);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [feedbackToast, setFeedbackToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab, isOpen]);
 
   // Sync reminders from storage on open
   useEffect(() => {
@@ -241,6 +255,21 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
           </div>
 
           <div className="flex items-center space-x-1.5">
+            {onOpenSidebar && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenSidebar();
+                }}
+                title="Abrir Menu Lateral de Configurações"
+                className="h-8 px-2.5 rounded-full bg-purple-500/20 hover:bg-purple-500/35 border border-purple-500/30 flex items-center gap-1 text-purple-300 hover:text-white transition cursor-pointer text-xs font-bold"
+              >
+                <Sliders className="w-3.5 h-3.5" />
+                <span>Menu</span>
+              </button>
+            )}
+
             {onOpenOfflineSync && (
               <button
                 type="button"
@@ -285,81 +314,26 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
           </div>
         </header>
 
-        {/* Tab Switcher: Lembretes vs Cores vs Calendário Celular */}
+        {/* Tab Switcher: Lembretes vs Cores vs Calendário Celular with Gooey Animation */}
         <div className="px-5 pt-3 shrink-0">
-          <div
-            className="grid grid-cols-3 p-1 rounded-2xl border text-xs font-bold"
-            style={{
-              backgroundColor: 'var(--color-secondary)',
-              borderColor: 'var(--color-border)',
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => setActiveTab('reminders')}
-              style={
-                activeTab === 'reminders'
-                  ? {
-                      backgroundColor: 'var(--color-accent)',
-                      color: 'var(--color-accent-text)',
-                    }
-                  : undefined
-              }
-              className={`py-2 rounded-xl flex items-center justify-center gap-1 transition cursor-pointer text-[11px] ${
-                activeTab === 'reminders'
-                  ? 'shadow'
-                  : 'text-gray-400 hover:text-gray-200'
-              }`}
-            >
-              <Bell className="w-3 h-3" />
-              <span>Lembretes</span>
-              {activeRemindersCount > 0 && (
-                <span className="w-3.5 h-3.5 rounded-full bg-black/40 text-[8.5px] flex items-center justify-center border border-white/20">
-                  {activeRemindersCount}
-                </span>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('palettes')}
-              style={
-                activeTab === 'palettes'
-                  ? {
-                      backgroundColor: 'var(--color-accent)',
-                      color: 'var(--color-accent-text)',
-                    }
-                  : undefined
-              }
-              className={`py-2 rounded-xl flex items-center justify-center gap-1 transition cursor-pointer text-[11px] ${
-                activeTab === 'palettes'
-                  ? 'shadow'
-                  : 'text-gray-400 hover:text-gray-200'
-              }`}
-            >
-              <Palette className="w-3 h-3" />
-              <span>Cores</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('calendar')}
-              style={
-                activeTab === 'calendar'
-                  ? {
-                      backgroundColor: 'var(--color-accent)',
-                      color: 'var(--color-accent-text)',
-                    }
-                  : undefined
-              }
-              className={`py-2 rounded-xl flex items-center justify-center gap-1 transition cursor-pointer text-[11px] ${
-                activeTab === 'calendar'
-                  ? 'shadow'
-                  : 'text-gray-400 hover:text-gray-200'
-              }`}
-            >
-              <Smartphone className="w-3 h-3 text-emerald-400" />
-              <span>Calendário</span>
-            </button>
-          </div>
+          <GooeyTabs
+            tabs={[
+              {
+                id: 'reminders',
+                label: 'Lembretes',
+                icon: Bell,
+                badge: activeRemindersCount > 0 ? activeRemindersCount : undefined,
+              },
+              { id: 'palettes', label: 'Cores', icon: Palette },
+              { id: 'calendar', label: 'Calendário', icon: Smartphone },
+            ]}
+            activeTab={activeTab}
+            onChange={(id) => setActiveTab(id as 'reminders' | 'palettes' | 'calendar')}
+            layoutId="manage-main-tabs"
+            variant="light"
+            activeColor="#c49272"
+            activeTextColor="#ffffff"
+          />
         </div>
 
         {/* In-Modal Toast Feedback */}
@@ -397,7 +371,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
             return (
               <div
                 key={act.id}
-                className={`bg-[#151728] rounded-2xl transition-all duration-200 shadow-sm border overflow-hidden ${
+                className={`bg-[#151728] rounded-2xl transition-all duration-200 shadow-sm border overflow-hidden gooey-card-hover ${
                   isEnabled
                     ? 'border-purple-500/40 shadow-purple-950/20'
                     : 'border-[#23263e]'
@@ -626,7 +600,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
         {/* TAB 2: PALETAS DE CORES (60/30/10) */}
         {activeTab === 'palettes' && (
           <div className="flex-1 overflow-y-auto px-5 py-3 no-scrollbar">
-            <ThemeSelector />
+            <ThemeSelector initialTab={initialSubTab} />
           </div>
         )}
 
@@ -653,7 +627,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
             {/* Provider Quick Cards */}
             <div className="space-y-2.5">
               {/* Google Calendar */}
-              <div className="p-3 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-between">
+              <div className="p-3 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-between gooey-card-hover">
                 <div className="flex items-center space-x-2.5">
                   <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center shadow-xs">
                     <span className="text-xs font-black text-blue-600">G</span>
@@ -671,7 +645,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
                       onOpenCalendarSync();
                     }
                   }}
-                  className="px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer gooey-btn"
                 >
                   <span>Gerenciar</span>
                   <ExternalLink className="w-3 h-3" />
@@ -679,7 +653,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
               </div>
 
               {/* Microsoft Outlook */}
-              <div className="p-3 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-between">
+              <div className="p-3 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-between gooey-card-hover">
                 <div className="flex items-center space-x-2.5">
                   <div className="w-7 h-7 rounded-lg bg-[#0078d4] flex items-center justify-center shadow-xs">
                     <span className="text-xs font-black text-white">O</span>
@@ -697,7 +671,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
                       onOpenCalendarSync();
                     }
                   }}
-                  className="px-2.5 py-1.5 rounded-xl bg-[#0078d4] hover:bg-[#006cc1] text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-xl bg-[#0078d4] hover:bg-[#006cc1] text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer gooey-btn"
                 >
                   <span>Gerenciar</span>
                   <ExternalLink className="w-3 h-3" />
@@ -705,7 +679,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
               </div>
 
               {/* Calendário Nativo do Android / Celular */}
-              <div className="p-3 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 flex items-center justify-between">
+              <div className="p-3 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 flex items-center justify-between gooey-card-hover">
                 <div className="flex items-center space-x-2.5">
                   <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center shadow-xs">
                     <Smartphone className="w-3.5 h-3.5 text-black stroke-[2.5]" />
@@ -723,7 +697,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
                     setFeedbackToast('Exportado para a agenda do celular!');
                     setTimeout(() => setFeedbackToast(null), 3000);
                   }}
-                  className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer gooey-btn"
                 >
                   <Download className="w-3 h-3" />
                   <span>Baixar .ics</span>
@@ -739,7 +713,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
                   onClose();
                   onOpenCalendarSync();
                 }}
-                className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg flex items-center justify-center gap-2 transition cursor-pointer active:scale-[0.99]"
+                className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg flex items-center justify-center gap-2 transition cursor-pointer active:scale-[0.99] gooey-btn"
               >
                 <CalendarIcon className="w-4 h-4" />
                 <span>Abrir Central Completa de Integração</span>

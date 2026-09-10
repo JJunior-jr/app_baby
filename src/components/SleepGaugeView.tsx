@@ -147,11 +147,19 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
 
   return (
     <div className="relative w-full h-full flex flex-col justify-between select-none overflow-hidden bg-[#0c0d1c] text-white">
-      {/* Background Deep Cosmic Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0e1022] via-[#0b0d1a] to-[#070811] pointer-events-none" />
+      {/* Background Deep Cosmic Gradient (60% Dominant token) */}
+      <div
+        className="absolute inset-0 pointer-events-none transition-colors duration-300"
+        style={{
+          background: 'radial-gradient(ellipse at top, var(--color-secondary) 0%, var(--color-dominant) 100%)',
+        }}
+      />
 
       {/* Gentle Radial Atmosphere Glow behind Gauge */}
-      <div className="absolute top-[28%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] rounded-full bg-purple-900/15 blur-3xl pointer-events-none" />
+      <div
+        className="absolute top-[28%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] rounded-full blur-3xl pointer-events-none opacity-25"
+        style={{ backgroundColor: 'var(--color-accent)' }}
+      />
 
       {/* Scattered Star Field */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -180,16 +188,26 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
         ))}
       </div>
 
-      {/* Top Header Bar inside Gauge View */}
+      {/* Top Header Bar inside Gauge View (30% Secondary token) */}
       <div className="relative z-20 px-4 pt-2 flex items-center justify-between">
         {/* Balanced left spacer replacing the deprecated cards button */}
         <div className="w-14 hidden sm:block pointer-events-none" aria-hidden="true" />
 
         {/* Center: Mode Selector (Sono vs Amamentação vs Fralda) */}
-        <div className="flex items-center space-x-1 bg-[#16182c]/90 border border-white/10 rounded-full p-1 shadow-lg backdrop-blur-md">
+        <div
+          className="flex items-center space-x-1 rounded-full p-1 shadow-lg backdrop-blur-md border transition-colors"
+          style={{
+            backgroundColor: 'var(--color-secondary)',
+            borderColor: 'var(--color-border)',
+          }}
+        >
           <button
             type="button"
-            className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-purple-600/70 text-white border border-purple-400/40 shadow-xs flex items-center gap-1 cursor-default"
+            className="px-2.5 py-1 rounded-full text-[11px] font-extrabold shadow-xs flex items-center gap-1 cursor-default transition-all"
+            style={{
+              backgroundColor: 'var(--color-accent)',
+              color: 'var(--color-accent-text)',
+            }}
           >
             <span>🌙</span>
             <span>Sono</span>
@@ -220,7 +238,11 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
         <button
           type="button"
           onClick={onSwitchToCardsView}
-          className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-300 hover:text-white bg-[#1b1e36]/80 border border-white/10 flex items-center gap-1 cursor-pointer"
+          className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-300 hover:text-white border flex items-center gap-1 cursor-pointer transition-colors"
+          style={{
+            backgroundColor: 'var(--color-secondary)',
+            borderColor: 'var(--color-border)',
+          }}
           title="Ver como Lista"
         >
           <List className="w-3 h-3" />
