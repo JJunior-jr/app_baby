@@ -189,56 +189,12 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
       </div>
 
       {/* Top Header Bar inside Gauge View (30% Secondary token) */}
-      <div className="relative z-20 px-4 pt-2 flex items-center justify-between">
-        {/* Balanced left spacer replacing the deprecated cards button */}
-        <div className="w-14 hidden sm:block pointer-events-none" aria-hidden="true" />
-
-        {/* Center: Mode Selector (Sono vs Amamentação vs Fralda) */}
-        <div
-          className="flex items-center space-x-1 rounded-full p-1 shadow-lg backdrop-blur-md border transition-colors"
-          style={{
-            backgroundColor: 'var(--color-secondary)',
-            borderColor: 'var(--color-border)',
-          }}
-        >
-          <button
-            type="button"
-            className="px-2.5 py-1 rounded-full text-[11px] font-extrabold shadow-xs flex items-center gap-1 cursor-default transition-all"
-            style={{
-              backgroundColor: 'var(--color-accent)',
-              color: 'var(--color-accent-text)',
-            }}
-          >
-            <span>🌙</span>
-            <span>Sono</span>
-          </button>
-          {onSwitchToBreastfeedingGauge && (
-            <button
-              type="button"
-              onClick={onSwitchToBreastfeedingGauge}
-              className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-400 hover:text-pink-300 transition flex items-center gap-1 cursor-pointer"
-            >
-              <span>🤱</span>
-              <span>Peito</span>
-            </button>
-          )}
-          {onSwitchToDiaperGauge && (
-            <button
-              type="button"
-              onClick={onSwitchToDiaperGauge}
-              className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-400 hover:text-teal-300 transition flex items-center gap-1 cursor-pointer"
-            >
-              <span>🧷</span>
-              <span>Fralda</span>
-            </button>
-          )}
-        </div>
-
+      <div className="relative z-20 px-4 pt-2.5 flex items-center justify-end">
         {/* Right: Quick Lista switch */}
         <button
           type="button"
           onClick={onSwitchToCardsView}
-          className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-300 hover:text-white border flex items-center gap-1 cursor-pointer transition-colors"
+          className="px-2.5 py-1 rounded-xl text-[11px] font-bold text-gray-300 hover:text-white border flex items-center gap-1 cursor-pointer transition-colors shadow-xs shrink-0 mt-0.5"
           style={{
             backgroundColor: 'var(--color-secondary)',
             borderColor: 'var(--color-border)',
@@ -257,7 +213,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="absolute top-14 left-1/2 -translate-x-1/2 z-30 px-3.5 py-1.5 rounded-full bg-[#1f2340] border border-purple-400/40 text-[11px] text-purple-200 font-bold shadow-xl flex items-center space-x-1.5"
+            className="absolute top-14 left-1/2 -translate-x-1/2 z-30 px-3.5 py-1.5 rounded-xl bg-[#1f2340] border border-purple-400/40 text-[11px] text-purple-200 font-bold shadow-xl flex items-center space-x-1.5"
           >
             <span>{soundFeedback}</span>
           </motion.div>
@@ -390,11 +346,11 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
           </div>
         </div>
 
-        {/* Detailed Sleep Info Chip */}
+        {/* Detailed Sleep Info Action */}
         <button
           type="button"
           onClick={onOpenSleepModal}
-          className="mt-1 px-4 py-1.5 rounded-full bg-[#181a30]/80 border border-white/10 text-xs text-gray-300 hover:text-white flex items-center gap-1.5 backdrop-blur-md active:scale-95 transition cursor-pointer"
+          className="mt-1.5 px-3.5 py-1.5 rounded-xl bg-[#181a30]/90 border border-white/10 text-xs text-gray-300 hover:text-white flex items-center gap-1.5 backdrop-blur-md active:scale-95 transition cursor-pointer"
         >
           <Info className="w-3.5 h-3.5 text-purple-400" />
           <span>

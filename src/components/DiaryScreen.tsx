@@ -183,13 +183,13 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
   return (
     <div className="flex-1 flex flex-col overflow-hidden relative">
       
-      {/* Top Filter Pills Bar */}
+      {/* Top Filter Buttons Bar */}
       <section className="px-4.5 pt-2 pb-2 flex items-center space-x-2 shrink-0 overflow-x-auto no-scrollbar">
         {/* Filter button */}
         <button
           type="button"
           onClick={onOpenFilterModal}
-          className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-full text-xs font-semibold transition shrink-0 ${
+          className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl text-xs font-semibold transition shrink-0 ${
             selectedFilter !== 'all' ? 'shadow-sm' : 'text-gray-200 hover:border-purple-400/50'
           }`}
           style={
@@ -212,7 +212,7 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
         <button
           type="button"
           onClick={() => setIsCalendarModalOpen(true)}
-          className="flex items-center space-x-1.5 px-3.5 py-1.8 rounded-full border text-xs font-semibold text-gray-200 shrink-0 hover:border-purple-400/50 transition cursor-pointer"
+          className="flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl border text-xs font-semibold text-gray-200 shrink-0 hover:border-purple-400/50 transition cursor-pointer"
           style={{
             backgroundColor: 'var(--color-secondary)',
             borderColor: 'var(--color-border)',
@@ -425,8 +425,8 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                                     {act.title}
                                   </h3>
                                   {act.isInProgress && (
-                                    <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[9.5px] font-extrabold flex items-center gap-1">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+                                    <span className="text-amber-400 text-[10px] font-bold flex items-center gap-1.5 animate-pulse">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
                                       Em andamento
                                     </span>
                                   )}

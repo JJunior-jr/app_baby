@@ -307,7 +307,7 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
             Resumo & Status do Bebê
           </span>
           {/* Live pulsing dot */}
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
+          <span className="inline-flex items-center text-[10px] font-bold text-emerald-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5" />
             Ao Vivo
           </span>

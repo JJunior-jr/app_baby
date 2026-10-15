@@ -308,7 +308,7 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
                 <Smartphone className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span className="text-left">Sincronizar com Agenda do Celular</span>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold">
+              <span className="text-[10px] text-purple-300 font-semibold">
                 Google • Outlook • Android
               </span>
             </button>

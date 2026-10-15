@@ -374,54 +374,14 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
       </div>
 
       {/* Top Header Bar inside Gauge View (30% Secondary token) */}
-      <div className="relative z-20 px-4 pt-2 flex items-center justify-between">
-        {/* Balanced left spacer replacing the deprecated cards button */}
-        <div className="w-14 hidden sm:block pointer-events-none" aria-hidden="true" />
-
-        {/* Center: Gauge Selector (Sono vs Amamentação vs Fralda) */}
-        <div
-          className="flex items-center space-x-1 rounded-full p-1 shadow-lg backdrop-blur-md border transition-colors"
-          style={{
-            backgroundColor: 'var(--color-secondary)',
-            borderColor: 'var(--color-border)',
-          }}
-        >
-          <button
-            type="button"
-            onClick={onSwitchToSleepGauge}
-            className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-400 hover:text-white transition flex items-center gap-1 cursor-pointer"
-          >
-            <span>🌙</span>
-            <span>Sono</span>
-          </button>
-          <button
-            type="button"
-            onClick={onSwitchToBreastfeedingGauge}
-            className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-400 hover:text-pink-300 transition flex items-center gap-1 cursor-pointer"
-          >
-            <span>🤱</span>
-            <span>Peito</span>
-          </button>
-          <button
-            type="button"
-            className="px-2.5 py-1 rounded-full text-[11px] font-extrabold shadow-xs flex items-center gap-1 cursor-default transition-all"
-            style={{
-              backgroundColor: 'var(--color-accent)',
-              color: 'var(--color-accent-text)',
-            }}
-          >
-            <span>🧷</span>
-            <span>Fralda</span>
-          </button>
-        </div>
-
+      <div className="relative z-20 px-4 pt-2.5 flex items-center justify-end">
         {/* Right: Quick adjustment for last diaper & Lista switch */}
-        <div className="flex items-center space-x-1.5" ref={adjustRef}>
+        <div className="flex items-center space-x-1.5 shrink-0 pt-0.5" ref={adjustRef}>
           <button
             type="button"
             onClick={() => setIsAdjustPopoverOpen(!isAdjustPopoverOpen)}
             title="Ajustar horário da última troca"
-            className="p-2 rounded-full text-xs font-bold text-gray-300 hover:text-white border transition active:scale-95 cursor-pointer"
+            className="p-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white border transition active:scale-95 cursor-pointer"
             style={{
               backgroundColor: 'var(--color-secondary)',
               borderColor: 'var(--color-border)',
@@ -432,7 +392,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
           <button
             type="button"
             onClick={onSwitchToCardsView}
-            className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-300 hover:text-white border flex items-center gap-1 cursor-pointer transition-colors"
+            className="px-2.5 py-1 rounded-xl text-[11px] font-bold text-gray-300 hover:text-white border flex items-center gap-1 cursor-pointer transition-colors"
             style={{
               backgroundColor: 'var(--color-secondary)',
               borderColor: 'var(--color-border)',
@@ -534,7 +494,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="absolute top-14 left-1/2 -translate-x-1/2 z-40 px-3.5 py-1.5 rounded-full bg-[#0d2222] border border-teal-400 text-[11px] text-teal-200 font-bold shadow-xl flex items-center space-x-1.5"
+            className="absolute top-14 left-1/2 -translate-x-1/2 z-40 px-3.5 py-1.5 rounded-xl bg-[#0d2222] border border-teal-400 text-[11px] text-teal-200 font-bold shadow-xl flex items-center space-x-1.5"
           >
             <span>{feedbackToast}</span>
           </motion.div>
@@ -627,12 +587,12 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
 
           {/* Gauge Center Content - properly sized & lifted to prevent any overlap with arc ends */}
           <div className="relative z-10 flex flex-col items-center justify-center text-center px-3 max-w-[190px] -translate-y-2">
-            {/* Display Mode Pill: Toggle between Interval and Daily Total */}
-            <div className="flex items-center space-x-1 mb-1 bg-black/50 p-0.5 rounded-full border border-white/10 backdrop-blur-md">
+            {/* Display Mode: Toggle between Interval and Daily Total */}
+            <div className="flex items-center space-x-1 mb-1.5 bg-black/50 p-1 rounded-xl border border-white/10 backdrop-blur-md">
               <button
                 type="button"
                 onClick={() => setCenterDisplayMode('interval')}
-                className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold transition cursor-pointer ${
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition cursor-pointer ${
                   centerDisplayMode === 'interval'
                     ? 'bg-teal-600/80 text-white shadow-xs'
                     : 'text-gray-400 hover:text-white'
@@ -643,7 +603,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
               <button
                 type="button"
                 onClick={() => setCenterDisplayMode('daily')}
-                className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold transition cursor-pointer ${
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition cursor-pointer ${
                   centerDisplayMode === 'daily'
                     ? 'bg-emerald-600/80 text-white shadow-xs'
                     : 'text-gray-400 hover:text-white'
@@ -689,9 +649,9 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
               </div>
             )}
 
-            {/* Pediatric Health Status Badge */}
+            {/* Pediatric Health Status Indicator */}
             <div
-              className={`mt-1 px-2.5 py-0.5 rounded-full border text-[9.5px] font-extrabold flex items-center gap-1 shadow-xs ${status.bgColor} ${status.borderColor} ${status.textColor}`}
+              className={`mt-1.5 text-[10px] font-bold flex items-center gap-1.5 ${status.textColor}`}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse shrink-0" />
               <span>{status.label}</span>
@@ -703,7 +663,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
                 Última às <strong className="text-white">{lastTimeStr}</strong> · {lastDiaperInfo.type === 'xixi' ? '💧 Xixi' : lastDiaperInfo.type === 'coco' ? '💩 Cocô' : '🧷 Ambos'}
               </span>
             ) : (
-              <div className="mt-1 flex items-center justify-center space-x-1.5 bg-black/40 px-2.5 py-0.5 rounded-full border border-white/10 text-[10px] font-bold whitespace-nowrap shadow-xs">
+              <div className="mt-1 flex items-center justify-center space-x-1.5 bg-black/40 px-2.5 py-0.5 rounded-lg border border-white/10 text-[10px] font-bold whitespace-nowrap shadow-xs">
                 <span className="text-cyan-300">💧 {counts24h.xixi}</span>
                 <span className="text-white/20">·</span>
                 <span className="text-amber-300">💩 {counts24h.coco}</span>
@@ -720,7 +680,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
 
         {/* Breakdown Banner & Stats outside the gauge arc (where there is full horizontal width) */}
         <div className="mt-1 flex items-center justify-center">
-          <div className="flex items-center space-x-2 bg-[#0f1926]/90 px-3.5 py-1 rounded-full border border-teal-500/25 shadow-sm text-gray-200">
+          <div className="flex items-center space-x-2 bg-[#0f1926]/90 px-3.5 py-1.5 rounded-xl border border-teal-500/25 shadow-sm text-gray-200">
             <span className="text-cyan-300 font-bold text-xs whitespace-nowrap">💧 {counts24h.xixi} Xixi</span>
             <span className="text-gray-500">·</span>
             <span className="text-amber-300 font-bold text-xs whitespace-nowrap">💩 {counts24h.coco} Cocô</span>
@@ -763,7 +723,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
             </span>
 
             {/* Prompt */}
-            <span className="text-[9.5px] font-semibold mt-1 px-1.5 py-0.5 rounded-full bg-cyan-400/20 text-cyan-200 border border-cyan-300/30">
+            <span className="text-[10px] font-semibold mt-1 text-cyan-300">
               1 toque p/ registrar
             </span>
           </button>
@@ -790,7 +750,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
             </span>
 
             {/* Prompt */}
-            <span className="text-[9.5px] font-semibold mt-1 px-1.5 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-300/30">
+            <span className="text-[10px] font-semibold mt-1 text-amber-300">
               1 toque p/ registrar
             </span>
           </button>
@@ -822,7 +782,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
               </span>
 
               {/* Status prompt */}
-              <span className="text-[9.5px] font-semibold mt-1 px-1.5 py-0.5 rounded-full bg-teal-400/20 text-teal-200 border border-teal-300/30 flex items-center gap-0.5">
+              <span className="text-[10px] font-semibold mt-1 text-teal-300 flex items-center gap-0.5">
                 Opções <ChevronDown className="w-2.5 h-2.5" />
               </span>
             </button>

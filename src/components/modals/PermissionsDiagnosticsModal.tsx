@@ -113,8 +113,8 @@ export const PermissionsDiagnosticsModal: React.FC<PermissionsDiagnosticsModalPr
             <div>
               <h2 className="text-base font-bold text-white tracking-tight leading-tight flex items-center gap-1.5">
                 <span>Permissões & Diagnóstico</span>
-                <span className="px-1.5 py-0.2 rounded-full bg-purple-500/20 text-purple-300 text-[9px] font-bold border border-purple-500/30">
-                  2026 Ready
+                <span className="text-purple-400 text-[10px] font-bold">
+                  · 2026 Ready
                 </span>
               </h2>
               <p className="text-[10px] text-gray-400">
@@ -208,16 +208,16 @@ export const PermissionsDiagnosticsModal: React.FC<PermissionsDiagnosticsModalPr
                         <div className="flex items-center gap-1.5">
                           <span className="font-bold text-white truncate">{item.title}</span>
                           {isGranted ? (
-                            <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">
-                              Ativo
+                            <span className="text-[10px] text-emerald-400 font-bold">
+                              ● Ativo
                             </span>
                           ) : isDenied ? (
-                            <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-red-500/20 text-red-300 font-bold">
-                              Bloqueado
+                            <span className="text-[10px] text-red-400 font-bold">
+                              ● Bloqueado
                             </span>
                           ) : (
-                            <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 font-bold">
-                              Pendente
+                            <span className="text-[10px] text-amber-400 font-bold">
+                              ● Pendente
                             </span>
                           )}
                         </div>
@@ -305,8 +305,8 @@ export const PermissionsDiagnosticsModal: React.FC<PermissionsDiagnosticsModalPr
                   </p>
                 </div>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">
-                100% Pronto
+              <span className="text-[10px] text-emerald-400 font-bold">
+                ● 100% Pronto
               </span>
             </div>
 

@@ -211,14 +211,14 @@ export const WhiteNoisePlaylistModal: React.FC<WhiteNoisePlaylistModalProps> = (
 
           {/* Volume Slider & Timer Controls */}
           <div className="mt-3 pt-2.5 border-t border-white/5 space-y-2.5">
-            {/* Background playback status chip */}
+            {/* Background playback status */}
             <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-[#121424] border border-purple-500/20 text-[10.5px]">
               <div className="flex items-center space-x-1.5 text-purple-300">
                 <Smartphone className="w-3.5 h-3.5 shrink-0 text-purple-400" />
                 <span className="font-semibold">Segundo plano & Tela de bloqueio ativo</span>
               </div>
-              <span className="text-[9px] text-emerald-400 font-bold bg-emerald-500/15 px-1.5 py-0.5 rounded">
-                Media Session
+              <span className="text-[10px] text-emerald-400 font-bold">
+                ● Media Session
               </span>
             </div>
             {/* Volume */}

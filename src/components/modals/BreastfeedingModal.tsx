@@ -446,7 +446,7 @@ export const BreastfeedingModal: React.FC<BreastfeedingModalProps> = ({
                   key={item.label}
                   type="button"
                   onClick={() => setFeeling(item.label)}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition ${
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition ${
                     feeling === item.label
                       ? 'bg-[#7158e2] text-white border border-[#9b87f5]'
                       : 'bg-[#17192b] border border-[#292b45] text-gray-200 hover:border-[#433c75]'

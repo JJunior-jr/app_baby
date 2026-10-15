@@ -209,56 +209,14 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
       </div>
 
       {/* Top Header Bar inside Gauge View (30% Secondary token) */}
-      <div className="relative z-20 px-4 pt-2 flex items-center justify-between">
-        {/* Balanced left spacer replacing the deprecated cards button */}
-        <div className="w-14 hidden sm:block pointer-events-none" aria-hidden="true" />
-
-        {/* Center: Gauge Selector (Sono vs Amamentação vs Fralda) */}
-        <div
-          className="flex items-center space-x-1 rounded-full p-1 shadow-lg backdrop-blur-md border transition-colors"
-          style={{
-            backgroundColor: 'var(--color-secondary)',
-            borderColor: 'var(--color-border)',
-          }}
-        >
-          <button
-            type="button"
-            onClick={onSwitchToSleepGauge}
-            className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-400 hover:text-white transition flex items-center gap-1 cursor-pointer"
-          >
-            <span>🌙</span>
-            <span>Sono</span>
-          </button>
-          <button
-            type="button"
-            className="px-2.5 py-1 rounded-full text-[11px] font-extrabold shadow-xs flex items-center gap-1 cursor-default transition-all"
-            style={{
-              backgroundColor: 'var(--color-accent)',
-              color: 'var(--color-accent-text)',
-            }}
-          >
-            <span>🤱</span>
-            <span>Peito</span>
-          </button>
-          {onSwitchToDiaperGauge && (
-            <button
-              type="button"
-              onClick={onSwitchToDiaperGauge}
-              className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-400 hover:text-teal-300 transition flex items-center gap-1 cursor-pointer"
-            >
-              <span>🧷</span>
-              <span>Fralda</span>
-            </button>
-          )}
-        </div>
-
+      <div className="relative z-20 px-4 pt-2.5 flex items-center justify-end">
         {/* Right: Quick adjustment for 24h baseline or switch to list */}
-        <div className="flex items-center space-x-1.5" ref={adjustRef}>
+        <div className="flex items-center space-x-1.5 shrink-0 pt-0.5" ref={adjustRef}>
           <button
             type="button"
             onClick={() => setIsAdjust24hOpen(!isAdjust24hOpen)}
             title="Ajustar tempo acumulado nas 24h"
-            className="p-2 rounded-full text-xs font-bold text-gray-300 hover:text-white border transition active:scale-95 cursor-pointer"
+            className="p-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white border transition active:scale-95 cursor-pointer"
             style={{
               backgroundColor: 'var(--color-secondary)',
               borderColor: 'var(--color-border)',
@@ -269,7 +227,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
           <button
             type="button"
             onClick={onSwitchToCardsView}
-            className="px-2.5 py-1 rounded-full text-[11px] font-bold text-gray-300 hover:text-white border flex items-center gap-1 cursor-pointer transition-colors"
+            className="px-2.5 py-1 rounded-xl text-[11px] font-bold text-gray-300 hover:text-white border flex items-center gap-1 cursor-pointer transition-colors"
             style={{
               backgroundColor: 'var(--color-secondary)',
               borderColor: 'var(--color-border)',
@@ -486,12 +444,12 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
 
           {/* Gauge Center Content */}
           <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-[230px]">
-            {/* Display Mode Pill: Toggle between 24h Total and Active Session */}
-            <div className="flex items-center space-x-1 mb-1.5 bg-black/40 p-0.5 rounded-full border border-white/10 backdrop-blur-md">
+            {/* Display Mode: Toggle between 24h Total and Active Session */}
+            <div className="flex items-center space-x-1 mb-1.5 bg-black/40 p-1 rounded-xl border border-white/10 backdrop-blur-md">
               <button
                 type="button"
                 onClick={() => setCenterDisplayMode('24h')}
-                className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold transition cursor-pointer ${
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition cursor-pointer ${
                   centerDisplayMode === '24h'
                     ? 'bg-pink-600/80 text-white shadow-xs'
                     : 'text-gray-400 hover:text-white'
@@ -502,7 +460,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
               <button
                 type="button"
                 onClick={() => setCenterDisplayMode('session')}
-                className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold transition cursor-pointer flex items-center gap-1 ${
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition cursor-pointer flex items-center gap-1 ${
                   centerDisplayMode === 'session'
                     ? 'bg-purple-600/80 text-white shadow-xs'
                     : 'text-gray-400 hover:text-white'
@@ -536,8 +494,8 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
               </div>
             )}
 
-            {/* 24-Hour Accuracy Badge: Proporção Exata do dia */}
-            <div className="mt-1 px-2.5 py-0.5 rounded-full bg-pink-500/15 border border-pink-400/30 text-pink-200 text-[10px] font-bold flex items-center gap-1">
+            {/* 24-Hour Accuracy: Proporção Exata do dia */}
+            <div className="mt-1 text-pink-200/90 text-[10px] font-semibold flex items-center gap-1.5">
               <Sparkles className="w-2.5 h-2.5 text-pink-300" />
               <span>
                 {progressPercent.toFixed(1)}% do dia ({totalHoursFloat.toFixed(1)}h / 24h)
@@ -547,8 +505,8 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
             {/* Active Session Status & Side Breakdown */}
             <div className="mt-2 flex flex-col items-center">
               {activeSide ? (
-                <div className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-pink-500/25 border border-pink-400/50 text-[10px] font-extrabold text-pink-100 shadow-sm animate-pulse">
-                  <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-ping" />
+                <div className="flex items-center space-x-1.5 text-[10.5px] font-bold text-pink-300 animate-pulse">
+                  <span className="w-2 h-2 rounded-full bg-pink-400" />
                   <span>Mamando no {activeSide === 'left' ? 'Peito Esquerdo' : 'Peito Direito'}</span>
                 </div>
               ) : currentSessionSeconds > 0 ? (
@@ -585,7 +543,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
                 const rightM = Math.max(0, Math.round(rightSeconds / 60));
                 onSaveSession(leftM, rightM);
               }}
-              className="px-4 py-1.5 rounded-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-xs font-bold shadow-lg shadow-pink-600/30 flex items-center space-x-1.5 active:scale-95 transition cursor-pointer"
+              className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-xs font-bold shadow-lg shadow-pink-600/30 flex items-center space-x-1.5 active:scale-95 transition cursor-pointer"
             >
               <Check className="w-3.5 h-3.5 stroke-[3]" />
               <span>Concluir e Salvar Mamada</span>
@@ -594,7 +552,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
               type="button"
               onClick={onResetTimers}
               title="Zerar cronômetro da mamada atual"
-              className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition active:scale-95 cursor-pointer"
+              className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition active:scale-95 cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -634,9 +592,9 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
 
             {/* Status */}
             <span
-              className={`text-[9.5px] font-semibold mt-1 px-1.5 py-0.5 rounded-full ${
+              className={`text-[10px] font-semibold mt-1 transition-colors ${
                 activeSide === 'left'
-                  ? 'bg-pink-400/30 text-pink-200 border border-pink-300/40'
+                  ? 'text-pink-200 font-bold'
                   : 'text-gray-400'
               }`}
             >
@@ -673,9 +631,9 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
 
             {/* Status */}
             <span
-              className={`text-[9.5px] font-semibold mt-1 px-1.5 py-0.5 rounded-full ${
+              className={`text-[10px] font-semibold mt-1 transition-colors ${
                 activeSide === 'right'
-                  ? 'bg-purple-400/30 text-purple-200 border border-purple-300/40'
+                  ? 'text-purple-200 font-bold'
                   : 'text-gray-400'
               }`}
             >
@@ -710,7 +668,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
               </span>
 
               {/* Status prompt */}
-              <span className="text-[9.5px] font-semibold mt-1 px-1.5 py-0.5 rounded-full bg-teal-400/20 text-teal-200 border border-teal-300/30">
+              <span className="text-[10px] font-semibold mt-1 text-teal-300">
                 Inserir Dados ▾
               </span>
             </button>

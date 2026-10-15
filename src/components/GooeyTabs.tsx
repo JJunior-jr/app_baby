@@ -139,13 +139,13 @@ export const GooeyTabs: React.FC<GooeyTabsProps> = ({
 
               {tab.badge !== undefined && (
                 <span
-                  className={`px-1.5 py-0.2 rounded-full text-[9px] font-bold border transition-colors ${
+                  className={`text-[10px] font-bold font-mono transition-colors ${
                     isActive
-                      ? 'bg-black/30 text-white border-white/20'
-                      : 'bg-white/10 text-gray-400 border-white/10 group-hover:text-gray-200'
+                      ? 'text-white/90'
+                      : 'text-gray-400 group-hover:text-gray-200'
                   }`}
                 >
-                  {tab.badge}
+                  ({tab.badge})
                 </span>
               )}
             </button>

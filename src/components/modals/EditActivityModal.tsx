@@ -201,8 +201,8 @@ export const EditActivityModal: React.FC<EditActivityModalProps> = ({
                 <h2 className="text-base font-bold text-white tracking-tight leading-tight">
                   Editar Atividade
                 </h2>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300">
-                  {activity.type}
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-300">
+                  · {activity.type}
                 </span>
               </div>
               <p className="text-[11px] text-gray-400">

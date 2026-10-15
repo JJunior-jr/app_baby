@@ -114,8 +114,8 @@ export const FeedbackPromptModal: React.FC<FeedbackPromptModalProps> = ({
             <div>
               <h2 className="text-base font-bold text-white tracking-tight leading-tight flex items-center gap-1.5">
                 <span>Avaliar Experiência</span>
-                <span className="px-1.5 py-0.2 rounded-full bg-purple-500/20 text-purple-300 text-[9px] font-bold border border-purple-500/30">
-                  Melhorias Contínuas
+                <span className="text-purple-400 text-[10px] font-bold">
+                  · Melhorias Contínuas
                 </span>
               </h2>
               <p className="text-[10px] text-gray-400">

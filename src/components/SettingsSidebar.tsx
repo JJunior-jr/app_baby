@@ -165,7 +165,7 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
                     Central & Alertas
                   </span>
                   {totalPending > 0 && (
-                    <span className="text-[8px] sm:text-[9px] px-1.5 py-0.2 rounded-full bg-purple-500/30 text-purple-200 font-bold border border-purple-400/40">
+                    <span className="text-[9px] text-purple-300 font-extrabold">
                       {totalPending} pendente{totalPending > 1 ? 's' : ''}
                     </span>
                   )}
@@ -198,7 +198,7 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
 
                   <div className="flex items-center space-x-1.5 shrink-0 ml-1">
                     {pendingAlarmsCount > 0 ? (
-                      <span className="px-1.5 py-0.5 rounded-full bg-purple-500 text-white text-[8.5px] sm:text-[9px] font-black border border-purple-400 shadow-sm animate-pulse">
+                      <span className="text-[9px] text-purple-300 font-bold">
                         {pendingAlarmsCount}
                       </span>
                     ) : (
@@ -241,19 +241,23 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
 
                   <div className="flex items-center space-x-1.5 shrink-0 ml-1">
                     {isSyncing ? (
-                      <span className="px-1.5 py-0.5 rounded-full bg-blue-500 text-white text-[8px] sm:text-[8.5px] font-bold border border-blue-400 animate-pulse">
+                      <span className="text-[9px] text-blue-300 font-bold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
                         Gravando
                       </span>
                     ) : syncPendingCount > 0 ? (
-                      <span className="px-1.5 py-0.5 rounded-full bg-amber-500 text-white text-[8px] sm:text-[8.5px] font-black border border-amber-400 shadow-sm animate-pulse">
+                      <span className="text-[9px] text-amber-300 font-bold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                         {syncPendingCount} pendente{syncPendingCount > 1 ? 's' : ''}
                       </span>
                     ) : !isOnline ? (
-                      <span className="px-1.5 py-0.5 rounded-full bg-amber-500/30 text-amber-200 text-[8px] sm:text-[8.5px] font-bold border border-amber-500/40">
+                      <span className="text-[9px] text-amber-300 font-bold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                         Offline
                       </span>
                     ) : (
-                      <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[8px] sm:text-[8.5px] font-bold border border-emerald-500/30">
+                      <span className="text-[9px] text-emerald-300 font-bold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                         Nuvem OK
                       </span>
                     )}
@@ -285,7 +289,7 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
                   </div>
 
                   <div className="flex items-center space-x-1.5 shrink-0 ml-1">
-                    <span className="px-1.5 py-0.5 rounded-full bg-pink-500/25 text-pink-200 text-[8px] sm:text-[8.5px] font-bold border border-pink-400/40">
+                    <span className="text-[9px] text-pink-300 font-bold">
                       Feedback
                     </span>
                     <ChevronRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-white transition" />
@@ -317,7 +321,7 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
 
                   <div className="flex items-center space-x-1.5 shrink-0 ml-1">
                     {activeRemindersCount > 0 ? (
-                      <span className="px-1.5 py-0.5 rounded-full bg-pink-500 text-white text-[8px] sm:text-[8.5px] font-black border border-pink-400 shadow-sm">
+                      <span className="text-[9px] text-pink-300 font-bold">
                         {activeRemindersCount} ativo{activeRemindersCount > 1 ? 's' : ''}
                       </span>
                     ) : (
@@ -457,7 +461,7 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
                     <span className="text-[10.5px] sm:text-xs text-gray-200 group-hover:text-white truncate">Permissões</span>
                   </div>
                   <div className="flex items-center space-x-1.5 shrink-0">
-                    <span className="px-1.5 py-0.2 rounded-full bg-indigo-500/20 text-indigo-200 text-[8px] font-semibold border border-indigo-400/30">
+                    <span className="text-[9px] text-indigo-300 font-semibold">
                       Checar
                     </span>
                     <ChevronRight className="w-3 h-3 text-gray-400" />

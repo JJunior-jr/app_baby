@@ -182,7 +182,7 @@ export const CalendarSyncModal: React.FC<CalendarSyncModalProps> = ({
             <div>
               <h2 className="text-base font-bold text-white tracking-tight leading-tight flex items-center gap-1.5">
                 <span>Integração de Calendário</span>
-                <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-bold border border-emerald-500/40">
+                <span className="text-emerald-400 text-[9px] font-black uppercase tracking-wider">
                   Celular
                 </span>
               </h2>
@@ -316,8 +316,8 @@ export const CalendarSyncModal: React.FC<CalendarSyncModalProps> = ({
                       <div className="flex items-center gap-1.5">
                         <h3 className="text-xs font-bold text-white">Google Calendar</h3>
                         {settings.googleConnected && (
-                          <span className="px-1.5 py-0.2 rounded-full bg-blue-500/20 text-blue-300 text-[9px] font-bold">
-                            Conectado
+                          <span className="text-blue-400 text-[10px] font-semibold">
+                            ● Conectado
                           </span>
                         )}
                       </div>
@@ -370,8 +370,8 @@ export const CalendarSyncModal: React.FC<CalendarSyncModalProps> = ({
                       <div className="flex items-center gap-1.5">
                         <h3 className="text-xs font-bold text-white">Microsoft Outlook</h3>
                         {settings.microsoftConnected && (
-                          <span className="px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 text-[9px] font-bold">
-                            Conectado
+                          <span className="text-cyan-400 text-[10px] font-semibold">
+                            ● Conectado
                           </span>
                         )}
                       </div>
@@ -426,8 +426,8 @@ export const CalendarSyncModal: React.FC<CalendarSyncModalProps> = ({
                           Calendário Nativo do Android / iOS
                         </h3>
                         {settings.androidConnected && (
-                          <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-bold">
-                            Pronto
+                          <span className="text-emerald-400 text-[10px] font-semibold">
+                            ● Pronto
                           </span>
                         )}
                       </div>

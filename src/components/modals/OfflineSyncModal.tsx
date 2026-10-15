@@ -150,12 +150,13 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({
               <h2 className="text-base font-bold text-white tracking-tight leading-tight flex items-center gap-1.5">
                 <span>Modo Offline & Sincronização</span>
                 <span
-                  className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wide border ${
+                  className={`text-[10px] font-bold flex items-center gap-1 ${
                     syncStatus.isOnline
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                      : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                      ? 'text-emerald-400'
+                      : 'text-amber-400'
                   }`}
                 >
+                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
                   {syncStatus.isOnline ? 'Online (Nuvem)' : 'Modo Offline'}
                 </span>
               </h2>
@@ -367,7 +368,8 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        <span className="text-[10px] font-bold text-amber-400 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                           {item.status === 'syncing' ? 'Gravando...' : 'Pendente no Celular'}
                         </span>
                         <span className="font-bold text-white">{item.title}</span>

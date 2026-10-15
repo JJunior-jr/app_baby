@@ -248,7 +248,7 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
             <div>
               <div className="flex items-center gap-1.5">
                 <h3 className="text-xs font-bold text-white">Sincronizar com seu Celular</h3>
-                <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-bold">
+                <span className="text-emerald-400 text-[9px] font-black uppercase tracking-wider">
                   Novo
                 </span>
               </div>
@@ -281,7 +281,7 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
             key={tab.id}
             type="button"
             onClick={() => setFilterPeriod(tab.id)}
-            className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-full text-xs font-semibold transition shrink-0 ${
+            className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl text-xs font-semibold transition shrink-0 ${
               filterPeriod === tab.id
                 ? 'bg-[#7158e2] text-white shadow-sm'
                 : 'bg-[#181a2d] border border-[#272a44] text-gray-300 hover:text-white'

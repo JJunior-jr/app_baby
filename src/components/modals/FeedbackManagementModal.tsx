@@ -105,8 +105,8 @@ export const FeedbackManagementModal: React.FC<FeedbackManagementModalProps> = (
             <div>
               <h2 className="text-base font-bold text-white tracking-tight leading-tight flex items-center gap-1.5">
                 <span>Central de Opiniões & Sugestões</span>
-                <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-bold">
-                  {analytics.total} avaliaç{analytics.total === 1 ? 'ão' : 'ões'}
+                <span className="text-emerald-400 text-[10px] font-bold">
+                  ({analytics.total} avaliaç{analytics.total === 1 ? 'ão' : 'ões'})
                 </span>
               </h2>
               <p className="text-[10px] text-gray-400">
@@ -240,17 +240,17 @@ export const FeedbackManagementModal: React.FC<FeedbackManagementModalProps> = (
                         </div>
 
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[9.5px] font-extrabold uppercase tracking-wider ${
+                          className={`text-[10px] font-bold uppercase tracking-wider ${
                             item.category === 'elogio'
-                              ? 'bg-emerald-500/20 text-emerald-300'
+                              ? 'text-emerald-400'
                               : item.category === 'melhoria'
-                              ? 'bg-amber-500/20 text-amber-300'
+                              ? 'text-amber-400'
                               : item.category === 'sugestao'
-                              ? 'bg-purple-500/20 text-purple-300'
-                              : 'bg-rose-500/20 text-rose-300'
+                              ? 'text-purple-400'
+                              : 'text-rose-400'
                           }`}
                         >
-                          {item.category}
+                          · {item.category}
                         </span>
 
                         <span className="text-[10px] text-gray-400">

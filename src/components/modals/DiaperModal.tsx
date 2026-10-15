@@ -192,7 +192,7 @@ export const DiaperModal: React.FC<DiaperModalProps> = ({ isOpen, onClose, onSav
               />
             </div>
 
-            {/* Consistency Chips (if Cocô or Ambos) */}
+            {/* Consistency Options (if Cocô or Ambos) */}
             {diaperType !== 'xixi' && (
               <div className="flex items-center space-x-2 pt-1 overflow-x-auto no-scrollbar">
                 {(['Normal', 'Ressecado', 'Líquido', 'Com muco'] as const).map((cons) => (
@@ -200,7 +200,7 @@ export const DiaperModal: React.FC<DiaperModalProps> = ({ isOpen, onClose, onSav
                     key={cons}
                     type="button"
                     onClick={() => setConsistency(cons)}
-                    className={`px-3.5 py-1.8 rounded-full text-xs font-semibold whitespace-nowrap transition ${
+                    className={`px-3.5 py-1.8 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
                       consistency === cons
                         ? 'bg-[#2ac289] text-[#0d1c16] font-bold'
                         : 'bg-[#1a1d2e] text-gray-300 border border-[#23273c] hover:border-gray-500'

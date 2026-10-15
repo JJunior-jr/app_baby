@@ -15,10 +15,10 @@ export const HealthScreen: React.FC = () => {
           </p>
         </div>
 
-        <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-bold flex items-center gap-1">
-          <ShieldCheck className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
+          <ShieldCheck className="w-4 h-4" />
           <span>Saúde em dia</span>
-        </span>
+        </div>
       </header>
 
       {/* Biometric Stats Card */}

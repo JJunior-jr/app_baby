@@ -246,8 +246,8 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
             <h1 className="text-base font-bold text-white tracking-tight flex items-center gap-1.5">
               <span>Configurações & Rotina</span>
               {activeRemindersCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-purple-600/40 border border-purple-500/50 text-purple-200 text-[10px] font-extrabold">
-                  {activeRemindersCount} ativo{activeRemindersCount > 1 ? 's' : ''}
+                <span className="text-purple-400 text-[10px] font-bold">
+                  ({activeRemindersCount} ativo{activeRemindersCount > 1 ? 's' : ''})
                 </span>
               )}
             </h1>
@@ -263,7 +263,7 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
                   onOpenSidebar();
                 }}
                 title="Abrir Menu Lateral de Configurações"
-                className="h-8 px-2.5 rounded-full bg-purple-500/20 hover:bg-purple-500/35 border border-purple-500/30 flex items-center gap-1 text-purple-300 hover:text-white transition cursor-pointer text-xs font-bold"
+                className="h-8 px-2.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/35 border border-purple-500/30 flex items-center gap-1 text-purple-300 hover:text-white transition cursor-pointer text-xs font-bold"
               >
                 <Sliders className="w-3.5 h-3.5" />
                 <span>Menu</span>
@@ -536,9 +536,9 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
                           />
                           <span className="text-xs text-gray-300 font-semibold">minutos</span>
                           
-                          {/* Live hours conversion chip */}
+                          {/* Live hours conversion */}
                           <div className="flex-1 text-right">
-                            <span className="inline-block px-2.5 py-1 rounded-lg bg-purple-900/50 border border-purple-500/40 text-purple-200 text-xs font-bold">
+                            <span className="text-purple-300 text-xs font-bold">
                               = {formatMinutesHuman(reminderConfig.customMinutes || 60)}
                             </span>
                           </div>

@@ -259,12 +259,12 @@ export const FormulaDrawer: React.FC<FormulaDrawerProps> = ({
             </div>
 
             {safeLeftover === 0 ? (
-              <span className="px-2 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-extrabold flex items-center gap-1">
-                <Sparkles className="w-3 h-3" />
+              <span className="text-emerald-400 text-xs font-extrabold flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5" />
                 100% Ingerido
               </span>
             ) : (
-              <span className="px-2 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[10px] font-extrabold">
+              <span className="text-amber-400 text-xs font-bold">
                 Sobrou {safeLeftover} ml
               </span>
             )}

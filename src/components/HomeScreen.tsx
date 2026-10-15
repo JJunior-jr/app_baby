@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import {
   Baby,
@@ -25,6 +25,7 @@ import { isDaytimeInBrazil } from '../services/brazilTime';
 import { SleepGaugeView } from './SleepGaugeView';
 import { BreastfeedingGaugeView } from './BreastfeedingGaugeView';
 import { DiaperGaugeView } from './DiaperGaugeView';
+import { FloatingGaugeSelector } from './FloatingGaugeSelector';
 import { notificationService } from '../services/notificationService';
 
 interface HomeScreenProps {
@@ -429,10 +430,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     showToast(`Mamadeira registrada: ${consumed}ml (${pct}%)! 🍼`);
   };
 
+  const gaugeContainerRef = useRef<HTMLDivElement>(null);
+
   // If user selected minimalist gauge view, render SleepGaugeView or BreastfeedingGaugeView
   if (homeViewType === 'gauge') {
     return (
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
+      <div ref={gaugeContainerRef} className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
+        {/* Floating Draggable Selector [Sono, Peito, Fralda] */}
+        <FloatingGaugeSelector
+          currentMode={gaugeSubView}
+          onSelectMode={(mode) => handleSetGaugeSubView(mode)}
+          containerRef={gaugeContainerRef}
+        />
+
         {gaugeSubView === 'amamentacao' ? (
           <BreastfeedingGaugeView
             currentUser={currentUser}
@@ -1058,7 +1068,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-gray-400 font-normal">2/2</span>
-              <span className="px-2 py-0.5 rounded-full bg-[#372f63] text-purple-300 text-[10px] font-extrabold flex items-center gap-0.5">
+              <span className="px-1.5 py-0.5 rounded-md bg-[#2d2552] border border-purple-500/30 text-purple-300 text-[10px] font-extrabold flex items-center gap-0.5">
                 ⭐ Nv. 1
               </span>
             </div>
