@@ -216,22 +216,14 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
             type="button"
             onClick={() => setIsAdjust24hOpen(!isAdjust24hOpen)}
             title="Ajustar tempo acumulado nas 24h"
-            className="p-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white border transition active:scale-95 cursor-pointer"
-            style={{
-              backgroundColor: 'var(--color-secondary)',
-              borderColor: 'var(--color-border)',
-            }}
+            className="p-2 rounded-xl text-xs font-bold text-gray-200 hover:text-white backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 transition active:scale-95 cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]"
           >
             <Settings2 className="w-4 h-4 text-pink-300" />
           </button>
           <button
             type="button"
             onClick={onSwitchToCardsView}
-            className="px-2.5 py-1 rounded-xl text-[11px] font-bold text-gray-300 hover:text-white border flex items-center gap-1 cursor-pointer transition-colors"
-            style={{
-              backgroundColor: 'var(--color-secondary)',
-              borderColor: 'var(--color-border)',
-            }}
+            className="px-2.5 py-1 rounded-xl text-[11px] font-bold text-gray-200 hover:text-white backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 flex items-center gap-1 cursor-pointer transition-colors shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]"
             title="Ver como Lista"
           >
             <List className="w-3 h-3" />
@@ -567,16 +559,17 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
           <button
             type="button"
             onClick={() => onToggleSide('left')}
-            className={`relative p-3 rounded-2xl flex flex-col items-center justify-between transition-all duration-200 active:scale-95 cursor-pointer border select-none overflow-hidden backdrop-blur-xl ${
+            className={`relative p-3 rounded-2xl flex flex-col items-center justify-between transition-all duration-200 active:scale-95 cursor-pointer border-t border-l border-b border-r select-none overflow-hidden backdrop-blur-[12px] ${
               activeSide === 'left'
-                ? 'bg-gradient-to-b from-pink-500/40 via-purple-600/35 to-pink-700/40 border-pink-400 ring-2 ring-pink-400/80 shadow-[0_0_22px_rgba(236,72,153,0.5)] text-white'
-                : 'bg-[#1e1a34]/85 hover:bg-[#252042] border-white/15 text-gray-200 hover:border-pink-400/40 shadow-md'
+                ? 'bg-gradient-to-br from-pink-500/40 via-purple-600/35 to-pink-700/40 border-t-white/60 border-l-white/50 border-b-pink-400/30 border-r-pink-400/30 ring-2 ring-pink-400/80 shadow-[0_0_24px_rgba(236,72,153,0.5),inset_0_1.5px_2px_rgba(255,255,255,0.5)] text-white'
+                : 'bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t-white/40 border-l-white/35 border-b-white/15 border-r-white/15 text-gray-200 hover:border-white/45 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)]'
             }`}
           >
             {/* Convex reflection highlight */}
-            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-2xl pointer-events-none" />
+            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 via-white/5 to-transparent rounded-t-2xl pointer-events-none" />
+            <div className="glass-reflection-line" />
 
-            <div className="flex items-center space-x-1 mb-1">
+            <div className="flex items-center space-x-1 mb-1 relative z-10">
               {activeSide === 'left' ? (
                 <Pause className="w-3.5 h-3.5 text-pink-300 fill-current" />
               ) : (
@@ -586,13 +579,13 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
             </div>
 
             {/* Timer */}
-            <span className="text-base font-extrabold font-mono text-white leading-tight">
+            <span className="text-base font-extrabold font-mono text-white leading-tight relative z-10">
               {formatTime(leftSeconds)}
             </span>
 
             {/* Status */}
             <span
-              className={`text-[10px] font-semibold mt-1 transition-colors ${
+              className={`text-[10px] font-semibold mt-1 transition-colors relative z-10 ${
                 activeSide === 'left'
                   ? 'text-pink-200 font-bold'
                   : 'text-gray-400'
@@ -606,16 +599,17 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
           <button
             type="button"
             onClick={() => onToggleSide('right')}
-            className={`relative p-3 rounded-2xl flex flex-col items-center justify-between transition-all duration-200 active:scale-95 cursor-pointer border select-none overflow-hidden backdrop-blur-xl ${
+            className={`relative p-3 rounded-2xl flex flex-col items-center justify-between transition-all duration-200 active:scale-95 cursor-pointer border-t border-l border-b border-r select-none overflow-hidden backdrop-blur-[12px] ${
               activeSide === 'right'
-                ? 'bg-gradient-to-b from-purple-500/40 via-indigo-600/35 to-purple-700/40 border-purple-400 ring-2 ring-purple-400/80 shadow-[0_0_22px_rgba(168,85,247,0.5)] text-white'
-                : 'bg-[#1e1a34]/85 hover:bg-[#252042] border-white/15 text-gray-200 hover:border-purple-400/40 shadow-md'
+                ? 'bg-gradient-to-br from-purple-500/40 via-indigo-600/35 to-purple-700/40 border-t-white/60 border-l-white/50 border-b-purple-400/30 border-r-purple-400/30 ring-2 ring-purple-400/80 shadow-[0_0_24px_rgba(168,85,247,0.5),inset_0_1.5px_2px_rgba(255,255,255,0.5)] text-white'
+                : 'bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t-white/40 border-l-white/35 border-b-white/15 border-r-white/15 text-gray-200 hover:border-white/45 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)]'
             }`}
           >
             {/* Convex reflection highlight */}
-            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-2xl pointer-events-none" />
+            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 via-white/5 to-transparent rounded-t-2xl pointer-events-none" />
+            <div className="glass-reflection-line" />
 
-            <div className="flex items-center space-x-1 mb-1">
+            <div className="flex items-center space-x-1 mb-1 relative z-10">
               {activeSide === 'right' ? (
                 <Pause className="w-3.5 h-3.5 text-purple-300 fill-current" />
               ) : (
@@ -625,13 +619,13 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
             </div>
 
             {/* Timer */}
-            <span className="text-base font-extrabold font-mono text-white leading-tight">
+            <span className="text-base font-extrabold font-mono text-white leading-tight relative z-10">
               {formatTime(rightSeconds)}
             </span>
 
             {/* Status */}
             <span
-              className={`text-[10px] font-semibold mt-1 transition-colors ${
+              className={`text-[10px] font-semibold mt-1 transition-colors relative z-10 ${
                 activeSide === 'right'
                   ? 'text-purple-200 font-bold'
                   : 'text-gray-400'

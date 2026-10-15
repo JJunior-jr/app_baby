@@ -346,13 +346,13 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
           </div>
         </div>
 
-        {/* Detailed Sleep Info Action */}
+        {/* Detailed Sleep Info Action - 3D Glass Button */}
         <button
           type="button"
           onClick={onOpenSleepModal}
-          className="mt-1.5 px-3.5 py-1.5 rounded-xl bg-[#181a30]/90 border border-white/10 text-xs text-gray-300 hover:text-white flex items-center gap-1.5 backdrop-blur-md active:scale-95 transition cursor-pointer"
+          className="mt-1.5 px-3.5 py-1.5 rounded-xl backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 text-xs text-white flex items-center gap-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] active:scale-95 transition cursor-pointer hover:border-white/50"
         >
-          <Info className="w-3.5 h-3.5 text-purple-400" />
+          <Info className="w-3.5 h-3.5 text-pink-300" />
           <span>
             {isSleeping
               ? isDaytime ? 'Detalhes da Soneca ☀️' : 'Detalhes do Sono 🌙'
@@ -375,12 +375,12 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
                   ? 'Iniciar modo soneca diurna'
                   : 'Iniciar modo sono noturno'
             }
-            className={`relative flex items-center justify-center w-13 h-13 rounded-full transition duration-200 active:scale-92 cursor-pointer shadow-lg ${
+            className={`relative flex items-center justify-center w-13 h-13 rounded-full transition duration-200 active:scale-92 cursor-pointer backdrop-blur-[12px] ${
               !isSleeping
                 ? isDaytime
-                  ? 'bg-[#211e2f] border border-amber-500/70 ring-3 ring-amber-400/90 shadow-[0_0_24px_rgba(251,191,36,0.55)] text-amber-300'
-                  : 'bg-[#1e1c33] border border-indigo-500/70 ring-3 ring-indigo-400/90 shadow-[0_0_24px_rgba(129,140,248,0.55)] text-indigo-300'
-                : 'bg-[#1b223d] border border-cyan-400/70 ring-3 ring-cyan-400/80 shadow-[0_0_24px_rgba(56,189,248,0.5)] text-cyan-300'
+                  ? 'bg-gradient-to-br from-amber-400/35 via-yellow-500/25 to-white/10 border-t border-l border-white/50 border-b border-r border-amber-300/30 ring-2 ring-amber-400/90 shadow-[0_0_24px_rgba(251,191,36,0.55),inset_0_1.5px_2px_rgba(255,255,255,0.5)] text-amber-200'
+                  : 'bg-gradient-to-br from-indigo-500/35 via-purple-600/25 to-white/10 border-t border-l border-white/50 border-b border-r border-indigo-300/30 ring-2 ring-indigo-400/90 shadow-[0_0_24px_rgba(129,140,248,0.55),inset_0_1.5px_2px_rgba(255,255,255,0.5)] text-indigo-200'
+                : 'bg-gradient-to-br from-cyan-400/35 via-teal-500/25 to-white/10 border-t border-l border-white/50 border-b border-r border-cyan-300/30 ring-2 ring-cyan-400/80 shadow-[0_0_24px_rgba(56,189,248,0.5),inset_0_1.5px_2px_rgba(255,255,255,0.5)] text-cyan-200'
             }`}
           >
             {/* Sun or Moon icon */}
@@ -408,10 +408,10 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
                 ? `Tocando: ${currentTrack.name} (Toque para abrir playlist)`
                 : 'Abrir Playlist de Ruídos Brancos para Dormir'
             }
-            className={`relative flex items-center justify-center w-12 h-12 rounded-full transition duration-200 active:scale-92 cursor-pointer shadow-md ${
+            className={`relative flex items-center justify-center w-12 h-12 rounded-full transition duration-200 active:scale-92 cursor-pointer backdrop-blur-[12px] ${
               isPlayingSound
-                ? 'bg-[#3b1d28] border border-rose-400/80 ring-2 ring-rose-400/70 shadow-[0_0_18px_rgba(244,63,94,0.45)] text-rose-300'
-                : 'bg-[#241f35] border border-purple-500/20 text-rose-300/80 hover:text-rose-200'
+                ? 'bg-gradient-to-br from-rose-500/40 to-pink-600/25 border-t border-l border-white/50 border-b border-r border-rose-300/30 ring-2 ring-rose-400/80 shadow-[0_0_20px_rgba(244,63,94,0.5),inset_0_1.5px_2px_rgba(255,255,255,0.4)] text-rose-200'
+                : 'bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 text-pink-300 hover:text-white shadow-[0_8px_20px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.35)]'
             }`}
           >
             {isPlayingSound ? (
@@ -429,13 +429,13 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             type="button"
             onClick={onSwitchToDiaperGauge || onOpenDiaperModal}
             title="Abrir Medidor de Fralda"
-            className="relative flex items-center justify-center w-12 h-12 rounded-full bg-[#241f35] border border-purple-500/20 text-purple-300 hover:text-white transition duration-200 active:scale-92 cursor-pointer shadow-md"
+            className="relative flex items-center justify-center w-12 h-12 rounded-full backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 text-purple-200 hover:text-white transition duration-200 active:scale-92 cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.35)]"
           >
             {/* Diaper shape emoji */}
             <span className="text-xl">🧷</span>
             {/* Small lock icon on top right just like in the screenshot */}
-            <div className="absolute -top-1 -right-0.5 w-4 h-4 rounded-full bg-[#1b1c2e] border border-white/20 flex items-center justify-center">
-              <Lock className="w-2.5 h-2.5 text-gray-300" />
+            <div className="absolute -top-1 -right-0.5 w-4 h-4 rounded-full bg-black/50 border border-white/30 flex items-center justify-center backdrop-blur-xs">
+              <Lock className="w-2.5 h-2.5 text-gray-200" />
             </div>
           </button>
 

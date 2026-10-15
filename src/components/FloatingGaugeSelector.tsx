@@ -198,15 +198,16 @@ export const FloatingGaugeSelector: React.FC<FloatingGaugeSelectorProps> = ({
       style={{
         transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
         touchAction: 'none',
-        backgroundColor: 'var(--color-secondary)',
-        borderColor: isDragging ? 'var(--color-accent)' : 'var(--color-border)',
       }}
-      className={`group absolute top-0 left-0 z-30 flex flex-col rounded-2xl p-1 shadow-xl backdrop-blur-md border transition-all select-none ${
+      className={`group absolute top-0 left-0 z-30 flex flex-col rounded-2xl p-1.5 backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 shadow-[0_14px_36px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.45)] transition-all select-none overflow-hidden ${
         isDragging
-          ? 'cursor-grabbing shadow-2xl scale-[1.03] ring-2 ring-purple-400/40 opacity-95'
-          : 'cursor-grab hover:shadow-2xl'
+          ? 'cursor-grabbing shadow-[0_20px_50px_rgba(0,0,0,0.6)] scale-[1.03] ring-2 ring-purple-400/50 opacity-95'
+          : 'cursor-grab hover:shadow-[0_18px_45px_rgba(0,0,0,0.5)]'
       }`}
     >
+      {/* Specular Diagonal Reflection Sheen */}
+      <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-2xl pointer-events-none" />
+      <div className="glass-reflection-line" />
       {/* Floating Hover / Touch Tooltip "Mover" */}
       <div
         className={`absolute pointer-events-none transition-all duration-200 z-50 whitespace-nowrap ${

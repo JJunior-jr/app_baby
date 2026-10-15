@@ -425,23 +425,64 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen h-[100dvh] w-full flex justify-center items-stretch text-slate-100 font-sans selection:bg-purple-600/30 selection:text-white overflow-hidden transition-colors duration-300"
+      className="min-h-screen h-[100dvh] w-full flex justify-center items-stretch text-slate-100 font-sans selection:bg-purple-600/30 selection:text-white overflow-hidden transition-colors duration-300 relative"
       style={{ backgroundColor: currentPalette.dominant }}
     >
+      {/* SVG Gooey Filter Definition for Organic Liquid Fusion */}
+      <svg className="absolute w-0 h-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <defs>
+          <filter id="liquid-gooey">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur" />
+            <feColorMatrix
+              in="blur"
+              mode="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9"
+              result="goo"
+            />
+            <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+          </filter>
+        </defs>
+      </svg>
+
+      {/* Vibrant Ambient Backdrop Mesh Gradients (Behind the Glass) */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        {/* Neon Magenta / Pink Liquid Orb */}
+        <div className="absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full bg-gradient-to-br from-pink-500 via-fuchsia-600 to-purple-800 opacity-40 blur-[90px] liquid-blob-1 liquid-color-dodge" />
+        {/* Saturated Cyan Liquid Orb */}
+        <div className="absolute top-1/3 -right-28 w-[420px] h-[420px] rounded-full bg-gradient-to-tr from-cyan-400 via-teal-500 to-indigo-600 opacity-45 blur-[85px] liquid-blob-2 liquid-color-dodge" />
+        {/* Electric Purple / Indigo Liquid Orb */}
+        <div className="absolute -bottom-24 left-1/4 w-[420px] h-[420px] rounded-full bg-gradient-to-t from-violet-600 via-purple-700 to-pink-600 opacity-40 blur-[100px] liquid-blob-3 liquid-overlay" />
+      </div>
+
       {/* Mobile Device Frame Container with smooth landscape & portrait centering */}
       <main
-        className="w-full max-w-[430px] landscape:max-w-xl sm:max-w-md md:max-w-lg lg:max-w-xl h-full max-h-[100dvh] flex flex-col relative shadow-2xl mx-auto overflow-hidden transition-all duration-300 border-x"
+        className="w-full max-w-[430px] landscape:max-w-xl sm:max-w-md md:max-w-lg lg:max-w-xl h-full max-h-[100dvh] flex flex-col relative shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] mx-auto overflow-hidden transition-all duration-300 border-x border-white/20 backdrop-blur-xl z-10"
         data-purpose="mobile-viewport"
         style={{
-          backgroundColor: currentPalette.dominant,
-          borderColor: currentPalette.border,
+          backgroundColor: 'rgba(8, 9, 19, 0.72)',
+          borderColor: 'rgba(255, 255, 255, 0.22)',
         }}
       >
+        {/* Internal Vibrant Liquid Mesh Blobs for Glass Refraction */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+          <div className="absolute -top-20 -left-10 w-72 h-72 rounded-full bg-gradient-to-r from-fuchsia-600/35 to-pink-500/30 blur-3xl liquid-blob-1" />
+          <div className="absolute top-1/2 -right-16 w-80 h-80 rounded-full bg-gradient-to-br from-cyan-500/30 to-blue-600/30 blur-3xl liquid-blob-2" />
+          <div className="absolute -bottom-20 left-10 w-72 h-72 rounded-full bg-gradient-to-tr from-violet-600/35 to-purple-600/30 blur-3xl liquid-blob-3" />
+        </div>
+
+        {/* Monochromatic Physical Glass Noise Overlay (1% - 3% opacity) */}
+        <div className="glass-noise-layer pointer-events-none z-[1]" />
+
+        {/* Glossmorphism Top Window Light Highlight Line */}
+        <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none z-30" />
+
         {/* Native Mobile Status Bar (9:41, WiFi, Battery) */}
-        <StatusBar onOpenOfflineSync={() => setIsOfflineSyncOpen(true)} />
+        <div className="relative z-20">
+          <StatusBar onOpenOfflineSync={() => setIsOfflineSyncOpen(true)} />
+        </div>
 
         {/* Dynamic Screen Tabs Container */}
-        <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative z-10">
           {activeTab === 'inicio' && (
             <HomeScreen
               currentUser={currentUser}

@@ -4,22 +4,32 @@
   /* 60% Dominante (Canvas & Fundo) */
   --color-dominant: #080913;
   
-  /* 30% Secundária (Estrutura, Cards, Barra de Navegação) */
-  --color-secondary: #13162a;
-  --color-secondary-elevated: #1a1f38;
-  --color-border: #232747;
+  /* 30% Secundária (Estrutura, Cards, Barra de Navegação) - Glassmorphism Base */
+  --color-secondary: rgba(255, 255, 255, 0.12);
+  --color-secondary-elevated: rgba(255, 255, 255, 0.18);
+  --color-border: rgba(255, 255, 255, 0.25);
   --color-text-primary: #f8fafc;
-  --color-text-secondary: #94a3b8;
+  --color-text-secondary: #cbd5e1;
   
   /* 10% Destaque / Accent / CTA */
-  --color-accent: #7c3aed;
-  --color-accent-hover: #6d28d9;
+  --color-accent: #8b5cf6;
+  --color-accent-hover: #7c3aed;
   --color-accent-text: #ffffff;
+
+  /* Glassmorphism & Glossmorphism 3D System */
+  --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.05) 100%);
+  --glass-bg-elevated: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 100%);
+  --glass-blur: 12px;
+  --glass-border-top: rgba(255, 255, 255, 0.40);
+  --glass-border-left: rgba(255, 255, 255, 0.35);
+  --glass-border-bottom: rgba(255, 255, 255, 0.12);
+  --glass-border-right: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.35), inset 0 1px 1px 0 rgba(255, 255, 255, 0.45);
 
   /* Tipografia & Formas */
   --font-family-app: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --app-card-radius: 20px;
-  --app-glow-filter: drop-shadow(0 0 10px var(--color-accent));
+  --app-glow-filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.45));
 }
 
 @layer base {
@@ -30,31 +40,114 @@
     background-color: var(--color-dominant);
     color: var(--color-text-primary);
     transition: background-color 0.25s ease, color 0.25s ease;
+    overflow-x: hidden;
   }
 }
 
-/* 60/30/10 Helper Classes */
+/* Glassmorphism / Glossmorphism 3D Helper Classes */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-top: 1px solid var(--glass-border-top);
+  border-left: 1px solid var(--glass-border-left);
+  border-bottom: 1px solid var(--glass-border-bottom);
+  border-right: 1px solid var(--glass-border-right);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--app-card-radius);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel-elevated {
+  background: var(--glass-bg-elevated);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
+  border-left: 1px solid rgba(255, 255, 255, 0.40);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  border-right: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 16px 44px 0 rgba(0, 0, 0, 0.45), inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.55);
+  border-radius: var(--app-card-radius);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Diagonal reflection sheen simulating window / light highlights on realistic glass */
+.glass-sheen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.08) 35%, transparent 65%);
+  pointer-events: none;
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+/* Specular diagonal window reflection strip */
+.glass-reflection-line {
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.12) 48%, rgba(255, 255, 255, 0.22) 50%, rgba(255, 255, 255, 0.08) 52%, transparent 60%);
+  pointer-events: none;
+  transform: rotate(-10deg);
+}
+
+/* Monochromatic noise overlay for physical glass realistic tooth (1% to 3% opacity) */
+.glass-noise-layer {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.9;
+  z-index: 1;
+}
+
+/* 60/30/10 Core Card Rules with Glassmorphism Fallback */
 .theme-canvas {
   background-color: var(--color-dominant);
   color: var(--color-text-primary);
 }
 
 .theme-card {
-  background-color: var(--color-secondary);
-  border-color: var(--color-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-top: 1px solid var(--glass-border-top);
+  border-left: 1px solid var(--glass-border-left);
+  border-bottom: 1px solid var(--glass-border-bottom);
+  border-right: 1px solid var(--glass-border-right);
+  box-shadow: var(--glass-shadow);
   border-radius: var(--app-card-radius);
+  position: relative;
+  overflow: hidden;
 }
 
 .theme-card-elevated {
-  background-color: var(--color-secondary-elevated);
-  border-color: var(--color-border);
+  background: var(--glass-bg-elevated);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
+  border-left: 1px solid rgba(255, 255, 255, 0.40);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  border-right: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 16px 44px 0 rgba(0, 0, 0, 0.45), inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.55);
   border-radius: var(--app-card-radius);
+  position: relative;
+  overflow: hidden;
 }
 
 .theme-accent-btn {
-  background-color: var(--color-accent);
+  background: linear-gradient(135deg, var(--color-accent) 0%, #6366f1 100%);
   color: var(--color-accent-text);
   border-radius: var(--app-card-radius);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
 .theme-glow {
@@ -79,22 +172,87 @@
   animation: blink 1.06s step-start infinite;
 }
 
-/* Gooey Hover Animations for Configuration Screens */
-@keyframes gooey-morph {
+/* Liquid / Fluido Keyframe Animations with Asymmetric Border-Radius */
+@keyframes liquid-blob-morph-1 {
   0% {
     border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+    transform: translate(0px, 0px) rotate(0deg) scale(1);
   }
   33% {
     border-radius: 65% 35% 40% 60% / 35% 60% 40% 65%;
+    transform: translate(25px, -20px) rotate(45deg) scale(1.12);
   }
   66% {
     border-radius: 30% 70% 55% 45% / 60% 35% 65% 40%;
+    transform: translate(-20px, 25px) rotate(90deg) scale(0.92);
   }
   100% {
-    border-radius: 55% 45% 35% 65% / 45% 55% 45% 55%;
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+    transform: translate(0px, 0px) rotate(0deg) scale(1);
   }
 }
 
+@keyframes liquid-blob-morph-2 {
+  0% {
+    border-radius: 55% 45% 35% 65% / 45% 55% 45% 55%;
+    transform: translate(0px, 0px) rotate(0deg) scale(1);
+  }
+  33% {
+    border-radius: 35% 65% 60% 40% / 55% 40% 60% 45%;
+    transform: translate(-30px, 20px) rotate(-60deg) scale(1.15);
+  }
+  66% {
+    border-radius: 60% 40% 45% 55% / 40% 65% 35% 60%;
+    transform: translate(20px, -25px) rotate(-120deg) scale(0.95);
+  }
+  100% {
+    border-radius: 55% 45% 35% 65% / 45% 55% 45% 55%;
+    transform: translate(0px, 0px) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes liquid-blob-morph-3 {
+  0% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    border-radius: 40% 60% 70% 30% / 40% 70% 30% 60%;
+    transform: translate(15px, 20px) scale(1.18);
+  }
+  100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.liquid-blob-1 {
+  animation: liquid-blob-morph-1 14s ease-in-out infinite;
+}
+
+.liquid-blob-2 {
+  animation: liquid-blob-morph-2 18s ease-in-out infinite;
+}
+
+.liquid-blob-3 {
+  animation: liquid-blob-morph-3 12s ease-in-out infinite;
+}
+
+/* Liquid Blend Modes for optical saturation highlights */
+.liquid-color-dodge {
+  mix-blend-mode: color-dodge;
+}
+
+.liquid-overlay {
+  mix-blend-mode: overlay;
+}
+
+/* Gooey Parent Filter container */
+.liquid-gooey-container {
+  filter: url('#liquid-gooey');
+}
+
+/* Gooey Interactive Card & Button classes */
 @keyframes gooey-jelly {
   0% {
     transform: scale(1);
@@ -123,8 +281,8 @@
 
 .gooey-card-hover:hover {
   animation: gooey-jelly 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  box-shadow: 0 10px 24px -6px rgba(124, 58, 237, 0.25),
-              0 0 12px 1px rgba(168, 85, 247, 0.15);
+  box-shadow: 0 14px 30px -6px rgba(236, 72, 153, 0.3),
+              0 0 16px 2px rgba(6, 182, 212, 0.25);
 }
 
 .gooey-card-hover:active {
@@ -142,7 +300,7 @@
 
 .gooey-btn:hover {
   transform: scale(1.04) translateY(-1px);
-  box-shadow: 0 6px 16px -2px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 8px 20px -2px rgba(236, 72, 153, 0.35);
 }
 
 .gooey-btn:active {
@@ -161,31 +319,3 @@
 .gooey-tab:active {
   transform: scale(0.96);
 }
-
-/* Liquid Glass Animation Keyframes */
-@keyframes liquid-float-1 {
-  0%, 100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  50% {
-    transform: translate(12px, 16px) scale(1.12);
-  }
-}
-
-@keyframes liquid-float-2 {
-  0%, 100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  50% {
-    transform: translate(-14px, -12px) scale(1.15);
-  }
-}
-
-.liquid-orb-1 {
-  animation: liquid-float-1 7s ease-in-out infinite;
-}
-
-.liquid-orb-2 {
-  animation: liquid-float-2 9s ease-in-out infinite;
-}
-

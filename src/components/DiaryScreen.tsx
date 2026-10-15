@@ -189,20 +189,11 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
         <button
           type="button"
           onClick={onOpenFilterModal}
-          className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl text-xs font-semibold transition shrink-0 ${
-            selectedFilter !== 'all' ? 'shadow-sm' : 'text-gray-200 hover:border-purple-400/50'
-          }`}
-          style={
+          className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl text-xs font-semibold transition shrink-0 backdrop-blur-[12px] shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] ${
             selectedFilter !== 'all'
-              ? {
-                  backgroundColor: 'var(--color-accent)',
-                  color: 'var(--color-accent-text)',
-                }
-              : {
-                  backgroundColor: 'var(--color-secondary)',
-                  borderColor: 'var(--color-border)',
-                }
-          }
+              ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white border border-white/35'
+              : 'bg-gradient-to-br from-white/20 via-white/10 to-white/5 text-gray-200 border-t border-l border-white/40 border-b border-r border-white/15 hover:border-white/40'
+          }`}
         >
           <Filter className="w-3.5 h-3.5" />
           <span>{getFilterLabel()}</span>
@@ -212,13 +203,9 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
         <button
           type="button"
           onClick={() => setIsCalendarModalOpen(true)}
-          className="flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl border text-xs font-semibold text-gray-200 shrink-0 hover:border-purple-400/50 transition cursor-pointer"
-          style={{
-            backgroundColor: 'var(--color-secondary)',
-            borderColor: 'var(--color-border)',
-          }}
+          className="flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 text-xs font-semibold text-gray-200 shrink-0 hover:border-white/40 transition cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]"
         >
-          <Calendar className="w-3.5 h-3.5 text-purple-400" />
+          <Calendar className="w-3.5 h-3.5 text-purple-300" />
           <span>{formattedDateLabel}</span>
         </button>
       </section>
@@ -398,25 +385,25 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                           }`}
                         />
 
-                        {/* Card Container */}
+                        {/* Card Container - 3D Glassmorphism */}
                         <div
-                          className={`p-3.5 border transition relative ${
+                          className={`p-3.5 backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] transition relative overflow-hidden ${
                             act.type === 'fralda'
-                              ? 'border-dashed border-teal-500/40'
+                              ? 'border-dashed border-teal-400/40'
                               : act.isInProgress
-                              ? 'border-[#7663e8]/70 shadow-[0_0_12px_rgba(118,99,232,0.15)]'
+                              ? 'border-t-purple-300 border-l-purple-300 ring-2 ring-purple-400/50 shadow-[0_0_16px_rgba(168,85,247,0.3)]'
                               : ''
                           }`}
                           style={{
-                            backgroundColor: 'var(--color-secondary)',
-                            borderColor: act.type === 'fralda' || act.isInProgress ? undefined : 'var(--color-border)',
                             borderRadius: 'var(--app-card-radius)',
                           }}
                         >
-                          <div className="flex items-center justify-between">
+                          <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+                          <div className="glass-reflection-line" />
+                          <div className="flex items-center justify-between relative z-10">
                             {/* Title & Icon */}
                             <div className="flex items-center space-x-2.5">
-                              <div className="w-8 h-8 rounded-xl bg-[#1f2238] flex items-center justify-center">
+                              <div className="w-9 h-9 rounded-xl bg-white/15 border-t border-l border-white/35 border-b border-r border-white/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] flex items-center justify-center">
                                 {renderIcon(act.type)}
                               </div>
                               <div>

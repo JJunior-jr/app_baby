@@ -292,23 +292,24 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
   return (
     <div
       id="diary-top-summary-container"
-      className="w-full mb-3 rounded-2xl bg-gradient-to-b from-[#13162a] via-[#101222] to-[#0a0c18] border border-[#232747] shadow-[0_8px_24px_rgba(0,0,0,0.4)] overflow-hidden transition-all duration-300 relative"
+      className="w-full mb-3 rounded-2xl backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 shadow-[0_12px_36px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] overflow-hidden transition-all duration-300 relative"
     >
       {/* Specular Liquid Glass Top Highlight */}
-      <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/[0.08] to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-white/25 via-white/5 to-transparent pointer-events-none" />
+      <div className="glass-reflection-line" />
 
       {/* Header Bar: Title + Live Status Badge + Toggle */}
-      <div className="px-3.5 py-2.5 flex items-center justify-between border-b border-[#1b1f3b]/80">
+      <div className="px-3.5 py-2.5 flex items-center justify-between border-b border-white/15 relative z-10">
         <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300">
-            <Zap className="w-3.5 h-3.5" />
+          <div className="w-6 h-6 rounded-lg bg-white/20 border border-white/35 flex items-center justify-center text-purple-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
+            <Zap className="w-3.5 h-3.5 text-pink-300" />
           </div>
-          <span className="text-xs font-bold text-gray-200 tracking-tight">
+          <span className="text-xs font-bold text-white tracking-tight">
             Resumo & Status do Bebê
           </span>
           {/* Live pulsing dot */}
-          <span className="inline-flex items-center text-[10px] font-bold text-emerald-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5" />
+          <span className="inline-flex items-center text-[10px] font-bold text-emerald-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
             Ao Vivo
           </span>
         </div>
@@ -317,45 +318,46 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
           type="button"
           onClick={() => setIsCollapsed(!isCollapsed)}
           aria-label={isCollapsed ? 'Expandir resumo' : 'Recolher resumo'}
-          className="p-1 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition active:scale-95 cursor-pointer"
+          className="p-1 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition active:scale-95 cursor-pointer"
         >
           {isCollapsed ? (
             <ChevronDown className="w-4 h-4 text-purple-300" />
           ) : (
-            <ChevronUp className="w-4 h-4 text-gray-400" />
+            <ChevronUp className="w-4 h-4 text-gray-300" />
           )}
         </button>
       </div>
 
       {/* Main Body */}
       {!isCollapsed && (
-        <div className="p-3.5 space-y-3">
+        <div className="p-3.5 space-y-3 relative z-10">
           {/* 1. SECTION: DYNAMIC LIVE TIMERS (Tempo sem mamar e Tempo acordado) */}
           <div className="grid grid-cols-2 gap-2.5">
             {/* Live Timer 1: Tempo sem mamar */}
-            <div className="relative overflow-hidden rounded-xl bg-[#161a33]/90 border border-[#2b315b]/80 p-2.5 flex flex-col justify-between shadow-inner">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-bold text-purple-300 uppercase tracking-wider flex items-center gap-1">
-                  <Baby className="w-3 h-3 text-purple-400" />
+            <div className="relative overflow-hidden rounded-xl backdrop-blur-md bg-gradient-to-br from-white/18 via-purple-500/15 to-white/5 border-t border-l border-white/35 border-b border-r border-white/15 p-2.5 flex flex-col justify-between shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]">
+              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+              <div className="flex items-center justify-between mb-1.5 relative z-10">
+                <span className="text-[10px] font-bold text-purple-200 uppercase tracking-wider flex items-center gap-1">
+                  <Baby className="w-3 h-3 text-purple-300" />
                   Sem mamar
                 </span>
                 <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
               </div>
 
-              <div className="flex items-baseline space-x-1">
+              <div className="flex items-baseline space-x-1 relative z-10">
                 <span className="text-lg font-black text-white tracking-tight">
                   {liveDynamicMetrics.timeWithoutFeeding.formatted}
                 </span>
-                <span className="text-[10.5px] font-semibold text-gray-400">
+                <span className="text-[10.5px] font-semibold text-gray-300">
                   atrás
                 </span>
               </div>
 
-              <div className="mt-1 flex items-center text-[10px] text-gray-400">
-                <Clock className="w-2.5 h-2.5 mr-1 text-gray-400 shrink-0" />
+              <div className="mt-1 flex items-center text-[10px] text-gray-300 relative z-10">
+                <Clock className="w-2.5 h-2.5 mr-1 text-purple-300 shrink-0" />
                 <span className="truncate">
                   Última às{' '}
-                  <strong className="text-gray-300 font-semibold">
+                  <strong className="text-white font-semibold">
                     {liveDynamicMetrics.timeWithoutFeeding.lastTimeStr}
                   </strong>
                 </span>
@@ -364,12 +366,13 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
 
             {/* Live Timer 2: Tempo acordado / dormindo */}
             <div
-              className={`relative overflow-hidden rounded-xl p-2.5 flex flex-col justify-between border shadow-inner ${
+              className={`relative overflow-hidden rounded-xl backdrop-blur-md p-2.5 flex flex-col justify-between border-t border-l border-white/35 border-b border-r border-white/15 shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] ${
                 liveDynamicMetrics.liveSleepStatus.isSleeping
-                  ? 'bg-[#1b193d]/90 border-indigo-500/40 text-indigo-200'
-                  : 'bg-[#171e2e]/90 border-amber-500/30 text-amber-200'
+                  ? 'bg-gradient-to-br from-white/18 via-indigo-500/20 to-white/5 text-indigo-100'
+                  : 'bg-gradient-to-br from-white/18 via-amber-500/18 to-white/5 text-amber-100'
               }`}
             >
+              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
               <div className="flex items-center justify-between mb-1.5">
                 <span
                   className={`text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ${
@@ -423,35 +426,36 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
 
           {/* 2. SECTION: TOTALS (Quantidade Ofertada x Consumida & Sono Total x Acordado Total) */}
           <div className="grid grid-cols-2 gap-2.5 pt-0.5">
-            {/* Nutrição: Ofertado vs Consumido */}
-            <div className="rounded-xl bg-[#111424]/80 border border-[#1e233d] p-2.5 flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-2">
+            {/* Nutrição: Ofertado vs Consumido - 3D Glass Card */}
+            <div className="rounded-xl backdrop-blur-md bg-gradient-to-br from-white/18 via-cyan-500/10 to-white/5 border-t border-l border-white/35 border-b border-r border-white/15 p-2.5 flex flex-col justify-between shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] relative overflow-hidden">
+              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+              <div className="flex items-center justify-between mb-2 relative z-10">
                 <div className="flex items-center space-x-1.5">
-                  <div className="w-5 h-5 rounded-md bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-300">
-                    <Droplets className="w-3 h-3" />
+                  <div className="w-5 h-5 rounded-md bg-white/20 border border-white/35 flex items-center justify-center text-cyan-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
+                    <Droplets className="w-3 h-3 text-cyan-300" />
                   </div>
-                  <span className="text-[10.5px] font-bold text-gray-300">
+                  <span className="text-[10.5px] font-bold text-gray-200">
                     Alimentação
                   </span>
                 </div>
                 {nutritionMetrics.totalOfferedMl > 0 && (
-                  <span className="text-[10px] font-extrabold text-cyan-300 bg-cyan-500/15 px-1.5 py-0.5 rounded-md">
+                  <span className="text-[10px] font-extrabold text-cyan-200 bg-cyan-500/25 border border-cyan-400/40 px-1.5 py-0.5 rounded-md backdrop-blur-xs">
                     {nutritionMetrics.percentage}%
                   </span>
                 )}
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1 relative z-10">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-400 text-[10px]">Ofertado:</span>
-                  <span className="font-extrabold text-gray-200">
+                  <span className="text-gray-300 text-[10px]">Ofertado:</span>
+                  <span className="font-extrabold text-gray-100">
                     {nutritionMetrics.totalOfferedMl > 0
                       ? `${nutritionMetrics.totalOfferedMl} ml`
                       : '0 ml'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-400 text-[10px]">Consumido:</span>
+                  <span className="text-gray-300 text-[10px]">Consumido:</span>
                   <span className="font-extrabold text-cyan-300">
                     {nutritionMetrics.totalConsumedMl > 0
                       ? `${nutritionMetrics.totalConsumedMl} ml`
@@ -461,9 +465,9 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full bg-[#181d33] h-1.5 rounded-full mt-2 overflow-hidden">
+              <div className="w-full bg-black/40 h-1.5 rounded-full mt-2 overflow-hidden border border-white/10 relative z-10">
                 <div
-                  className="bg-gradient-to-r from-cyan-400 to-purple-400 h-full rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-cyan-400 to-purple-400 h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]"
                   style={{
                     width: `${
                       nutritionMetrics.totalOfferedMl > 0
@@ -476,33 +480,34 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
 
               {/* Extra note if peito */}
               {nutritionMetrics.breastfeedCount > 0 && (
-                <div className="mt-1.5 text-[9px] text-purple-300/80 font-medium truncate">
+                <div className="mt-1.5 text-[9px] text-purple-200/90 font-medium truncate relative z-10">
                   + {nutritionMetrics.breastfeedCount}x peito (
                   {nutritionMetrics.breastMinutes} min)
                 </div>
               )}
             </div>
 
-            {/* Sono: Sono Total vs Acordado Total */}
-            <div className="rounded-xl bg-[#111424]/80 border border-[#1e233d] p-2.5 flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-2">
+            {/* Sono: Sono Total vs Acordado Total - 3D Glass Card */}
+            <div className="rounded-xl backdrop-blur-md bg-gradient-to-br from-white/18 via-amber-500/10 to-white/5 border-t border-l border-white/35 border-b border-r border-white/15 p-2.5 flex flex-col justify-between shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] relative overflow-hidden">
+              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+              <div className="flex items-center justify-between mb-2 relative z-10">
                 <div className="flex items-center space-x-1.5">
-                  <div className="w-5 h-5 rounded-md bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-300">
-                    <Moon className="w-3 h-3" />
+                  <div className="w-5 h-5 rounded-md bg-white/20 border border-white/35 flex items-center justify-center text-amber-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
+                    <Moon className="w-3 h-3 text-amber-300" />
                   </div>
-                  <span className="text-[10.5px] font-bold text-gray-300">
+                  <span className="text-[10.5px] font-bold text-gray-200">
                     Sono & Vigília
                   </span>
                 </div>
-                <span className="text-[10px] font-extrabold text-purple-300 bg-purple-500/15 px-1.5 py-0.5 rounded-md">
+                <span className="text-[10px] font-extrabold text-purple-200 bg-purple-500/25 border border-purple-400/40 px-1.5 py-0.5 rounded-md backdrop-blur-xs">
                   24h
                 </span>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1 relative z-10">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-400 text-[10px] flex items-center gap-1">
-                    <Moon className="w-2.5 h-2.5 text-amber-400" />
+                  <span className="text-gray-300 text-[10px] flex items-center gap-1">
+                    <Moon className="w-2.5 h-2.5 text-amber-300" />
                     Sono Total:
                   </span>
                   <span className="font-extrabold text-amber-300">
@@ -510,8 +515,8 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-gray-400 text-[10px] flex items-center gap-1">
-                    <Sun className="w-2.5 h-2.5 text-emerald-400" />
+                  <span className="text-gray-300 text-[10px] flex items-center gap-1">
+                    <Sun className="w-2.5 h-2.5 text-emerald-300" />
                     Acordado Total:
                   </span>
                   <span className="font-extrabold text-emerald-300">
@@ -521,20 +526,20 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
               </div>
 
               {/* Dual Proportional Bar: Sleep vs Awake */}
-              <div className="w-full bg-[#181d33] h-1.5 rounded-full mt-2 overflow-hidden flex">
+              <div className="w-full bg-black/40 h-1.5 rounded-full mt-2 overflow-hidden flex border border-white/10 relative z-10">
                 <div
-                  className="bg-amber-400 h-full transition-all duration-500"
+                  className="bg-amber-400 h-full transition-all duration-500 shadow-[0_0_6px_rgba(251,191,36,0.8)]"
                   style={{ width: `${sleepMetrics.sleepPercent}%` }}
                   title={`Sono: ${sleepMetrics.sleepPercent}%`}
                 />
                 <div
-                  className="bg-emerald-500/70 h-full transition-all duration-500"
+                  className="bg-emerald-400 h-full transition-all duration-500 shadow-[0_0_6px_rgba(52,211,153,0.8)]"
                   style={{ width: `${sleepMetrics.awakePercent}%` }}
                   title={`Acordado: ${sleepMetrics.awakePercent}%`}
                 />
               </div>
 
-              <div className="mt-1.5 flex justify-between text-[9px] text-gray-400">
+              <div className="mt-1.5 flex justify-between text-[9px] text-gray-300 relative z-10">
                 <span>{sleepMetrics.sleepPercent}% sono</span>
                 <span>{sleepMetrics.awakePercent}% acordado</span>
               </div>

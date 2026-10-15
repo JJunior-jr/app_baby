@@ -281,10 +281,10 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
             key={tab.id}
             type="button"
             onClick={() => setFilterPeriod(tab.id)}
-            className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl text-xs font-semibold transition shrink-0 ${
+            className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl text-xs font-semibold transition shrink-0 backdrop-blur-[12px] shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] ${
               filterPeriod === tab.id
-                ? 'bg-[#7158e2] text-white shadow-sm'
-                : 'bg-[#181a2d] border border-[#272a44] text-gray-300 hover:text-white'
+                ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white border border-white/35'
+                : 'bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 text-gray-200 hover:border-white/40'
             }`}
           >
             {tab.icon && <tab.icon className="w-3.5 h-3.5" />}
@@ -295,58 +295,59 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
 
       {/* Form: Add new schedule */}
       {isAdding && (
-        <form onSubmit={handleAddRoutine} className="bg-[#181b30] border border-purple-500/40 rounded-2xl p-4 space-y-3 animate-in fade-in-50">
-          <h3 className="text-sm font-bold text-white">Criar Novo Horário</h3>
+        <form onSubmit={handleAddRoutine} className="backdrop-blur-[12px] bg-gradient-to-br from-white/25 via-white/10 to-white/5 border-t border-l border-white/45 border-b border-r border-white/20 rounded-2xl p-4 space-y-3 animate-in fade-in-50 shadow-[0_16px_40px_rgba(0,0,0,0.45),inset_0_1.5px_1.5px_rgba(255,255,255,0.55)] relative overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+          <h3 className="text-sm font-bold text-white relative z-10">Criar Novo Horário</h3>
           
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 relative z-10">
             <div>
-              <label className="text-[11px] text-gray-400 block mb-1">Horário</label>
+              <label className="text-[11px] text-gray-300 block mb-1">Horário</label>
               <input
                 type="time"
                 value={newTime}
                 onChange={(e) => setNewTime(e.target.value)}
-                className="w-full bg-[#121422] border border-gray-700 rounded-xl p-2 text-xs text-white"
+                className="w-full bg-white/10 border border-white/20 rounded-xl p-2 text-xs text-white backdrop-blur-md"
               />
             </div>
             <div>
-              <label className="text-[11px] text-gray-400 block mb-1">Categoria</label>
+              <label className="text-[11px] text-gray-300 block mb-1">Categoria</label>
               <select
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value as any)}
-                className="w-full bg-[#121422] border border-gray-700 rounded-xl p-2 text-xs text-white"
+                className="w-full bg-white/10 border border-white/20 rounded-xl p-2 text-xs text-white backdrop-blur-md"
               >
-                <option value="feed">Alimentação</option>
-                <option value="sleep">Sono</option>
-                <option value="diaper">Fralda</option>
-                <option value="bath">Banho</option>
-                <option value="play">Brincadeira</option>
+                <option value="feed" className="bg-[#181a2d]">Alimentação</option>
+                <option value="sleep" className="bg-[#181a2d]">Sono</option>
+                <option value="diaper" className="bg-[#181a2d]">Fralda</option>
+                <option value="bath" className="bg-[#181a2d]">Banho</option>
+                <option value="play" className="bg-[#181a2d]">Brincadeira</option>
               </select>
             </div>
           </div>
 
-          <div>
-            <label className="text-[11px] text-gray-400 block mb-1">Título da Atividade</label>
+          <div className="relative z-10">
+            <label className="text-[11px] text-gray-300 block mb-1">Título da Atividade</label>
             <input
               type="text"
               required
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Ex: Passeio ao ar livre"
-              className="w-full bg-[#121422] border border-gray-700 rounded-xl p-2.5 text-xs text-white"
+              className="w-full bg-white/10 border border-white/20 rounded-xl p-2.5 text-xs text-white backdrop-blur-md placeholder:text-gray-400"
             />
           </div>
 
-          <div className="flex space-x-2 pt-1">
+          <div className="flex space-x-2 pt-1 relative z-10">
             <button
               type="submit"
-              className="flex-1 py-2 rounded-xl bg-[#9a7ffc] hover:bg-[#886cf2] text-[#131127] text-xs font-bold"
+              className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white text-xs font-bold shadow-md border border-white/35 active:scale-98 transition"
             >
               Salvar Agendamento
             </button>
             <button
               type="button"
               onClick={() => setIsAdding(false)}
-              className="px-4 py-2 rounded-xl bg-gray-800 text-xs text-gray-300"
+              className="px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-xs text-gray-200 hover:bg-white/15 transition"
             >
               Cancelar
             </button>
@@ -359,12 +360,14 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
         {displayedRoutines.map((routine) => (
           <div
             key={routine.id}
-            className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between ${
+            className={`p-3.5 rounded-2xl border-t border-l border-white/40 border-b border-r border-white/15 backdrop-blur-[12px] transition-all flex items-center justify-between relative overflow-hidden shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] ${
               routine.completed
-                ? 'bg-[#131726]/70 border-emerald-900/40 opacity-75'
-                : 'bg-[#151728] border-[#252842] shadow-sm'
+                ? 'bg-gradient-to-br from-white/10 via-emerald-950/20 to-white/5 opacity-80 border-emerald-500/30'
+                : 'bg-gradient-to-br from-white/20 via-white/10 to-white/5 hover:border-white/50'
             }`}
           >
+            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+            <div className="glass-reflection-line" />
             {/* Left: Checkbox + Time + Info */}
             <div className="flex items-center space-x-3">
               <button

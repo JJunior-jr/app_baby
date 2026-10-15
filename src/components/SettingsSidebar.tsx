@@ -87,17 +87,17 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
               damping: 32,
               mass: 0.85,
             }}
-            className="relative w-[38vw] min-w-[210px] max-w-[500px] sm:w-[36vw] md:w-[35vw] lg:w-[32vw] h-full bg-slate-950/40 backdrop-blur-2xl backdrop-saturate-180 border-r border-t border-b border-white/25 rounded-r-3xl text-white flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.5),inset_1px_1px_2px_rgba(255,255,255,0.35)] z-10 overflow-hidden"
+            className="relative w-[38vw] min-w-[210px] max-w-[500px] sm:w-[36vw] md:w-[35vw] lg:w-[32vw] h-full bg-gradient-to-br from-white/20 via-white/10 to-white/5 backdrop-blur-[14px] border-r border-t border-b border-t-white/45 border-r-white/25 border-b-white/15 rounded-r-3xl text-white flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_1px_1px_2px_rgba(255,255,255,0.45)] z-10 overflow-hidden"
           >
             {/* Liquid Refraction Ambient Orbs (Soft organic movement behind glass) */}
-            <div className="absolute -top-12 -left-12 w-48 h-48 bg-gradient-to-tr from-purple-500/35 to-indigo-500/20 rounded-full blur-3xl pointer-events-none liquid-orb-1" />
-            <div className="absolute top-1/3 -right-12 w-40 h-40 bg-gradient-to-bl from-cyan-400/30 to-blue-500/20 rounded-full blur-3xl pointer-events-none liquid-orb-2" />
-            <div className="absolute bottom-10 left-2 w-44 h-44 bg-gradient-to-r from-pink-500/30 to-purple-400/20 rounded-full blur-3xl pointer-events-none liquid-orb-1" />
+            <div className="absolute -top-12 -left-12 w-48 h-48 bg-gradient-to-tr from-pink-500/35 to-purple-500/25 rounded-full blur-3xl pointer-events-none liquid-blob-1 liquid-color-dodge" />
+            <div className="absolute top-1/3 -right-12 w-40 h-40 bg-gradient-to-bl from-cyan-400/35 to-blue-500/25 rounded-full blur-3xl pointer-events-none liquid-blob-2 liquid-color-dodge" />
+            <div className="absolute bottom-10 left-2 w-44 h-44 bg-gradient-to-r from-purple-500/35 to-indigo-500/25 rounded-full blur-3xl pointer-events-none liquid-blob-3 liquid-overlay" />
 
             {/* Specular Liquid Glass Sheen */}
             <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-white/70 via-white/25 to-transparent pointer-events-none z-20" />
             <div className="absolute inset-y-0 right-0 w-[1px] bg-gradient-to-b from-white/40 via-white/10 to-white/30 pointer-events-none z-20" />
-            <div className="absolute inset-0 bg-gradient-to-b from-white/[0.10] via-transparent to-black/[0.15] pointer-events-none z-0" />
+            <div className="glass-reflection-line" />
 
             {/* Header: Frosted Glass Capsule Bar */}
             <div className="p-3 sm:p-4 border-b border-white/15 flex items-center justify-between bg-white/[0.06] backdrop-blur-xl relative z-10 shrink-0">
