@@ -444,14 +444,14 @@ export default function App() {
         </defs>
       </svg>
 
-      {/* Vibrant Ambient Backdrop Mesh Gradients (Behind the Glass) */}
+      {/* Vibrant Ambient Backdrop Mesh Gradients (Behind the Glass) - Calibrated for high contrast & clarity */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         {/* Neon Magenta / Pink Liquid Orb */}
-        <div className="absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full bg-gradient-to-br from-pink-500 via-fuchsia-600 to-purple-800 opacity-40 blur-[90px] liquid-blob-1 liquid-color-dodge" />
+        <div className="absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full bg-gradient-to-br from-pink-500 via-fuchsia-600 to-purple-800 opacity-28 blur-[90px] liquid-blob-1 liquid-color-dodge" />
         {/* Saturated Cyan Liquid Orb */}
-        <div className="absolute top-1/3 -right-28 w-[420px] h-[420px] rounded-full bg-gradient-to-tr from-cyan-400 via-teal-500 to-indigo-600 opacity-45 blur-[85px] liquid-blob-2 liquid-color-dodge" />
+        <div className="absolute top-1/3 -right-28 w-[420px] h-[420px] rounded-full bg-gradient-to-tr from-cyan-400 via-teal-500 to-indigo-600 opacity-30 blur-[85px] liquid-blob-2 liquid-color-dodge" />
         {/* Electric Purple / Indigo Liquid Orb */}
-        <div className="absolute -bottom-24 left-1/4 w-[420px] h-[420px] rounded-full bg-gradient-to-t from-violet-600 via-purple-700 to-pink-600 opacity-40 blur-[100px] liquid-blob-3 liquid-overlay" />
+        <div className="absolute -bottom-24 left-1/4 w-[420px] h-[420px] rounded-full bg-gradient-to-t from-violet-600 via-purple-700 to-pink-600 opacity-26 blur-[100px] liquid-blob-3 liquid-overlay" />
       </div>
 
       {/* Mobile Device Frame Container with smooth landscape & portrait centering */}
@@ -465,9 +465,9 @@ export default function App() {
       >
         {/* Internal Vibrant Liquid Mesh Blobs for Glass Refraction */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute -top-20 -left-10 w-72 h-72 rounded-full bg-gradient-to-r from-fuchsia-600/35 to-pink-500/30 blur-3xl liquid-blob-1" />
-          <div className="absolute top-1/2 -right-16 w-80 h-80 rounded-full bg-gradient-to-br from-cyan-500/30 to-blue-600/30 blur-3xl liquid-blob-2" />
-          <div className="absolute -bottom-20 left-10 w-72 h-72 rounded-full bg-gradient-to-tr from-violet-600/35 to-purple-600/30 blur-3xl liquid-blob-3" />
+          <div className="absolute -top-20 -left-10 w-72 h-72 rounded-full bg-gradient-to-r from-fuchsia-600/22 to-pink-500/20 blur-3xl liquid-blob-1" />
+          <div className="absolute top-1/2 -right-16 w-80 h-80 rounded-full bg-gradient-to-br from-cyan-500/22 to-blue-600/20 blur-3xl liquid-blob-2" />
+          <div className="absolute -bottom-20 left-10 w-72 h-72 rounded-full bg-gradient-to-tr from-violet-600/22 to-purple-600/20 blur-3xl liquid-blob-3" />
         </div>
 
         {/* Monochromatic Physical Glass Noise Overlay (1% - 3% opacity) */}

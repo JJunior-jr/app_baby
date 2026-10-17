@@ -214,27 +214,30 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
         </div>
       </header>
 
-      {/* Daily Progress Banner */}
-      <section className="bg-[#151728] border border-[#262a44] rounded-2xl p-4 shadow-sm space-y-2">
-        <div className="flex items-center justify-between text-xs font-bold text-gray-200">
+      {/* Daily Progress Banner - 3D Glassmorphic Panel */}
+      <section className="backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-purple-500/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 rounded-2xl p-4 shadow-[0_12px_32px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] relative overflow-hidden space-y-2.5">
+        <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+        <div className="glass-reflection-line" />
+
+        <div className="flex items-center justify-between text-xs font-bold text-slate-100 relative z-10">
           <span className="flex items-center gap-1.5 text-purple-300">
             <Clock className="w-4 h-4" />
             <span>Progresso da Rotina Diária</span>
           </span>
-          <span className="text-emerald-400 font-extrabold">{progressPercent}% Concluído</span>
+          <span className="text-emerald-300 font-extrabold font-mono tracking-tight">{progressPercent}% Concluído</span>
         </div>
 
         {/* Bar */}
-        <div className="w-full h-2.5 bg-gray-800 rounded-full overflow-hidden">
+        <div className="w-full h-2.5 bg-black/40 border border-white/10 rounded-full overflow-hidden p-0.5 relative z-10">
           <div
-            className="h-full bg-gradient-to-r from-purple-500 to-emerald-400 transition-all duration-300 rounded-full"
+            className="h-full bg-gradient-to-r from-purple-500 via-indigo-500 to-emerald-400 transition-all duration-300 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-gray-400 pt-0.5">
+        <div className="flex items-center justify-between text-[11px] text-slate-300 font-medium pt-0.5 relative z-10">
           <span>{completedCount} de {routines.length} agendamentos finalizados</span>
-          <span>Hoje, 19 de Agosto</span>
+          <span className="text-slate-400">Hoje</span>
         </div>
       </section>
 
@@ -388,12 +391,12 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
                   <span className="text-xs font-black text-purple-300 font-mono tracking-tight">
                     {routine.time}
                   </span>
-                  <span className={`text-sm font-bold ${routine.completed ? 'text-gray-400 line-through' : 'text-white'}`}>
+                  <span className={`text-sm font-bold ${routine.completed ? 'text-slate-400 line-through' : 'text-white'}`}>
                     {routine.title}
                   </span>
                 </div>
                 {routine.notes && (
-                  <p className="text-[11px] text-gray-400 mt-0.5 max-w-[240px] truncate">
+                  <p className="text-[11px] text-slate-300 font-medium mt-0.5 max-w-[240px] truncate">
                     {routine.notes}
                   </p>
                 )}
@@ -407,13 +410,13 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
                   type="button"
                   onClick={onOpenCalendarSync}
                   title="Sincronizar este horário com o calendário do celular (Google/Outlook/Android)"
-                  className="w-8 h-8 rounded-xl bg-[#1e2238] hover:bg-[#292d4b] text-purple-300 flex items-center justify-center transition cursor-pointer active:scale-95"
+                  className="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-purple-300 flex items-center justify-center transition cursor-pointer active:scale-95 shadow-xs"
                 >
                   <Calendar className="w-3.5 h-3.5" />
                 </button>
               )}
 
-              <div className="w-8 h-8 rounded-xl bg-[#1e2238] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center shadow-xs">
                 {getCategoryIcon(routine.category)}
               </div>
 
@@ -421,7 +424,7 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
                 type="button"
                 onClick={() => toggleNotify(routine.id)}
                 title={routine.notify ? 'Alarme ativado' : 'Alarme desativado'}
-                className="p-1 text-gray-400 hover:text-amber-400 transition cursor-pointer"
+                className="p-1 text-slate-400 hover:text-amber-400 transition cursor-pointer"
               >
                 {routine.notify ? (
                   <Bell className="w-4 h-4 text-amber-400" />

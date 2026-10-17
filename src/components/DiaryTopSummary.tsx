@@ -400,23 +400,23 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
               </div>
 
               <div className="flex items-baseline space-x-1">
-                <span className="text-lg font-black text-white tracking-tight">
+                <span className="text-lg font-black text-white font-mono tracking-tight">
                   {liveDynamicMetrics.liveSleepStatus.formattedTime}
                 </span>
-                <span className="text-[10.5px] font-semibold text-gray-400">
+                <span className="text-[10.5px] font-semibold text-slate-300">
                   {liveDynamicMetrics.liveSleepStatus.isSleeping
                     ? 'de sono'
                     : 'ativo'}
                 </span>
               </div>
 
-              <div className="mt-1 flex items-center text-[10px] text-gray-400">
-                <Timer className="w-2.5 h-2.5 mr-1 text-gray-400 shrink-0" />
+              <div className="mt-1 flex items-center text-[10px] text-slate-300">
+                <Timer className="w-2.5 h-2.5 mr-1 text-slate-400 shrink-0" />
                 <span className="truncate">
                   {liveDynamicMetrics.liveSleepStatus.isSleeping
                     ? 'Dormiu às '
                     : 'Acordou às '}
-                  <strong className="text-gray-300 font-semibold">
+                  <strong className="text-white font-semibold">
                     {liveDynamicMetrics.liveSleepStatus.referenceTimeStr}
                   </strong>
                 </span>

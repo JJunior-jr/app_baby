@@ -358,12 +358,15 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
 
               return (
                 <section key={period} className="space-y-3">
-                  {/* Period Header */}
-                  <div className="flex items-center space-x-2 pt-1">
-                    <span className="text-xs font-bold text-gray-400 tracking-wider uppercase">
-                      {period} {period === 'Noite' ? '🌙' : period === 'Tarde' ? '🌅' : '☀️'}
+                  {/* Period Header - Glassmorphic Pill with Count */}
+                  <div className="flex items-center justify-between pt-1.5 pb-0.5">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-xs text-xs font-extrabold text-slate-200 tracking-wide uppercase">
+                      <span>{period === 'Noite' ? '🌙' : period === 'Tarde' ? '🌅' : '☀️'}</span>
+                      <span>{period}</span>
+                    </div>
+                    <span className="text-[11px] font-semibold text-slate-400">
+                      {periodActivities.length} {periodActivities.length === 1 ? 'registro' : 'registros'}
                     </span>
-                    <div className="flex-1 h-[1px] bg-gray-800/80"></div>
                   </div>
 
                   {/* Activity Cards List (Tracking line removed per user request) */}
@@ -407,18 +410,18 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                                     </span>
                                   )}
                                 </div>
-                                <div className="flex items-center space-x-2 text-[11px] text-gray-400 mt-0.5">
-                                  <span>{act.timeStr}</span>
+                                <div className="flex items-center space-x-2 text-[11px] text-slate-300 font-medium mt-0.5">
+                                  <span className="font-mono text-slate-200 font-semibold">{act.timeStr}</span>
                                   {act.subtitle && (
                                     <>
-                                      <span>·</span>
-                                      <span className="text-purple-300">{act.subtitle}</span>
+                                      <span className="text-white/40">·</span>
+                                      <span className="text-purple-300 font-semibold">{act.subtitle}</span>
                                     </>
                                   )}
                                   {act.assignee && (
                                     <>
-                                      <span>·</span>
-                                      <span className="text-gray-400">{act.assignee}</span>
+                                      <span className="text-white/40">·</span>
+                                      <span className="text-slate-400">{act.assignee}</span>
                                     </>
                                   )}
                                 </div>
