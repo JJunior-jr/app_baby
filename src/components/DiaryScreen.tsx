@@ -366,28 +366,13 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                     <div className="flex-1 h-[1px] bg-gray-800/80"></div>
                   </div>
 
-                  {/* Vertical Timeline Track */}
-                  <div className="relative pl-6 space-y-3 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gradient-to-b before:from-[#52449a] before:via-[#362f63] before:to-transparent">
+                  {/* Activity Cards List (Tracking line removed per user request) */}
+                  <div className="space-y-3">
                     {periodActivities.map((act) => (
                       <div key={act.id} className="relative">
-                        {/* Timeline Node Bullet */}
+                        {/* Card Container - 3D Glassmorphism (overflow-visible to allow dropdown menu display) */}
                         <div
-                          className={`absolute -left-6 top-3.5 w-3 h-3 rounded-full border-2 border-[#0c0d16] ${
-                            act.type === 'sono'
-                              ? 'bg-amber-400'
-                              : act.type === 'amamentacao'
-                              ? 'bg-[#9b87f5]'
-                              : act.type === 'fralda'
-                              ? 'bg-teal-400'
-                              : act.type === 'comeu'
-                              ? 'bg-rose-400'
-                              : 'bg-purple-400'
-                          }`}
-                        />
-
-                        {/* Card Container - 3D Glassmorphism */}
-                        <div
-                          className={`p-3.5 backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] transition relative overflow-hidden ${
+                          className={`p-3.5 backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] transition relative overflow-visible ${
                             act.type === 'fralda'
                               ? 'border-dashed border-teal-400/40'
                               : act.isInProgress
@@ -398,8 +383,12 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                             borderRadius: 'var(--app-card-radius)',
                           }}
                         >
-                          <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                          <div className="glass-reflection-line" />
+                          {/* Inner Clipped Highlights Layer */}
+                          <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+                            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent" />
+                            <div className="glass-reflection-line" />
+                          </div>
+
                           <div className="flex items-center justify-between relative z-10">
                             {/* Title & Icon */}
                             <div className="flex items-center space-x-2.5">
@@ -436,13 +425,13 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                               </div>
                             </div>
 
-                            {/* 3-Dots Action Menu */}
-                            <div className="relative">
+                            {/* 3-Dots Action Menu - fixed z-index and overflow to guarantee Excluir visibility */}
+                            <div className="relative z-30">
                               <button
                                 type="button"
                                 onClick={() => setActiveMenuId(activeMenuId === act.id ? null : act.id)}
                                 aria-label="Mais opções"
-                                className="p-1.5 text-gray-400 hover:text-white rounded-lg transition hover:bg-white/5 active:scale-95 cursor-pointer"
+                                className="p-1.5 text-gray-400 hover:text-white rounded-lg transition hover:bg-white/10 active:scale-95 cursor-pointer"
                               >
                                 <MoreVertical className="w-4 h-4" />
                               </button>
@@ -450,10 +439,10 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                               {activeMenuId === act.id && (
                                 <>
                                   <div
-                                    className="fixed inset-0 z-20"
+                                    className="fixed inset-0 z-40"
                                     onClick={() => setActiveMenuId(null)}
                                   />
-                                  <div className="absolute right-0 top-7 w-36 bg-[#181a30]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/30 py-1.5 z-30 animate-in fade-in-50 zoom-in-95 duration-150">
+                                  <div className="absolute right-0 top-8 w-40 bg-[#16182c]/95 backdrop-blur-2xl rounded-2xl shadow-[0_16px_40px_rgba(0,0,0,0.8)] border border-purple-400/40 py-1.5 z-50 animate-in fade-in-50 zoom-in-95 duration-150">
                                     <button
                                       type="button"
                                       onClick={() => {
@@ -461,21 +450,21 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                                         setIsEditModalOpen(true);
                                         setActiveMenuId(null);
                                       }}
-                                      className="w-full px-3.5 py-2 text-left text-xs font-semibold text-gray-200 hover:text-white hover:bg-purple-600/30 flex items-center space-x-2 transition cursor-pointer"
+                                      className="w-full px-3.5 py-2.5 text-left text-xs font-semibold text-gray-200 hover:text-white hover:bg-purple-600/30 flex items-center space-x-2 transition cursor-pointer"
                                     >
                                       <Edit3 className="w-3.5 h-3.5 text-purple-300" />
                                       <span>Editar</span>
                                     </button>
-                                    <div className="h-[1px] bg-white/5 my-1" />
+                                    <div className="h-[1px] bg-white/10 my-1" />
                                     <button
                                       type="button"
                                       onClick={() => {
                                         onDeleteActivity(act.id);
                                         setActiveMenuId(null);
                                       }}
-                                      className="w-full px-3.5 py-2 text-left text-xs font-semibold text-rose-400 hover:bg-rose-950/40 flex items-center space-x-2 transition cursor-pointer"
+                                      className="w-full px-3.5 py-2.5 text-left text-xs font-semibold text-rose-400 hover:bg-rose-950/50 flex items-center space-x-2 transition cursor-pointer"
                                     >
-                                      <Trash2 className="w-3.5 h-3.5" />
+                                      <Trash2 className="w-3.5 h-3.5 text-rose-400" />
                                       <span>Excluir</span>
                                     </button>
                                   </div>

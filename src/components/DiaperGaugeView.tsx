@@ -381,26 +381,17 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
             type="button"
             onClick={() => setIsAdjustPopoverOpen(!isAdjustPopoverOpen)}
             title="Ajustar horário da última troca"
-            className="p-2 rounded-xl text-xs font-bold text-gray-300 hover:text-white border transition active:scale-95 cursor-pointer"
-            style={{
-              backgroundColor: 'var(--color-secondary)',
-              borderColor: 'var(--color-border)',
-            }}
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-gray-200 hover:text-white backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 transition active:scale-95 cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]"
           >
             <Settings2 className="w-4 h-4 text-teal-300" />
           </button>
           <button
             type="button"
             onClick={onSwitchToCardsView}
-            className="px-2.5 py-1 rounded-xl text-[11px] font-bold text-gray-300 hover:text-white border flex items-center gap-1 cursor-pointer transition-colors"
-            style={{
-              backgroundColor: 'var(--color-secondary)',
-              borderColor: 'var(--color-border)',
-            }}
-            title="Ver como Lista"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-gray-200 hover:text-white backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 transition active:scale-95 cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]"
+            title="Voltar para lista"
           >
-            <List className="w-3 h-3" />
-            <span>Lista</span>
+            <List className="w-4 h-4 text-gray-200" />
           </button>
 
           {/* Popover to adjust last change time */}
@@ -502,8 +493,8 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
       </AnimatePresence>
 
       {/* Centerpiece: Circular Arc Gauge */}
-      <div className="relative z-10 flex flex-col items-center justify-center flex-1 px-3">
-        <div className="relative w-[310px] h-[310px] sm:w-[320px] sm:h-[320px] flex items-center justify-center">
+      <div className="relative z-10 flex flex-col items-center justify-center flex-1 min-h-0 px-3">
+        <div className="relative w-[300px] h-[300px] flex items-center justify-center">
           {/* SVG Arc Gauge with 0h to 4h scale markers */}
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 320 320" fill="none">
             <defs>
@@ -585,146 +576,82 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
             </text>
           </svg>
 
-          {/* Gauge Center Content - properly sized & lifted to prevent any overlap with arc ends */}
-          <div className="relative z-10 flex flex-col items-center justify-center text-center px-3 max-w-[190px] -translate-y-2">
-            {/* Display Mode: Toggle between Interval and Daily Total */}
-            <div className="flex items-center space-x-1 mb-1.5 bg-black/50 p-1 rounded-xl border border-white/10 backdrop-blur-md">
-              <button
-                type="button"
-                onClick={() => setCenterDisplayMode('interval')}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition cursor-pointer ${
-                  centerDisplayMode === 'interval'
-                    ? 'bg-teal-600/80 text-white shadow-xs'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                Última Troca
-              </button>
-              <button
-                type="button"
-                onClick={() => setCenterDisplayMode('daily')}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition cursor-pointer ${
-                  centerDisplayMode === 'daily'
-                    ? 'bg-emerald-600/80 text-white shadow-xs'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                Total 24h
-              </button>
-            </div>
+          {/* Gauge Center Content - perfectly proportioned without breaking layout */}
+          <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-[210px]">
+            {/* Top Label */}
+            <span className="text-xs sm:text-sm font-semibold text-teal-200 tracking-wide mb-0.5">
+              Última troca de fralda
+            </span>
 
             {/* Main Big Digits */}
-            {centerDisplayMode === 'interval' ? (
-              <div
-                className="relative my-0.5 cursor-pointer"
-                onClick={() => setCenterDisplayMode('daily')}
-                title="Toque para ver o total do dia"
-              >
-                <span className="text-[38px] sm:text-[42px] font-black tracking-tight text-white leading-none drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] font-mono">
-                  {hours.toString().padStart(2, '0')}h {mins.toString().padStart(2, '0')}m
-                </span>
-                <div className="flex items-center justify-center space-x-1 mt-0.5">
-                  <span className="text-[10px] text-teal-300 font-bold uppercase tracking-wider">
-                    desde a última troca
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div
-                className="relative my-0.5 cursor-pointer"
-                onClick={() => setCenterDisplayMode('interval')}
-                title="Toque para ver o tempo decorrido"
-              >
-                <div className="flex items-baseline justify-center space-x-1">
-                  <span className="text-[40px] sm:text-[44px] font-black tracking-tight text-white leading-none drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] font-mono">
-                    {counts24h.total}
-                  </span>
-                  <span className="text-base font-bold text-teal-200">
-                    fraldas
-                  </span>
-                </div>
-                <span className="block text-[10px] text-emerald-300 font-bold uppercase tracking-wider mt-0.5">
-                  nas últimas 24 horas
-                </span>
-              </div>
-            )}
+            <div className="flex flex-col items-center justify-center my-0.5">
+              <span className="text-[40px] sm:text-[44px] font-black tracking-tight text-white leading-none drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] font-mono">
+                {hours.toString().padStart(2, '0')}h {mins.toString().padStart(2, '0')}m
+              </span>
+              <span className="block text-[9.5px] text-teal-300 font-bold uppercase tracking-widest mt-1">
+                desde a última troca
+              </span>
+            </div>
 
             {/* Pediatric Health Status Indicator */}
             <div
-              className={`mt-1.5 text-[10px] font-bold flex items-center gap-1.5 ${status.textColor}`}
+              className={`mt-1.5 text-xs font-bold flex items-center gap-1.5 ${status.textColor}`}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse shrink-0" />
               <span>{status.label}</span>
             </div>
 
-            {/* Secondary Compact Details - strictly compact and non-breaking */}
-            {centerDisplayMode === 'interval' ? (
-              <span className="text-[9.5px] text-gray-300 mt-1 whitespace-nowrap">
-                Última às <strong className="text-white">{lastTimeStr}</strong> · {lastDiaperInfo.type === 'xixi' ? '💧 Xixi' : lastDiaperInfo.type === 'coco' ? '💩 Cocô' : '🧷 Ambos'}
-              </span>
-            ) : (
-              <div className="mt-1 flex items-center justify-center space-x-1.5 bg-black/40 px-2.5 py-0.5 rounded-lg border border-white/10 text-[10px] font-bold whitespace-nowrap shadow-xs">
-                <span className="text-cyan-300">💧 {counts24h.xixi}</span>
-                <span className="text-white/20">·</span>
-                <span className="text-amber-300">💩 {counts24h.coco}</span>
-                {counts24h.ambos > 0 && (
-                  <>
-                    <span className="text-white/20">·</span>
-                    <span className="text-emerald-300">🧷 {counts24h.ambos}</span>
-                  </>
-                )}
-              </div>
-            )}
+            {/* Secondary Compact Details */}
+            <span className="text-[10px] text-gray-300 mt-1 whitespace-nowrap">
+              Última às <strong className="text-white">{lastTimeStr}</strong> · {lastDiaperInfo.type === 'xixi' ? '💧 Xixi' : lastDiaperInfo.type === 'coco' ? '💩 Cocô' : '🧷 Ambos'}
+            </span>
           </div>
         </div>
 
-        {/* Breakdown Banner & Stats outside the gauge arc (where there is full horizontal width) */}
-        <div className="mt-1 flex items-center justify-center">
-          <div className="flex items-center space-x-2 bg-[#0f1926]/90 px-3.5 py-1.5 rounded-xl border border-teal-500/25 shadow-sm text-gray-200">
-            <span className="text-cyan-300 font-bold text-xs whitespace-nowrap">💧 {counts24h.xixi} Xixi</span>
-            <span className="text-gray-500">·</span>
-            <span className="text-amber-300 font-bold text-xs whitespace-nowrap">💩 {counts24h.coco} Cocô</span>
-            {counts24h.ambos > 0 && (
-              <>
-                <span className="text-gray-500">·</span>
-                <span className="text-emerald-300 font-bold text-xs whitespace-nowrap">🧷 {counts24h.ambos} Ambos</span>
-              </>
-            )}
-            <span className="text-gray-500">·</span>
-            <span className="text-teal-300 font-semibold text-[10px] whitespace-nowrap">Meta: 6-8/dia</span>
-          </div>
+        {/* 24h Summary Pill: xixi, cocô, ambos, total - positioned below gauge so it never overlaps the arc */}
+        <div className="mt-1 flex items-center justify-center space-x-2 bg-gradient-to-r from-white/10 via-white/15 to-white/10 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/20 text-[10.5px] font-bold shadow-sm select-none">
+          <span className="text-cyan-300">💧 {counts24h.xixi}</span>
+          <span className="text-white/25">·</span>
+          <span className="text-amber-300">💩 {counts24h.coco}</span>
+          {counts24h.ambos > 0 && (
+            <>
+              <span className="text-white/25">·</span>
+              <span className="text-emerald-300">🧷 {counts24h.ambos}</span>
+            </>
+          )}
+          <span className="text-white/25">·</span>
+          <span className="text-teal-200">Total: {counts24h.total} hoje</span>
         </div>
-
-
       </div>
 
       {/* Bottom Controls: 3 Liquid Glass Action Buttons (Xixi, Cocô, Detalhes/Ambos) */}
-      <div className="relative z-20 pb-4 px-4 sm:px-6">
-        <div className="grid grid-cols-3 gap-2.5 max-w-[420px] mx-auto relative">
+      <div className="relative z-20 pb-4 px-4 sm:px-6 h-[100px] flex items-center justify-center">
+        <div className="grid grid-cols-3 gap-2.5 w-full max-w-[420px] mx-auto items-stretch relative">
           {/* Button 1: Xixi (Urina) */}
           <button
             type="button"
             onClick={() => handleQuickChange('xixi')}
-            className="relative p-3 rounded-2xl flex flex-col items-center justify-between transition-all duration-200 active:scale-95 cursor-pointer border select-none overflow-hidden backdrop-blur-xl bg-gradient-to-b from-[#132839]/90 via-[#0e202f] to-[#0a1824] border-cyan-500/30 hover:border-cyan-400/60 shadow-lg text-cyan-100 group"
+            className="relative p-2.5 h-[84px] rounded-2xl flex flex-col items-center justify-between text-center transition-all duration-200 active:scale-95 cursor-pointer border-t border-l border-b border-r select-none overflow-hidden backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t-white/40 border-l-white/35 border-b-white/15 border-r-white/15 text-cyan-200 hover:border-white/45 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] group"
           >
             {/* Convex reflection highlight */}
-            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent rounded-t-2xl pointer-events-none" />
+            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 via-white/5 to-transparent rounded-t-2xl pointer-events-none" />
+            <div className="glass-reflection-line" />
 
-            <div className="flex items-center space-x-1 mb-1">
-              <Droplets className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+            <div className="h-5 flex items-center justify-center space-x-1.5 relative z-10 w-full text-center">
+              <Droplets className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
               <span className="text-[11px] font-black uppercase tracking-tight text-cyan-200">
                 Xixi
               </span>
             </div>
 
             {/* Quick Count */}
-            <span className="text-base font-extrabold font-mono text-white leading-tight">
+            <span className="h-6 flex items-center justify-center text-base font-black font-mono text-white leading-none relative z-10 w-full text-center">
               {counts24h.xixi} hoje
             </span>
 
             {/* Prompt */}
-            <span className="text-[10px] font-semibold mt-1 text-cyan-300">
-              1 toque p/ registrar
+            <span className="h-4 flex items-center justify-center text-[10px] font-semibold text-cyan-300 relative z-10 w-full text-center">
+              1 toque p/ salvar
             </span>
           </button>
 
@@ -732,57 +659,59 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
           <button
             type="button"
             onClick={() => handleQuickChange('coco')}
-            className="relative p-3 rounded-2xl flex flex-col items-center justify-between transition-all duration-200 active:scale-95 cursor-pointer border select-none overflow-hidden backdrop-blur-xl bg-gradient-to-b from-[#2e2315]/90 via-[#241a0e] to-[#1a1208] border-amber-500/35 hover:border-amber-400/60 shadow-lg text-amber-100 group"
+            className="relative p-2.5 h-[84px] rounded-2xl flex flex-col items-center justify-between text-center transition-all duration-200 active:scale-95 cursor-pointer border-t border-l border-b border-r select-none overflow-hidden backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t-white/40 border-l-white/35 border-b-white/15 border-r-white/15 text-amber-200 hover:border-white/45 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] group"
           >
             {/* Convex reflection highlight */}
-            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent rounded-t-2xl pointer-events-none" />
+            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 via-white/5 to-transparent rounded-t-2xl pointer-events-none" />
+            <div className="glass-reflection-line" />
 
-            <div className="flex items-center space-x-1 mb-1">
-              <span className="text-sm group-hover:scale-110 transition-transform">💩</span>
+            <div className="h-5 flex items-center justify-center space-x-1.5 relative z-10 w-full text-center">
+              <span className="text-xs group-hover:scale-110 transition-transform">💩</span>
               <span className="text-[11px] font-black uppercase tracking-tight text-amber-200">
                 Cocô
               </span>
             </div>
 
             {/* Quick Count */}
-            <span className="text-base font-extrabold font-mono text-white leading-tight">
+            <span className="h-6 flex items-center justify-center text-base font-black font-mono text-white leading-none relative z-10 w-full text-center">
               {counts24h.coco} hoje
             </span>
 
             {/* Prompt */}
-            <span className="text-[10px] font-semibold mt-1 text-amber-300">
-              1 toque p/ registrar
+            <span className="h-4 flex items-center justify-center text-[10px] font-semibold text-amber-300 relative z-10 w-full text-center">
+              1 toque p/ salvar
             </span>
           </button>
 
           {/* Button 3: Ambos & Detalhes com Popover */}
-          <div className="relative" ref={popoverRef}>
+          <div className="relative w-full h-[84px]" ref={popoverRef}>
             <button
               type="button"
               onClick={() => setIsOptionsPopoverOpen(!isOptionsPopoverOpen)}
-              className={`w-full h-full relative p-3 rounded-2xl flex flex-col items-center justify-between transition-all duration-200 active:scale-95 cursor-pointer border select-none overflow-hidden backdrop-blur-xl ${
+              className={`w-full h-full relative p-2.5 rounded-2xl flex flex-col items-center justify-between text-center transition-all duration-200 active:scale-95 cursor-pointer border-t border-l border-b border-r select-none overflow-hidden backdrop-blur-[12px] ${
                 isOptionsPopoverOpen
-                  ? 'bg-gradient-to-b from-teal-500/40 via-emerald-600/35 to-teal-700/40 border-teal-300 ring-2 ring-teal-400/80 shadow-[0_0_22px_rgba(20,184,166,0.5)] text-white'
-                  : 'bg-[#152422]/90 hover:bg-[#1a2e2b] border-teal-500/35 text-teal-100 hover:border-teal-400/60 shadow-lg'
+                  ? 'bg-gradient-to-br from-teal-500/40 via-emerald-600/35 to-teal-700/40 border-t-white/60 border-l-white/50 border-b-teal-400/30 border-r-teal-400/30 ring-2 ring-teal-400/80 shadow-[0_0_24px_rgba(20,184,166,0.5),inset_0_1.5px_2px_rgba(255,255,255,0.5)] text-white'
+                  : 'bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t-white/40 border-l-white/35 border-b-white/15 border-r-white/15 text-teal-200 hover:border-white/45 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)]'
               }`}
             >
               {/* Convex reflection highlight */}
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent rounded-t-2xl pointer-events-none" />
+              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 via-white/5 to-transparent rounded-t-2xl pointer-events-none" />
+              <div className="glass-reflection-line" />
 
-              <div className="flex items-center space-x-1 mb-1">
-                <span className="text-sm">🧷</span>
+              <div className="h-5 flex items-center justify-center space-x-1.5 relative z-10 w-full text-center">
+                <span className="text-xs">🧷</span>
                 <span className="text-[11px] font-black uppercase tracking-tight text-teal-200">
                   Ambos
                 </span>
               </div>
 
               {/* Label */}
-              <span className="text-xs font-bold text-white text-center leading-tight">
+              <span className="h-6 flex items-center justify-center text-xs font-black uppercase tracking-wider text-white leading-none relative z-10 w-full text-center">
                 Xixi + Cocô
               </span>
 
               {/* Status prompt */}
-              <span className="text-[10px] font-semibold mt-1 text-teal-300 flex items-center gap-0.5">
+              <span className="h-4 flex items-center justify-center text-[10px] font-semibold text-teal-300 relative z-10 w-full text-center flex items-center gap-0.5">
                 Opções <ChevronDown className="w-2.5 h-2.5" />
               </span>
             </button>

@@ -486,6 +486,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             isSleeping={isSleeping}
             sleepSeconds={sleepSeconds}
             onToggleSleep={handleSleepClick}
+            onAdjustSleepSeconds={(deltaSeconds) => {
+              setSleepSeconds((prev) => Math.max(0, prev + deltaSeconds));
+              showToast('Tempo de sono ajustado! 🌙');
+            }}
             onOpenSleepModal={onOpenSleepModal}
             onOpenDiaperModal={onOpenDiaperModal}
             onOpenFormulaDrawer={() => setIsFormulaDrawerOpen(true)}

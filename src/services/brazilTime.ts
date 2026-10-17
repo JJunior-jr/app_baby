@@ -41,13 +41,19 @@ export const getBrazilTimeString = (date: Date = new Date()): string => {
 };
 
 /**
- * Determines whether it is currently daytime in Brazil.
- * Standard daytime is defined from 06:00 to 17:59 (inclusive).
- * Nighttime is 18:00 to 05:59.
+ * Determines whether it is currently daytime (Soneca diurna ☀️) or nighttime (Sono noturno 🌙).
+ * Definition of Day vs Night:
+ * - Dia (06:00 às 17:59): Período diurno. O sono do bebê é classificado como "Soneca", simbolizado pelo Sol ☀️.
+ * - Noite (18:00 às 05:59): Período noturno. O sono do bebê é classificado como "Sono noturno", simbolizado pela Lua 🌙.
  */
-export const isDaytimeInBrazil = (date: Date = new Date()): boolean => {
-  const hour = getBrazilHour(date);
+export const isDaytime = (date: Date = new Date()): boolean => {
+  // Use device local hour, or Brazil hour if in Brazil timezone
+  const hour = date.getHours();
   return hour >= 6 && hour < 18;
+};
+
+export const isDaytimeInBrazil = (date: Date = new Date()): boolean => {
+  return isDaytime(date);
 };
 
 /**

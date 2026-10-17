@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Sun,
@@ -16,9 +16,10 @@ import {
   Lock,
   Music,
   BellRing,
+  Settings2,
 } from 'lucide-react';
 import { UserProfile } from '../types';
-import { isDaytimeInBrazil, getBrazilTimeString } from '../services/brazilTime';
+import { isDaytime, isDaytimeInBrazil, getBrazilTimeString } from '../services/brazilTime';
 import {
   whiteNoiseService,
   WhiteNoiseTrack,
@@ -37,6 +38,7 @@ interface SleepGaugeViewProps {
   onSwitchToBreastfeedingGauge?: () => void;
   onSwitchToDiaperGauge?: () => void;
   onOpenNotificationCenter?: () => void;
+  onAdjustSleepSeconds?: (deltaSeconds: number) => void;
 }
 
 // Generate deterministic stars for the night sky backdrop
@@ -62,7 +64,25 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
   onSwitchToBreastfeedingGauge,
   onSwitchToDiaperGauge,
   onOpenNotificationCenter,
+  onAdjustSleepSeconds,
 }) => {
+  // Sleep time adjustment state
+  const [isAdjustSleepOpen, setIsAdjustSleepOpen] = useState(false);
+  const [customMinutesInput, setCustomMinutesInput] = useState('');
+  const adjustRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (adjustRef.current && !adjustRef.current.contains(e.target as Node)) {
+        setIsAdjustSleepOpen(false);
+      }
+    };
+    if (isAdjustSleepOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isAdjustSleepOpen]);
+
   // Current real-time clock for the big display or elapsed sleep mode (Brazil Time)
   const [currentTimeStr, setCurrentTimeStr] = useState<string>(() => getBrazilTimeString());
   const [isDaytime, setIsDaytime] = useState<boolean>(() => isDaytimeInBrazil());
@@ -190,20 +210,144 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
 
       {/* Top Header Bar inside Gauge View (30% Secondary token) */}
       <div className="relative z-20 px-4 pt-2.5 flex items-center justify-end">
-        {/* Right: Quick Lista switch */}
-        <button
-          type="button"
-          onClick={onSwitchToCardsView}
-          className="px-2.5 py-1 rounded-xl text-[11px] font-bold text-gray-300 hover:text-white border flex items-center gap-1 cursor-pointer transition-colors shadow-xs shrink-0 mt-0.5"
-          style={{
-            backgroundColor: 'var(--color-secondary)',
-            borderColor: 'var(--color-border)',
-          }}
-          title="Ver como Lista"
-        >
-          <List className="w-3 h-3" />
-          <span>Lista</span>
-        </button>
+        {/* Right: Quick adjustment for sleep time & Lista switch */}
+        <div className="flex items-center space-x-1.5 shrink-0 pt-0.5" ref={adjustRef}>
+          <button
+            type="button"
+            onClick={() => setIsAdjustSleepOpen(!isAdjustSleepOpen)}
+            title="Ajustar tempo de sono"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-gray-200 hover:text-white backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 transition active:scale-95 cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]"
+          >
+            <Settings2 className="w-4 h-4 text-amber-300" />
+          </button>
+          <button
+            type="button"
+            onClick={onSwitchToCardsView}
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-gray-200 hover:text-white backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 transition active:scale-95 cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] shrink-0"
+            title="Voltar para lista"
+          >
+            <List className="w-4 h-4 text-gray-200" />
+          </button>
+
+          {/* Popover to adjust sleep time */}
+          <AnimatePresence>
+            {isAdjustSleepOpen && onAdjustSleepSeconds && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+                className="absolute top-12 right-2 w-72 bg-[#12162a] border border-amber-500/40 rounded-2xl p-3.5 shadow-2xl shadow-black/90 z-50 backdrop-blur-2xl text-white"
+              >
+                <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
+                  <span className="text-xs font-bold text-amber-200">Ajustar Tempo de Sono</span>
+                  <span className="text-[10px] text-gray-400 font-mono">
+                    {Math.floor(sleepSeconds / 3600)}h {Math.floor((sleepSeconds % 3600) / 60)}m atuais
+                  </span>
+                </div>
+                <p className="text-[10px] text-gray-300 mb-2.5 leading-relaxed">
+                  {isSleeping
+                    ? 'Adicione ou subtraia tempo do sono em andamento:'
+                    : 'Adicione ou subtraia tempo do último sono registrado:'}
+                </p>
+
+                {/* Quick Deltas */}
+                <div className="grid grid-cols-2 gap-1.5 mb-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onAdjustSleepSeconds(15 * 60);
+                      setIsAdjustSleepOpen(false);
+                    }}
+                    className="py-1 px-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-[11px] font-bold text-amber-200 cursor-pointer"
+                  >
+                    +15 min
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onAdjustSleepSeconds(30 * 60);
+                      setIsAdjustSleepOpen(false);
+                    }}
+                    className="py-1 px-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-[11px] font-bold text-amber-200 cursor-pointer"
+                  >
+                    +30 min
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onAdjustSleepSeconds(60 * 60);
+                      setIsAdjustSleepOpen(false);
+                    }}
+                    className="py-1 px-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/40 text-[11px] font-bold text-indigo-200 cursor-pointer"
+                  >
+                    +1 hora
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onAdjustSleepSeconds(-15 * 60);
+                      setIsAdjustSleepOpen(false);
+                    }}
+                    className="py-1 px-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-[11px] font-bold text-gray-300 cursor-pointer"
+                  >
+                    -15 min
+                  </button>
+                </div>
+
+                {/* Custom Minutes Input */}
+                <div className="border-t border-white/10 pt-2.5">
+                  <span className="text-[10px] font-bold text-amber-300 block mb-1.5">
+                    Ou tempo personalizado (em minutos):
+                  </span>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="Ex: 45"
+                      value={customMinutesInput}
+                      onChange={(e) => setCustomMinutesInput(e.target.value)}
+                      className="flex-1 bg-white/10 border border-white/20 rounded-xl px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-400 font-mono"
+                    />
+                    <span className="text-[11px] text-gray-400 font-medium">min</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <button
+                      type="button"
+                      disabled={!customMinutesInput || parseInt(customMinutesInput, 10) <= 0}
+                      onClick={() => {
+                        const mins = parseInt(customMinutesInput, 10);
+                        if (!isNaN(mins) && mins > 0) {
+                          onAdjustSleepSeconds(mins * 60);
+                          setCustomMinutesInput('');
+                          setIsAdjustSleepOpen(false);
+                        }
+                      }}
+                      className="py-1 px-2 rounded-xl bg-amber-600/40 hover:bg-amber-600/60 disabled:opacity-40 border border-amber-400/50 text-[10.5px] font-bold text-white transition active:scale-95 cursor-pointer"
+                    >
+                      + Adicionar
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!customMinutesInput || parseInt(customMinutesInput, 10) <= 0}
+                      onClick={() => {
+                        const mins = parseInt(customMinutesInput, 10);
+                        if (!isNaN(mins) && mins > 0) {
+                          onAdjustSleepSeconds(-mins * 60);
+                          setCustomMinutesInput('');
+                          setIsAdjustSleepOpen(false);
+                        }
+                      }}
+                      className="py-1 px-2 rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-40 border border-white/20 text-[10.5px] font-bold text-gray-300 transition active:scale-95 cursor-pointer"
+                    >
+                      - Subtrair
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Sound Toast Feedback */}
@@ -301,17 +445,17 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             </span>
 
             {/* Big Main Digits: "21:46" or elapsed timer */}
-            <div className="relative">
-              <span className="text-[44px] sm:text-[48px] font-extrabold tracking-tight text-white leading-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]">
+            <div className="flex flex-col items-center justify-center my-0.5">
+              <span className="text-[44px] sm:text-[48px] font-extrabold tracking-tight text-white leading-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)] font-mono">
                 {displayMode === 'clock' ? currentTimeStr : formatTimer(sleepSeconds)}
               </span>
-              <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 text-[9px] text-gray-400 uppercase tracking-widest font-mono opacity-60 group-hover:opacity-100 transition">
+              <span className="block text-[10px] text-purple-300 font-bold uppercase tracking-wider font-mono mt-1">
                 {displayMode === 'clock' ? 'horário (BR)' : 'cronômetro'}
               </span>
             </div>
 
             {/* Subtitle Prompt: "Adicione a hora que John acordou para começar o seu dia!" */}
-            <p className="text-[11.5px] sm:text-[12px] text-gray-300/90 font-normal leading-relaxed mt-4 mb-2">
+            <p className="text-[11.5px] sm:text-[12px] text-gray-300/90 font-normal leading-relaxed mt-2.5 mb-1.5">
               {isSleeping ? (
                 <>
                   {babyName} está {isDaytime ? 'em uma soneca' : 'dormindo'} tranquilamente há{' '}
@@ -325,19 +469,19 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
               )}
             </p>
 
-            {/* Center Icon: Sun ☀️ or Moon 🌙 dynamic based on Brazil time */}
+            {/* Center Icon: Sun ☀️ for day/soneca or Moon 🌙 for night/sono */}
             <div className="flex items-center justify-center mt-0.5">
               {isSleeping ? (
                 <span
-                  className="text-lg animate-pulse"
-                  title={isDaytime ? 'Soneca diurna (Dormindo)' : 'Sono noturno (Dormindo)'}
+                  className="text-xl animate-pulse"
+                  title={isDaytime ? 'Soneca diurna em andamento ☀️' : 'Sono noturno em andamento 🌙'}
                 >
                   {isDaytime ? '☀️' : '🌙'}
                 </span>
               ) : (
                 <span
-                  className="text-lg drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
-                  title={isDaytime ? 'Acordado (Dia)' : 'Acordado (Noite)'}
+                  className="text-xl drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+                  title={isDaytime ? 'Acordado (Dia / Soneca ☀️)' : 'Acordado (Noite / Sono 🌙)'}
                 >
                   {isDaytime ? '☀️' : '🌙'}
                 </span>
