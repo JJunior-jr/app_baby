@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import {
   X,
   Palette,
@@ -63,31 +62,18 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
     activeRemindersCount + pendingAlarmsCount + (syncPendingCount > 0 ? syncPendingCount : 0);
 
   return (
-    <AnimatePresence>
+    <>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex justify-start pointer-events-auto">
+        <div className="fixed inset-0 z-50 flex justify-start pointer-events-auto animate-in fade-in duration-200">
           {/* Subtle Frosted Backdrop - keeps background content visible */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+          <div
             onClick={onClose}
             className="absolute inset-0 bg-black/25 backdrop-blur-[2px] cursor-pointer"
           />
 
-          {/* Liquid Glass Sidebar Drawer sliding from Left to Right (takes ~30% to 40% of the screen) */}
-          <motion.aside
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{
-              type: 'spring',
-              stiffness: 340,
-              damping: 32,
-              mass: 0.85,
-            }}
-            className="relative w-[38vw] min-w-[210px] max-w-[500px] sm:w-[36vw] md:w-[35vw] lg:w-[32vw] h-full bg-gradient-to-br from-white/20 via-white/10 to-white/5 backdrop-blur-[14px] border-r border-t border-b border-t-white/45 border-r-white/25 border-b-white/15 rounded-r-3xl text-white flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_1px_1px_2px_rgba(255,255,255,0.45)] z-10 overflow-hidden"
+          {/* Liquid Glass Sidebar Drawer sliding from Left to Right */}
+          <aside
+            className="relative w-[38vw] min-w-[210px] max-w-[500px] sm:w-[36vw] md:w-[35vw] lg:w-[32vw] h-full bg-gradient-to-br from-white/20 via-white/10 to-white/5 backdrop-blur-[14px] border-r border-t border-b border-t-white/45 border-r-white/25 border-b-white/15 rounded-r-3xl text-white flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_1px_1px_2px_rgba(255,255,255,0.45)] z-10 overflow-hidden animate-in slide-in-from-left duration-200"
           >
             {/* Liquid Refraction Ambient Orbs (Soft organic movement behind glass) */}
             <div className="absolute -top-12 -left-12 w-48 h-48 bg-gradient-to-tr from-pink-500/35 to-purple-500/25 rounded-full blur-3xl pointer-events-none liquid-blob-1 liquid-color-dodge" />
@@ -490,9 +476,9 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
             <div className="p-2.5 border-t border-white/15 text-center text-[9px] sm:text-[10px] text-gray-300/80 bg-white/[0.03] backdrop-blur-md relative z-10 shrink-0">
               Baby John · Configurações
             </div>
-          </motion.aside>
+          </aside>
         </div>
       )}
-    </AnimatePresence>
+    </>
   );
 };

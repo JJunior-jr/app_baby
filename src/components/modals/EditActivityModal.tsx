@@ -180,7 +180,7 @@ export const EditActivityModal: React.FC<EditActivityModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto">
       {/* Click outside backdrop */}
       <div className="absolute inset-0" onClick={onClose} />
 
@@ -188,7 +188,7 @@ export const EditActivityModal: React.FC<EditActivityModalProps> = ({
       <section
         aria-modal="true"
         role="dialog"
-        className="relative z-10 w-full max-w-[440px] landscape:max-w-xl bg-[#131526] rounded-3xl p-5 shadow-2xl border border-purple-500/20 max-h-[90vh] overflow-y-auto no-scrollbar animate-in zoom-in-95 duration-200"
+        className="relative z-10 w-full max-w-[440px] landscape:max-w-xl bg-[#131526] rounded-3xl p-5 pb-8 shadow-2xl border border-purple-500/20 max-h-[90vh] overflow-y-auto no-scrollbar animate-in zoom-in-95 duration-200"
       >
         {/* Header */}
         <header className="flex items-center justify-between pb-3 border-b border-white/10">

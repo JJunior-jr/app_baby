@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import { ActivityItem, DailySummary } from '../types';
 import { CalendarModal } from './modals/CalendarModal';
-import { EditActivityModal } from './modals/EditActivityModal';
 import { DiaryTopSummary } from './DiaryTopSummary';
 
 interface DiaryScreenProps {
@@ -36,6 +35,7 @@ interface DiaryScreenProps {
   onOpenActivitySheet: () => void;
   onDeleteActivity: (id: string) => void;
   onUpdateActivity?: (id: string, updates: Partial<ActivityItem>) => void;
+  onEditActivity: (activity: ActivityItem) => void;
   dailySummary: DailySummary;
   onOpenCalendarSync?: () => void;
 }
@@ -50,14 +50,13 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
   onOpenActivitySheet,
   onDeleteActivity,
   onUpdateActivity,
+  onEditActivity,
   dailySummary,
   onOpenCalendarSync,
 }) => {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [showSummaryModal, setShowSummaryModal] = useState<boolean>(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState<boolean>(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [editingActivity, setEditingActivity] = useState<ActivityItem | null>(null);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const selectedDayRef = useRef<HTMLButtonElement | null>(null);
@@ -452,8 +451,7 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                                     <button
                                       type="button"
                                       onClick={() => {
-                                        setEditingActivity(act);
-                                        setIsEditModalOpen(true);
+                                        onEditActivity(act);
                                         setActiveMenuId(null);
                                       }}
                                       className="w-full px-3.5 py-2.5 text-left text-xs font-semibold text-gray-200 hover:text-white hover:bg-purple-600/30 flex items-center space-x-2 transition cursor-pointer"
@@ -631,21 +629,6 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
         onSelectDate={onSelectDate}
         activities={activities}
         onOpenCalendarSync={onOpenCalendarSync}
-      />
-
-      {/* Edit Activity Modal */}
-      <EditActivityModal
-        isOpen={isEditModalOpen}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setEditingActivity(null);
-        }}
-        activity={editingActivity}
-        onSave={(id, updates) => {
-          if (onUpdateActivity) {
-            onUpdateActivity(id, updates);
-          }
-        }}
       />
     </div>
   );

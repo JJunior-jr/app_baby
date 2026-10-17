@@ -1,33 +1,79 @@
 @import "tailwindcss";
 
 :root {
-  /* 60% Dominante (Canvas & Fundo Sólido) */
+  /* -------------------------------------------------------------
+   * 1. 60/30/10 COLOR SYSTEM TOKENS
+   * ------------------------------------------------------------- */
+  /* 60% Dominante (Canvas & Fundo Principal) */
   --color-dominant: #0f172a;
   
-  /* 30% Secundária (Estrutura, Cards, Barra de Navegação) - Cores Sólidas Neutras */
+  /* 30% Secundária (Superfícies, Cards, Barra de Navegação) */
   --color-secondary: #1e293b;
+  --color-secondary-hover: #273549;
+  --color-secondary-active: #151e2b;
   --color-secondary-elevated: #334155;
+  --color-secondary-elevated-hover: #3e4f66;
+  
+  /* Bordas e Divisores */
   --color-border: #334155;
+  --color-border-hover: #475569;
+  --color-border-focus: #3b82f6;
+  
+  /* Textos & Tipografia */
   --color-text-primary: #f8fafc;
   --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
   
-  /* 10% Destaque / Accent / CTA Sólido */
+  /* 10% Destaque / Accent / CTA Principal */
   --color-accent: #3b82f6;
   --color-accent-hover: #2563eb;
+  --color-accent-active: #1d4ed8;
   --color-accent-text: #ffffff;
+  --color-accent-subtle: rgba(59, 130, 246, 0.14);
+  --color-accent-subtle-border: rgba(59, 130, 246, 0.32);
 
-  /* Card & Button Tokens Sólidos e Limpos */
-  --card-bg: #1e293b;
-  --card-border: #334155;
-  --card-radius: 12px;
+  /* Estados Disabled & Acessibilidade Focus */
+  --color-disabled-bg: rgba(148, 163, 184, 0.12);
+  --color-disabled-text: #64748b;
+  --color-disabled-border: rgba(148, 163, 184, 0.2);
+  --color-focus-ring: #3b82f6;
+  --focus-ring-offset: 2px;
 
-  /* Tipografia & Formas */
-  --font-family-app: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  /* Status Semânticos */
+  --color-success: #10b981;
+  --color-success-subtle: rgba(16, 185, 129, 0.15);
+  --color-warning: #f59e0b;
+  --color-warning-subtle: rgba(245, 158, 11, 0.15);
+  --color-danger: #ef4444;
+  --color-danger-subtle: rgba(239, 68, 68, 0.15);
+
+  /* -------------------------------------------------------------
+   * 2. SHADOWS & ELEVATION TOKENS
+   * ------------------------------------------------------------- */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.18);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.22), 0 1px 2px -1px rgba(0, 0, 0, 0.18);
+  --shadow-card-hover: 0 4px 8px -1px rgba(0, 0, 0, 0.28), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --shadow-elevated: 0 10px 18px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -4px rgba(0, 0, 0, 0.25);
+  --shadow-dropdown: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+
+  /* -------------------------------------------------------------
+   * 3. RADIUS & SHAPE TOKENS (UNIFIED DESIGN SYSTEM)
+   * ------------------------------------------------------------- */
   --app-card-radius: 12px;
+  --app-button-radius: 12px;
+  --app-input-radius: 10px;
+  --app-badge-radius: 9999px;
   --app-glow-filter: none;
+
+  /* Tipografia */
+  --font-family-app: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
+  *, ::before, ::after {
+    box-sizing: border-box;
+  }
+
   body {
     font-family: var(--font-family-app);
     -webkit-tap-highlight-color: transparent;
@@ -37,35 +83,407 @@
     transition: background-color 0.15s ease, color 0.15s ease;
     overflow-x: hidden;
   }
+
+  input, textarea, select, button {
+    font-family: inherit;
+  }
 }
 
-/* Classes utilitárias limpas para temas e cards */
+/* -------------------------------------------------------------
+ * 4. COMPONENT STATE MANAGER (CSS CLASS SYSTEM WITH ALL STATES)
+ * ------------------------------------------------------------- */
+
+/* Canvas & Surface Utilities */
 .theme-canvas {
   background-color: var(--color-dominant);
   color: var(--color-text-primary);
 }
 
+.theme-surface {
+  background-color: var(--color-secondary);
+  color: var(--color-text-primary);
+}
+
+.theme-surface-elevated {
+  background-color: var(--color-secondary-elevated);
+  color: var(--color-text-primary);
+}
+
+.theme-border {
+  border-color: var(--color-border);
+}
+
+.theme-text-primary {
+  color: var(--color-text-primary);
+}
+
+.theme-text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.theme-text-muted {
+  color: var(--color-text-muted);
+}
+
+/* --- BUTTONS --- */
+.btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 0.625rem 1rem;
+  border-radius: var(--app-button-radius);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-base:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.btn-base:disabled,
+.btn-base[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+/* Primary Button (10% Accent) */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1rem;
+  border-radius: var(--app-button-radius);
+  background-color: var(--color-accent);
+  color: var(--color-accent-text);
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+  box-shadow: var(--shadow-card);
+}
+
+.btn-primary:active:not(:disabled) {
+  background-color: var(--color-accent-active);
+  transform: scale(0.98);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Secondary Button (30% Structure) */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1rem;
+  border-radius: var(--app-button-radius);
+  background-color: var(--color-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--color-secondary-hover);
+  border-color: var(--color-border-hover);
+}
+
+.btn-secondary:active:not(:disabled) {
+  background-color: var(--color-secondary-active);
+  transform: scale(0.98);
+}
+
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Ghost Button (Transparent with Hover Surface) */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.625rem 1rem;
+  border-radius: var(--app-button-radius);
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid transparent;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background-color: var(--color-secondary);
+  color: var(--color-text-primary);
+}
+
+.btn-ghost:active:not(:disabled) {
+  background-color: var(--color-secondary-active);
+  transform: scale(0.98);
+}
+
+.btn-ghost:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.btn-ghost:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Subtle Accent Button */
+.btn-accent-subtle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--app-button-radius);
+  background-color: var(--color-accent-subtle);
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent-subtle-border);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  outline: none;
+}
+
+.btn-accent-subtle:hover:not(:disabled) {
+  background-color: var(--color-accent);
+  color: var(--color-accent-text);
+}
+
+.btn-accent-subtle:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-accent-subtle:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Icon Action Button (Compact Touch Target) */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--app-button-radius);
+  background-color: var(--color-secondary);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  outline: none;
+}
+
+.btn-icon:hover:not(:disabled) {
+  background-color: var(--color-secondary-hover);
+  border-color: var(--color-border-hover);
+  color: var(--color-text-primary);
+}
+
+.btn-icon:active:not(:disabled) {
+  background-color: var(--color-secondary-active);
+  transform: scale(0.95);
+}
+
+.btn-icon:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.btn-icon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --- CARDS & PANELS --- */
+.card-base {
+  background-color: var(--color-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--app-card-radius);
+  box-shadow: var(--shadow-card);
+  color: var(--color-text-primary);
+}
+
+.card-interactive {
+  background-color: var(--color-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--app-card-radius);
+  box-shadow: var(--shadow-card);
+  color: var(--color-text-primary);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.card-interactive:hover {
+  background-color: var(--color-secondary-hover);
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.card-interactive:active {
+  background-color: var(--color-secondary-active);
+  transform: scale(0.995);
+}
+
+.card-interactive:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.card-elevated {
+  background-color: var(--color-secondary-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--app-card-radius);
+  box-shadow: var(--shadow-elevated);
+  color: var(--color-text-primary);
+}
+
+/* Backward compatibility for previous classes */
 .theme-card {
   background-color: var(--color-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--app-card-radius);
+  box-shadow: var(--shadow-card);
 }
 
 .theme-card-elevated {
   background-color: var(--color-secondary-elevated);
   border: 1px solid var(--color-border);
   border-radius: var(--app-card-radius);
+  box-shadow: var(--shadow-elevated);
 }
 
 .theme-accent-btn {
   background-color: var(--color-accent);
   color: var(--color-accent-text);
   border-radius: var(--app-card-radius);
-  transition: background-color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .theme-accent-btn:hover {
   background-color: var(--color-accent-hover);
+}
+
+.theme-accent-btn:active {
+  background-color: var(--color-accent-active);
+  transform: scale(0.98);
+}
+
+/* --- FORM INPUTS --- */
+.input-base {
+  width: 100%;
+  background-color: var(--color-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--app-input-radius);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.input-base::placeholder {
+  color: var(--color-text-muted);
+}
+
+.input-base:hover:not(:disabled) {
+  border-color: var(--color-border-hover);
+}
+
+.input-base:focus,
+.input-base:focus-visible {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+.input-base:disabled {
+  background-color: var(--color-disabled-bg);
+  border-color: var(--color-disabled-border);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+
+/* --- BADGES --- */
+.badge-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--app-badge-radius);
+  background-color: var(--color-accent-subtle);
+  border: 1px solid var(--color-accent-subtle-border);
+  color: var(--color-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1rem;
+}
+
+.badge-neutral {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--app-badge-radius);
+  background-color: var(--color-secondary-elevated);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1rem;
 }
 
 /* Custom scrollbar hiding for native mobile feel */

@@ -23,6 +23,7 @@ import { FeedbackPromptModal } from './components/modals/FeedbackPromptModal';
 import { FeedbackManagementModal } from './components/modals/FeedbackManagementModal';
 import { OfflineSyncModal } from './components/modals/OfflineSyncModal';
 import { NotificationCenterModal } from './components/modals/NotificationCenterModal';
+import { EditActivityModal } from './components/modals/EditActivityModal';
 import { SettingsSidebar, SettingsSection } from './components/SettingsSidebar';
 
 import { apiService } from './services/api';
@@ -76,6 +77,8 @@ export default function App() {
   const [isOfflineSyncOpen, setIsOfflineSyncOpen] = useState(false);
   const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
   const [isSettingsSidebarOpen, setIsSettingsSidebarOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingActivity, setEditingActivity] = useState<ActivityItem | null>(null);
   const [manageActivitiesInitialTab, setManageActivitiesInitialTab] = useState<'reminders' | 'palettes' | 'calendar'>('reminders');
   const [manageActivitiesInitialSubTab, setManageActivitiesInitialSubTab] = useState<'colors' | 'typography' | 'shapes'>('colors');
   const [syncStatus, setSyncStatus] = useState(() => syncService.getSyncStatus());
@@ -480,6 +483,10 @@ export default function App() {
               onOpenActivitySheet={() => setIsActivitySheetOpen(true)}
               onDeleteActivity={handleDeleteActivity}
               onUpdateActivity={handleUpdateActivity}
+              onEditActivity={(act) => {
+                setEditingActivity(act);
+                setIsEditModalOpen(true);
+              }}
               dailySummary={dailySummary}
               onOpenCalendarSync={() => setIsCalendarSyncOpen(true)}
             />
@@ -646,6 +653,18 @@ export default function App() {
         <NotificationCenterModal
           isOpen={isNotificationCenterOpen}
           onClose={() => setIsNotificationCenterOpen(false)}
+        />
+
+        <EditActivityModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingActivity(null);
+          }}
+          activity={editingActivity}
+          onSave={(id, updates) => {
+            handleUpdateActivity(id, updates);
+          }}
         />
 
         {/* Lateral Settings Sidebar / Navbar */}

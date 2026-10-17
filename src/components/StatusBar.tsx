@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Wifi, WifiOff, Bell, RefreshCw, CloudCheck, CloudOff } from 'lucide-react';
+import { Mail, Wifi, WifiOff, Bell, RefreshCw, CloudCheck, CloudOff, Zap } from 'lucide-react';
 import { syncService } from '../services/syncService';
 import { SyncStatusState } from '../types';
 
@@ -61,22 +61,25 @@ export const StatusBar: React.FC<StatusBarProps> = ({
             {syncStatus.isSyncing ? (
               <>
                 <RefreshCw className="w-2.5 h-2.5 animate-spin text-blue-300" />
-                <span className="leading-none">Gravando</span>
+                <span className="leading-none">Auto-Sync</span>
               </>
             ) : !syncStatus.isOnline ? (
               <>
                 <WifiOff className="w-2.5 h-2.5 text-amber-300" />
                 <span className="leading-none">
-                  Offline{syncStatus.pendingCount > 0 ? ` (${syncStatus.pendingCount})` : ''}
+                  Offline Plus{syncStatus.pendingCount > 0 ? ` (${syncStatus.pendingCount})` : ''}
                 </span>
               </>
             ) : syncStatus.pendingCount > 0 ? (
               <>
-                <RefreshCw className="w-2.5 h-2.5 text-purple-300" />
-                <span className="leading-none">{syncStatus.pendingCount} pendentes</span>
+                <RefreshCw className="w-2.5 h-2.5 text-purple-300 animate-spin" />
+                <span className="leading-none">Auto-Sync ({syncStatus.pendingCount})</span>
               </>
             ) : (
-              <Wifi className="w-3.5 h-3.5 text-gray-300 hover:text-emerald-400 transition" />
+              <span className="flex items-center gap-1 text-[10px] text-purple-300 font-bold px-1.5 py-0.5 rounded bg-purple-950/40 border border-purple-500/30">
+                <Zap className="w-2.5 h-2.5 fill-current" />
+                <span>Offline Plus</span>
+              </span>
             )}
           </button>
         )}
