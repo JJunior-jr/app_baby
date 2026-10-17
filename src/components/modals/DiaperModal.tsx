@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar, Edit3, Droplets, Check } from 'lucide-react';
+import { X, Calendar, Edit3, Droplets, Check, Baby, Sparkles, Layers } from 'lucide-react';
 
 interface DiaperModalProps {
   isOpen: boolean;
@@ -39,19 +39,19 @@ export const DiaperModal: React.FC<DiaperModalProps> = ({ isOpen, onClose, onSav
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-2 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-2 sm:p-4 overflow-y-auto">
       {/* Click outside backdrop */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      <div className="relative z-10 w-full max-w-[430px] landscape:max-w-lg h-auto max-h-[90vh] bg-[#0d0f19] rounded-3xl flex flex-col justify-between overflow-y-auto shadow-2xl border border-gray-800 animate-in zoom-in-95 duration-200">
+      <div className="relative z-10 w-full max-w-[430px] landscape:max-w-lg h-auto max-h-[90vh] bg-[#0f172a] rounded-xl flex flex-col justify-between overflow-y-auto shadow-2xl border border-[#334155] animate-in zoom-in-95 duration-200">
         
         {/* Navigation Header */}
-        <header className="relative px-5 pt-4 pb-3 flex items-center justify-between border-b border-white/5">
+        <header className="relative px-5 pt-4 pb-3 flex items-center justify-between border-b border-[#334155]">
           <button
             type="button"
             onClick={onClose}
             aria-label="Fechar"
-            className="p-1.5 -ml-1 text-gray-300 hover:text-white transition rounded-xl hover:bg-white/5"
+            className="p-1.5 -ml-1 text-gray-300 hover:text-white transition rounded-xl hover:bg-[#1e293b]"
           >
             <X className="w-6 h-6 stroke-[2.2]" />
           </button>
@@ -59,36 +59,36 @@ export const DiaperModal: React.FC<DiaperModalProps> = ({ isOpen, onClose, onSav
             <h1 className="text-base font-bold text-white">Registrar Fralda</h1>
             <p className="text-xs text-gray-400 mt-0.5">Hoje · Agora</p>
           </div>
-          <div className="w-6 h-6 text-xl">👶</div>
+          <div className="w-8 h-8 rounded-lg bg-[#1e293b] border border-[#334155] flex items-center justify-center">
+            <Baby className="w-4 h-4 text-emerald-400" />
+          </div>
         </header>
 
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5 no-scrollbar">
           {/* Activity Heading */}
           <section className="flex items-center gap-3.5 pt-1">
-            <div className="w-13 h-13 min-w-[50px] min-h-[50px] rounded-2xl bg-[#142922] border border-[#1b3d32]/60 flex items-center justify-center text-[#2ac289]">
-              <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
-                <path d="M7 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-3 8v9a1 1 0 1 0 2 0v-7h3v7a1 1 0 1 0 2 0v-9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1zm8.5 0h8a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-8a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1zm5.5 3c-1.1 0-2-.9-2-2h-2c0 2.21 1.79 4 4 4s4-1.79 4-4h-2c0 1.1-.9 2-2 2z"></path>
-              </svg>
+            <div className="w-12 h-12 rounded-xl bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <Sparkles className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-white leading-tight">Fralda</h2>
-              <p className="text-xs text-gray-400 font-medium">Como estava a fralda do John?</p>
+              <h2 className="text-xl font-bold tracking-tight text-white leading-tight">Fralda</h2>
+              <p className="text-xs text-gray-400 font-medium">Como estava a fralda do bebê?</p>
             </div>
           </section>
 
           {/* Timestamp Card */}
-          <section className="bg-[#1a1d2e] rounded-2xl p-4 flex items-center justify-between border border-[#23273c]">
+          <section className="bg-[#1e293b] rounded-xl p-4 flex items-center justify-between border border-[#334155]">
             <div className="flex items-center gap-3.5">
-              <div className="text-[#2ac289]">
-                <Calendar className="w-6 h-6" />
+              <div className="text-emerald-400">
+                <Calendar className="w-5 h-5" />
               </div>
               <div>
                 <span className="block text-[11px] text-gray-400 leading-tight">Quando aconteceu</span>
                 <span className="block text-sm font-semibold text-white mt-0.5">19 de ago. · 23:10</span>
               </div>
             </div>
-            <button type="button" aria-label="Editar data e hora" className="text-gray-500 hover:text-gray-300 p-1">
+            <button type="button" aria-label="Editar data e hora" className="text-gray-400 hover:text-white p-1">
               <Edit3 className="w-4 h-4" />
             </button>
           </section>
@@ -101,16 +101,16 @@ export const DiaperModal: React.FC<DiaperModalProps> = ({ isOpen, onClose, onSav
               <button
                 type="button"
                 onClick={() => setDiaperType('xixi')}
-                className={`h-26 sm:h-28 rounded-2xl flex flex-col items-center justify-center transition-all ${
+                className={`h-24 rounded-xl flex flex-col items-center justify-center transition-all ${
                   diaperType === 'xixi'
-                    ? 'bg-[#121c22] border-2 border-[#2ac289] shadow-sm'
-                    : 'bg-[#1b1e2f] border border-transparent hover:bg-[#202438]'
+                    ? 'bg-cyan-950/40 border-2 border-cyan-400'
+                    : 'bg-[#1e293b] border border-[#334155] hover:bg-[#334155]'
                 }`}
               >
                 <div className="mb-2">
-                  <Droplets className="w-7 h-7 text-[#34b3f5] fill-current" />
+                  <Droplets className="w-6 h-6 text-cyan-400 fill-current" />
                 </div>
-                <span className={`text-xs font-bold ${diaperType === 'xixi' ? 'text-[#2ac289]' : 'text-gray-300'}`}>
+                <span className={`text-xs font-bold ${diaperType === 'xixi' ? 'text-cyan-300' : 'text-gray-300'}`}>
                   Xixi
                 </span>
               </button>
@@ -119,14 +119,16 @@ export const DiaperModal: React.FC<DiaperModalProps> = ({ isOpen, onClose, onSav
               <button
                 type="button"
                 onClick={() => setDiaperType('coco')}
-                className={`h-26 sm:h-28 rounded-2xl flex flex-col items-center justify-center transition-all ${
+                className={`h-24 rounded-xl flex flex-col items-center justify-center transition-all ${
                   diaperType === 'coco'
-                    ? 'bg-[#121c22] border-2 border-[#2ac289] shadow-sm'
-                    : 'bg-[#1b1e2f] border border-transparent hover:bg-[#202438]'
+                    ? 'bg-amber-950/40 border-2 border-amber-400'
+                    : 'bg-[#1e293b] border border-[#334155] hover:bg-[#334155]'
                 }`}
               >
-                <div className="mb-1 text-2xl select-none">💩</div>
-                <span className={`text-xs font-bold ${diaperType === 'coco' ? 'text-[#2ac289]' : 'text-gray-300'}`}>
+                <div className="mb-2">
+                  <Sparkles className="w-6 h-6 text-amber-400" />
+                </div>
+                <span className={`text-xs font-bold ${diaperType === 'coco' ? 'text-amber-300' : 'text-gray-300'}`}>
                   Cocô
                 </span>
               </button>
@@ -135,16 +137,16 @@ export const DiaperModal: React.FC<DiaperModalProps> = ({ isOpen, onClose, onSav
               <button
                 type="button"
                 onClick={() => setDiaperType('ambos')}
-                className={`h-26 sm:h-28 rounded-2xl flex flex-col items-center justify-center transition-all ${
+                className={`h-24 rounded-xl flex flex-col items-center justify-center transition-all ${
                   diaperType === 'ambos'
-                    ? 'bg-[#121c22] border-2 border-[#2ac289] shadow-[0_0_12px_rgba(46,197,133,0.18)]'
-                    : 'bg-[#1b1e2f] border border-transparent hover:bg-[#202438]'
+                    ? 'bg-emerald-950/40 border-2 border-emerald-400'
+                    : 'bg-[#1e293b] border border-[#334155] hover:bg-[#334155]'
                 }`}
               >
-                <div className="mb-2 w-7 h-7 rounded-full bg-[#1678cd] flex items-center justify-center text-white text-sm font-bold shadow-sm">
-                  ∞
+                <div className="mb-2">
+                  <Layers className="w-6 h-6 text-emerald-400" />
                 </div>
-                <span className={`text-xs font-bold ${diaperType === 'ambos' ? 'text-[#2ac289]' : 'text-gray-300'}`}>
+                <span className={`text-xs font-bold ${diaperType === 'ambos' ? 'text-emerald-300' : 'text-gray-300'}`}>
                   Ambos
                 </span>
               </button>
@@ -181,14 +183,14 @@ export const DiaperModal: React.FC<DiaperModalProps> = ({ isOpen, onClose, onSav
             <label htmlFor="fralda-obs" className="block text-sm font-bold text-white">
               Observações (opcional)
             </label>
-            <div className="bg-[#1a1d2e] rounded-2xl p-3.5 border border-[#23273c]">
+            <div className="bg-[#1e293b] rounded-xl p-3.5 border border-[#334155]">
               <textarea
                 id="fralda-obs"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Algum detalhe importante?"
                 rows={3}
-                className="w-full bg-transparent border-0 p-0 text-white text-sm placeholder-gray-500 resize-none focus:outline-none"
+                className="w-full bg-transparent border-0 p-0 text-white text-sm placeholder-gray-400 resize-none focus:outline-none"
               />
             </div>
 
@@ -200,10 +202,10 @@ export const DiaperModal: React.FC<DiaperModalProps> = ({ isOpen, onClose, onSav
                     key={cons}
                     type="button"
                     onClick={() => setConsistency(cons)}
-                    className={`px-3.5 py-1.8 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
                       consistency === cons
-                        ? 'bg-[#2ac289] text-[#0d1c16] font-bold'
-                        : 'bg-[#1a1d2e] text-gray-300 border border-[#23273c] hover:border-gray-500'
+                        ? 'bg-emerald-500 text-white font-bold'
+                        : 'bg-[#1e293b] text-gray-300 border border-[#334155] hover:border-gray-400'
                     }`}
                   >
                     {cons}
@@ -215,11 +217,11 @@ export const DiaperModal: React.FC<DiaperModalProps> = ({ isOpen, onClose, onSav
         </div>
 
         {/* Fixed Bottom Action Button */}
-        <footer className="p-5 pt-2 pb-6 bg-[#0d0f19] border-t border-white/5">
+        <footer className="p-5 pt-3 pb-5 bg-[#0f172a] border-t border-[#334155]">
           <button
             type="button"
             onClick={handleSave}
-            className="w-full py-4 bg-[#2ac289] hover:bg-[#25b37e] active:scale-[0.99] text-[#0d1c16] font-bold text-base rounded-2xl transition shadow-lg shadow-[#2ac289]/15 flex items-center justify-center"
+            className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.99] text-white font-bold text-sm rounded-xl transition flex items-center justify-center shadow-sm"
           >
             Registrar fralda
           </button>

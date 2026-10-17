@@ -290,11 +290,11 @@ export const EditActivityModal: React.FC<EditActivityModalProps> = ({
               <select
                 value={period}
                 onChange={(e) => setPeriod(e.target.value as any)}
-                className="w-full bg-[#1b1f3b] border border-[#2b3052] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-purple-400"
+                className="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-400"
               >
-                <option value="Manhã">Manhã (☀️)</option>
-                <option value="Tarde">Tarde (🌅)</option>
-                <option value="Noite">Noite (🌙)</option>
+                <option value="Manhã">Manhã</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noite">Noite</option>
               </select>
             </div>
 

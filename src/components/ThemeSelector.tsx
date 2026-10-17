@@ -652,7 +652,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {RADIUS_OPTIONS.map((opt) => {
                 const isSelected = currentRadius.id === opt.id;
                 return (
@@ -694,7 +694,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {GLOW_OPTIONS.map((glow) => {
                 const isSelected = currentGlow.id === glow.id;
                 return (

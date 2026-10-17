@@ -16,6 +16,11 @@ import {
   WifiOff,
   RefreshCw,
   Sliders,
+  Sun,
+  Milk,
+  Droplets,
+  Activity,
+  Bell,
 } from 'lucide-react';
 import { ActivityItem, CustomActivityDefinition, UserProfile, SyncStatusState } from '../types';
 import { FormulaDrawer } from './modals/FormulaDrawer';
@@ -600,12 +605,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       {/* Top Banner Row */}
       <div className="flex flex-col gap-3">
-        {/* Next Nap Info Card - Realistic 3D Glassmorphism */}
-        <section className="relative overflow-hidden backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 rounded-2xl px-4 py-3 flex items-center justify-between shadow-[0_12px_32px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)]">
-          <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent rounded-t-2xl pointer-events-none" />
-          <div className="glass-reflection-line" />
+        {/* Next Nap Info Card - Solid neutral card */}
+        <section className="relative overflow-hidden bg-[#1e293b] border border-[#334155] rounded-xl px-4 py-3 flex items-center justify-between shadow-sm">
           <div className="flex items-center space-x-2.5 relative z-10">
-            <span className="text-base">🌙</span>
+            <Moon className="w-4 h-4 text-blue-300" />
             <p className="text-xs text-gray-200 font-medium">
               Próxima soneca <span className="font-extrabold text-white">00:44</span> · em 1h 40min
             </p>
@@ -700,49 +703,51 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         {/* View Mode: Lista de Atividades (4 elementos líquidos um abaixo do outro com Glassmorphism) */}
         <div className="flex flex-col gap-2.5 w-full animate-in fade-in-50 duration-200">
             
-            {/* List Item 1: Sono - Glassmorphism & Glossmorphism 3D */}
+            {/* List Item 1: Sono - Solid Card */}
             <motion.button
               type="button"
               onClick={handleSleepClick}
-              whileTap={{ scale: 0.95, y: 1 }}
+              whileTap={{ scale: 0.98, y: 1 }}
               whileHover={{ scale: 1.015, y: -1 }}
               transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-              className={`w-full rounded-2xl p-3.5 min-h-[72px] flex items-center justify-between text-left relative overflow-hidden backdrop-blur-[12px] group select-none transition-all ${
+              className={`w-full rounded-xl p-3.5 flex items-center justify-between cursor-pointer border transition-all text-left relative overflow-hidden select-none group shadow-sm ${
                 sleepAnimation
-                  ? 'bg-gradient-to-br from-emerald-400/35 via-teal-500/25 to-white/10 text-white shadow-[0_12px_32px_rgba(16,185,129,0.35),inset_0_1.5px_2px_rgba(255,255,255,0.6)] ring-2 ring-emerald-400/60 border-t border-l border-white/50 border-b border-r border-emerald-300/30'
+                  ? 'bg-emerald-700 text-white border-emerald-500 ring-2 ring-emerald-400/60'
                   : isSleeping
-                    ? 'bg-gradient-to-br from-white/20 via-emerald-500/20 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 shadow-[0_12px_32px_rgba(16,185,129,0.25),inset_0_1.5px_1px_rgba(255,255,255,0.45)] text-white'
-                    : 'bg-gradient-to-br from-white/20 via-amber-500/15 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 shadow-[0_12px_32px_rgba(0,0,0,0.35),inset_0_1.5px_1px_rgba(255,255,255,0.45)] hover:border-white/50 text-white'
+                    ? 'bg-[#1e293b] hover:bg-slate-700/50 border-emerald-500/40 text-white'
+                    : 'bg-[#1e293b] hover:bg-slate-700/50 border-[#334155] text-white'
               }`}
             >
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-2xl pointer-events-none" />
-              <div className="glass-reflection-line" />
               {sleepAnimation ? (
                 <div className="flex items-center space-x-3 w-full justify-center py-1 relative z-10">
-                  <div className="w-8 h-8 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center text-[#16a34a] shadow-sm">
+                  <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-emerald-600 shadow-sm">
                     <CheckCircle2 className="w-5 h-5 fill-current stroke-white" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-black uppercase tracking-wider text-white">
+                    <span className="text-sm font-bold uppercase tracking-wider text-white">
                       Registrado!
                     </span>
                     <span className="text-[11px] text-emerald-100 font-medium">
-                      {isDaytime ? 'Soneca' : 'Sono noturno'} iniciado com sucesso {isDaytime ? '☀️' : '🌙'}
+                      {isDaytime ? 'Soneca' : 'Sono noturno'} iniciado com sucesso
                     </span>
                   </div>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center space-x-3 relative z-10 min-w-0 flex-1">
-                    <div className="w-11 h-11 rounded-2xl bg-white/15 border-t border-l border-white/35 border-b border-r border-white/15 backdrop-blur-md flex items-center justify-center text-2xl shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
-                      <span>{isDaytime ? '☀️' : '🌙'}</span>
+                    <div className="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
+                      {isDaytime ? (
+                        <Sun className="w-6 h-6 text-amber-300" />
+                      ) : (
+                        <Moon className="w-6 h-6 text-indigo-300" />
+                      )}
                     </div>
                     <div className="flex flex-col min-w-0 flex-1 justify-center">
-                      <span className="text-sm font-extrabold tracking-tight text-white leading-tight">
+                      <span className="text-sm font-bold tracking-tight text-white leading-tight">
                         {isSleeping ? (isDaytime ? 'Soneca' : 'Sono Noturno') : (isDaytime ? 'Soneca (Dormir)' : 'Sono Noturno')}
                       </span>
                       <div className="mt-1 flex items-center justify-between gap-2 min-w-0">
-                        <div className="text-xs font-medium text-amber-100/90 flex items-center gap-1.5 min-w-0">
+                        <div className="text-xs font-medium text-slate-300 flex items-center gap-1.5 min-w-0">
                           {isSleeping ? (
                             <span className="inline-flex items-center gap-1.5 text-emerald-300 min-w-0 truncate whitespace-nowrap">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
@@ -752,18 +757,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                             </span>
                           ) : (
                             <span className="truncate whitespace-nowrap">
-                              Toque para iniciar {isDaytime ? 'soneca ☀️' : 'sono 🌙'}
+                              Toque para iniciar {isDaytime ? 'soneca' : 'sono noturno'}
                             </span>
                           )}
                         </div>
 
                         <div className="shrink-0">
                           {isSleeping ? (
-                            <span className="px-3 py-1 rounded-xl bg-black/40 text-white text-xs font-bold border border-white/30 shadow-inner whitespace-nowrap backdrop-blur-xs">
+                            <span className="px-3 py-1 rounded-lg bg-slate-800 text-white text-xs font-bold border border-slate-700 shadow-xs whitespace-nowrap">
                               Acordou?
                             </span>
                           ) : (
-                            <span className="px-3 py-1 rounded-xl bg-white/20 border border-white/35 text-white text-xs font-bold shadow-xs whitespace-nowrap backdrop-blur-xs">
+                            <span className="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-xs whitespace-nowrap">
                               Iniciar
                             </span>
                           )}
@@ -775,32 +780,31 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               )}
             </motion.button>
 
-            {/* List Item 2: Amamentação - Glassmorphism & Glossmorphic 3D */}
+            {/* List Item 2: Amamentação - Solid Card */}
             <motion.div
               whileHover={{ scale: 1.015, y: -1 }}
               transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-              className={`w-full rounded-2xl p-3.5 bg-gradient-to-br from-white/20 via-purple-500/18 to-white/5 backdrop-blur-[12px] text-white flex items-center justify-between shadow-[0_12px_32px_rgba(0,0,0,0.35),inset_0_1.5px_1px_rgba(255,255,255,0.45)] cursor-pointer border-t border-l border-white/40 border-b border-r border-white/15 relative overflow-hidden select-none group transition-all ${
-                activeBreastSide ? 'ring-2 ring-purple-400/60 border-purple-300/70' : 'hover:border-white/50'
+              className={`w-full rounded-xl p-3.5 bg-[#1e293b] hover:bg-slate-700/50 text-white flex items-center justify-between shadow-sm cursor-pointer border select-none group transition-all ${
+                activeBreastSide ? 'ring-2 ring-purple-400/60 border-purple-400' : 'border-[#334155]'
               }`}
               onClick={onOpenBreastfeedingModal}
             >
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-2xl pointer-events-none" />
-              <div className="glass-reflection-line" />
-
               <div className="flex items-center space-x-3 min-w-0 relative z-10 flex-1 mr-2">
-                <div className="w-11 h-11 rounded-2xl bg-white/15 border-t border-l border-white/35 border-b border-r border-white/15 backdrop-blur-md flex items-center justify-center text-xl shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
-                  <Baby className="w-6 h-6 text-purple-200" />
+                <div className="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
+                  <Baby className="w-6 h-6 text-purple-300" />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-extrabold tracking-tight truncate">Amamentação</span>
+                    <span className="text-sm font-bold tracking-tight truncate">Amamentação</span>
                     {activeBreastSide && (
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
                     )}
                   </div>
-                  <span className="text-xs text-purple-200/90 font-medium truncate">
+                  <span className="text-xs text-slate-300 font-medium truncate flex items-center">
                     {activeBreastSide ? (
-                      <span className="text-amber-300 font-mono font-bold">⏱️ {formatNursingTime(nursingSeconds)}</span>
+                      <span className="text-amber-300 font-mono font-bold flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5 inline text-amber-400" /> {formatNursingTime(nursingSeconds)}
+                      </span>
                     ) : (
                       'Esq. há 23h'
                     )}
@@ -808,7 +812,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 </div>
               </div>
 
-              {/* Quick side liquid buttons */}
+              {/* Quick side action buttons */}
               <div className="flex items-center gap-1.5 shrink-0 relative z-10" onClick={(e) => e.stopPropagation()}>
                 <motion.button
                   type="button"
@@ -816,17 +820,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   whileTap={{ scale: 0.88 }}
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold flex items-center space-x-1 backdrop-blur-md relative overflow-hidden ${
+                  className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold flex items-center space-x-1 border transition-all ${
                     activeBreastSide === 'left'
-                      ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-[0_4px_14px_rgba(236,72,153,0.5)] ring-2 ring-white scale-105 border border-white/40'
-                      : 'bg-white/15 hover:bg-white/25 text-purple-100 border border-white/30 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]'
+                      ? 'bg-pink-600 text-white border-pink-400 shadow-sm'
+                      : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
                   }`}
                   title="Iniciar amamentação lado esquerdo"
                 >
-                  <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
                   <span>← Esq.</span>
                   {activeBreastSide === 'left' && (
-                    <span className="font-mono font-black text-purple-900 bg-purple-200 px-1 rounded-md text-[10px]">
+                    <span className="font-mono font-bold text-white bg-pink-800 px-1 rounded text-[10px]">
                       {formatNursingTime(nursingSeconds)}
                     </span>
                   )}
@@ -837,17 +840,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   whileTap={{ scale: 0.88 }}
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold flex items-center space-x-1 backdrop-blur-md relative overflow-hidden ${
+                  className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold flex items-center space-x-1 border transition-all ${
                     activeBreastSide === 'right'
-                      ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-[0_4px_14px_rgba(236,72,153,0.5)] ring-2 ring-white scale-105 border border-white/40'
-                      : 'bg-white/15 hover:bg-white/25 text-purple-100 border border-white/30 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]'
+                      ? 'bg-purple-600 text-white border-purple-400 shadow-sm'
+                      : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
                   }`}
                   title="Iniciar amamentação lado direito"
                 >
-                  <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
                   <span>→ Dir.</span>
                   {activeBreastSide === 'right' && (
-                    <span className="font-mono font-black text-purple-900 bg-purple-200 px-1 rounded-md text-[10px]">
+                    <span className="font-mono font-bold text-white bg-purple-800 px-1 rounded text-[10px]">
                       {formatNursingTime(nursingSeconds)}
                     </span>
                   )}
@@ -858,35 +860,31 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   whileTap={{ scale: 0.88 }}
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  className="px-2.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-[11px] font-bold text-purple-100 flex items-center gap-1 border border-white/30 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] relative overflow-hidden"
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-slate-200 flex items-center gap-1 border border-slate-700 shadow-sm"
                   title="Escolher fórmula em drawer"
                 >
-                  <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
-                  <span>🍼</span>
+                  <Milk className="w-3.5 h-3.5 text-cyan-300" />
                   <span>Fórm.</span>
                 </motion.button>
               </div>
             </motion.div>
 
-            {/* List Item 3: Troca de fralda - Glassmorphism & Glossmorphic 3D */}
+            {/* List Item 3: Troca de fralda - Solid Card */}
             <motion.div
               whileHover={{ scale: 1.015, y: -1 }}
               transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-              className="w-full rounded-2xl p-3.5 bg-gradient-to-br from-white/20 via-teal-500/18 to-white/5 backdrop-blur-[12px] text-white flex items-center justify-between shadow-[0_12px_32px_rgba(0,0,0,0.35),inset_0_1.5px_1px_rgba(255,255,255,0.45)] border-t border-l border-white/40 border-b border-r border-white/15 hover:border-white/50 cursor-pointer relative overflow-hidden select-none group transition-all"
+              className="w-full rounded-xl p-3.5 bg-[#1e293b] hover:bg-slate-700/50 text-white flex items-center justify-between shadow-sm border border-[#334155] cursor-pointer select-none group transition-all"
               onClick={onOpenDiaperModal}
             >
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-2xl pointer-events-none" />
-              <div className="glass-reflection-line" />
-
               <div className="flex items-center space-x-3 relative z-10">
-                <div className="w-11 h-11 rounded-2xl bg-white/15 border-t border-l border-white/35 border-b border-r border-white/15 backdrop-blur-md flex items-center justify-center text-xl shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
-                  <span>🚼</span>
+                <div className="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
+                  <Droplets className="w-6 h-6 text-teal-300" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-extrabold tracking-tight text-white">
+                  <span className="text-sm font-bold tracking-tight text-white">
                     Troca de fralda
                   </span>
-                  <span className="text-xs text-teal-100 font-medium">
+                  <span className="text-xs text-teal-200 font-medium">
                     há 5h 36min
                   </span>
                 </div>
@@ -898,60 +896,55 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   type="button"
                   onClick={() => {
                     onQuickTrack('diaper_xixi');
-                    showToast('Troca de fralda (Xixi) registrada! 💧');
+                    showToast('Troca de fralda (Xixi) registrada!');
                   }}
                   whileTap={{ scale: 0.88 }}
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs font-bold backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] relative overflow-hidden"
+                  className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold shadow-sm"
                 >
-                  <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
-                  <span>💧</span>
+                  <Droplets className="w-3.5 h-3.5 text-cyan-300" />
                   <span>Xixi</span>
                 </motion.button>
                 <motion.button
                   type="button"
                   onClick={() => {
                     onQuickTrack('diaper_coco');
-                    showToast('Troca de fralda (Cocô) registrada! 🚼');
+                    showToast('Troca de fralda (Cocô) registrada!');
                   }}
                   whileTap={{ scale: 0.88 }}
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs font-bold backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)] relative overflow-hidden"
+                  className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold shadow-sm"
                 >
-                  <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
-                  <span>🚼</span>
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                   <span>Cocô</span>
                 </motion.button>
               </div>
             </motion.div>
 
-            {/* List Item 4: Comeu - Glassmorphism & Glossmorphic 3D */}
+            {/* List Item 4: Comeu - Solid Card */}
             <motion.div
               whileTap={{ scale: 0.95, y: 1 }}
               whileHover={{ scale: 1.015, y: -1 }}
               transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-              className="w-full rounded-2xl p-3.5 bg-gradient-to-br from-white/20 via-rose-500/18 to-white/5 backdrop-blur-[12px] text-white flex items-center justify-between shadow-[0_12px_32px_rgba(0,0,0,0.35),inset_0_1.5px_1px_rgba(255,255,255,0.45)] border-t border-l border-white/40 border-b border-r border-white/15 hover:border-white/50 cursor-pointer relative overflow-hidden select-none group transition-all"
+              className="w-full rounded-xl p-3.5 bg-[#1e293b] hover:bg-slate-700/50 text-white flex items-center justify-between shadow-sm border border-[#334155] cursor-pointer select-none group transition-all"
               onClick={onOpenMealModal}
             >
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent rounded-t-2xl pointer-events-none" />
-              <div className="glass-reflection-line" />
-
               <div className="flex items-center space-x-3 relative z-10">
-                <div className="w-11 h-11 rounded-2xl bg-white/15 border-t border-l border-white/35 border-b border-r border-white/15 backdrop-blur-md flex items-center justify-center text-2xl shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
-                  <span>🥣</span>
+                <div className="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
+                  <Utensils className="w-6 h-6 text-rose-300" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-extrabold tracking-tight">Comeu</span>
-                  <span className="text-xs text-rose-100 font-medium">
+                  <span className="text-sm font-bold tracking-tight">Comeu</span>
+                  <span className="text-xs text-rose-200 font-medium">
                     Janta · 17:27
                   </span>
                 </div>
               </div>
 
               <div className="shrink-0 relative z-10">
-                <span className="px-3 py-1.5 rounded-xl bg-white/15 border border-white/30 backdrop-blur-md text-xs font-bold text-rose-100 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25)]">
+                <span className="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold text-rose-200 shadow-sm">
                   Registrar refeição
                 </span>
               </div>
@@ -967,7 +960,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <button
             type="button"
             onClick={onOpenManageActivities}
-            className="text-xs font-bold text-[#9a7ffc] hover:underline"
+            className="text-xs font-bold text-purple-400 hover:underline"
           >
             Editar &gt;
           </button>
@@ -983,8 +976,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             transition={{ type: 'spring', stiffness: 500, damping: 18 }}
             className="flex flex-col items-center justify-center shrink-0 space-y-1.5 focus:outline-hidden"
           >
-            <div className="w-14 h-14 rounded-2xl bg-white/10 hover:bg-white/18 border border-white/25 hover:border-purple-300/60 backdrop-blur-2xl flex items-center justify-center text-purple-200 shadow-[0_4px_16px_rgba(168,85,247,0.15),inset_0_1px_1.5px_rgba(255,255,255,0.4)] relative overflow-hidden transition-colors">
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
+            <div className="w-14 h-14 rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] flex items-center justify-center text-purple-300 shadow-sm transition-colors">
               <Plus className="w-6 h-6 stroke-[2.2] relative z-10" />
             </div>
             <span className="text-[11px] font-medium text-purple-300">Adicionar</span>
@@ -995,18 +987,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             type="button"
             onClick={() => {
               onQuickTrack('custom', 'Tommy time');
-              showToast('Tommy time registrado! 🎯');
+              showToast('Tommy time registrado!');
             }}
             whileTap={{ scale: 0.88, y: 1 }}
             whileHover={{ scale: 1.08, y: -2 }}
             transition={{ type: 'spring', stiffness: 500, damping: 18 }}
             className="flex flex-col items-center justify-center shrink-0 space-y-1.5 relative group focus:outline-hidden"
           >
-            <div className="w-14 h-14 rounded-2xl bg-white/10 hover:bg-white/18 border border-white/25 hover:border-purple-300/60 backdrop-blur-2xl flex items-center justify-center text-gray-100 relative shadow-[0_4px_16px_rgba(168,85,247,0.15),inset_0_1px_1.5px_rgba(255,255,255,0.4)] overflow-hidden transition-colors">
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
-              <span className="text-xl relative z-10">🎯</span>
+            <div className="w-14 h-14 rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] flex items-center justify-center text-gray-100 relative shadow-sm transition-colors">
+              <Activity className="w-6 h-6 text-indigo-300 relative z-10" />
               <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-amber-400 text-black text-[9px] font-extrabold flex items-center justify-center shadow-md z-20">
-                🔔
+                <Bell className="w-2.5 h-2.5 text-black" />
               </span>
             </div>
             <span className="text-[11px] font-medium text-gray-300 max-w-[70px] truncate text-center">
@@ -1019,18 +1010,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             type="button"
             onClick={() => {
               onQuickTrack('custom', 'Tammy time');
-              showToast('Tammy time registrado! 👶');
+              showToast('Tammy time registrado!');
             }}
             whileTap={{ scale: 0.88, y: 1 }}
             whileHover={{ scale: 1.08, y: -2 }}
             transition={{ type: 'spring', stiffness: 500, damping: 18 }}
             className="flex flex-col items-center justify-center shrink-0 space-y-1.5 relative group focus:outline-hidden"
           >
-            <div className="w-14 h-14 rounded-2xl bg-white/10 hover:bg-white/18 border border-white/25 hover:border-purple-300/60 backdrop-blur-2xl flex items-center justify-center text-gray-100 relative shadow-[0_4px_16px_rgba(168,85,247,0.15),inset_0_1px_1.5px_rgba(255,255,255,0.4)] overflow-hidden transition-colors">
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
-              <span className="text-xl relative z-10">👶</span>
+            <div className="w-14 h-14 rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] flex items-center justify-center text-gray-100 relative shadow-sm transition-colors">
+              <Baby className="w-6 h-6 text-purple-300 relative z-10" />
               <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-amber-400 text-black text-[9px] font-extrabold flex items-center justify-center shadow-md z-20">
-                🔔
+                <Bell className="w-2.5 h-2.5 text-black" />
               </span>
             </div>
             <span className="text-[11px] font-medium text-gray-300 max-w-[70px] truncate text-center">
@@ -1047,16 +1037,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 type="button"
                 onClick={() => {
                   onQuickTrack('custom', custom.name);
-                  showToast(`${custom.name} registrada! ✨`);
+                  showToast(`${custom.name} registrada!`);
                 }}
                 whileTap={{ scale: 0.88, y: 1 }}
                 whileHover={{ scale: 1.08, y: -2 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 18 }}
                 className="flex flex-col items-center justify-center shrink-0 space-y-1.5 focus:outline-hidden"
               >
-                <div className="w-14 h-14 rounded-2xl bg-white/10 hover:bg-white/18 border border-white/25 hover:border-purple-300/60 backdrop-blur-2xl flex items-center justify-center text-gray-100 shadow-[0_4px_16px_rgba(168,85,247,0.15),inset_0_1px_1.5px_rgba(255,255,255,0.4)] relative overflow-hidden transition-colors">
-                  <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
-                  <span className="text-xl relative z-10">✨</span>
+                <div className="w-14 h-14 rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] flex items-center justify-center text-gray-100 shadow-sm relative transition-colors">
+                  <Sparkles className="w-6 h-6 text-purple-300 relative z-10" />
                 </div>
                 <span className="text-[11px] font-medium text-gray-300 max-w-[70px] truncate text-center">
                   {custom.name}

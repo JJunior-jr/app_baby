@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Check, Droplets, Plus, Minus, Sparkles, AlertCircle } from 'lucide-react';
+import { X, Check, Droplets, Plus, Minus, Sparkles, AlertCircle, Milk, Heart } from 'lucide-react';
 
 export interface FormulaConfirmData {
   offeredMl: number;
@@ -65,16 +65,16 @@ export const FormulaDrawer: React.FC<FormulaDrawerProps> = ({
         <div className="w-12 h-1.5 bg-[#2d314f] rounded-full mx-auto mb-3" />
 
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-white/5">
+        <div className="flex items-center justify-between pb-3 border-b border-[#334155]">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#292452] border border-purple-500/30 flex items-center justify-center text-xl text-purple-300">
-              🍼
+            <div className="w-10 h-10 rounded-xl bg-blue-950/60 border border-blue-500/30 flex items-center justify-center text-blue-400">
+              <Milk className="w-5 h-5" />
             </div>
             <div>
               <h2 id="formula-drawer-title" className="text-base font-bold text-white tracking-tight">
                 Mamadeira & Quantidade
               </h2>
-              <p className="text-xs text-[#8c91af]">Registre o volume ofertado e o que sobrou</p>
+              <p className="text-xs text-gray-400">Registre o volume ofertado e o que sobrou</p>
             </div>
           </div>
 
@@ -82,24 +82,24 @@ export const FormulaDrawer: React.FC<FormulaDrawerProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Fechar drawer"
-            className="p-1.5 text-gray-400 hover:text-white transition rounded-xl bg-white/5"
+            className="p-1.5 text-gray-400 hover:text-white transition rounded-xl bg-[#1e293b]"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Milk Type Toggle */}
-        <div className="grid grid-cols-2 gap-2 mt-3.5 p-1 bg-[#1a1d33] rounded-2xl border border-gray-800">
+        <div className="grid grid-cols-2 gap-2 mt-3.5 p-1 bg-[#1e293b] rounded-xl border border-[#334155]">
           <button
             type="button"
             onClick={() => setMilkType('formula')}
             className={`py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 ${
               milkType === 'formula'
-                ? 'bg-[#7158e2] text-white shadow-md'
+                ? 'bg-blue-600 text-white shadow-sm'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <Droplets className="w-3.5 h-3.5" />
+            <Milk className="w-3.5 h-3.5" />
             <span>Fórmula infantil</span>
           </button>
           <button
@@ -107,11 +107,11 @@ export const FormulaDrawer: React.FC<FormulaDrawerProps> = ({
             onClick={() => setMilkType('leite_materno')}
             className={`py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 ${
               milkType === 'leite_materno'
-                ? 'bg-[#7158e2] text-white shadow-md'
+                ? 'bg-blue-600 text-white shadow-sm'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            <span>🤱</span>
+            <Heart className="w-3.5 h-3.5" />
             <span>Leite materno (ordenhado)</span>
           </button>
         </div>
@@ -242,18 +242,18 @@ export const FormulaDrawer: React.FC<FormulaDrawerProps> = ({
         </div>
 
         {/* SECTION 3: Live Calculation Summary Card */}
-        <div className="mt-4 bg-gradient-to-r from-[#1f1a3d] via-[#1a233d] to-[#12232c] border border-purple-500/40 rounded-2xl p-3.5 shadow-lg space-y-2">
+        <div className="mt-4 bg-[#1e293b] border border-[#334155] rounded-xl p-3.5 space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-7 h-7 rounded-xl bg-purple-600/30 border border-purple-400/40 flex items-center justify-center text-sm">
-                🍼
+              <div className="w-8 h-8 rounded-lg bg-blue-950/60 border border-blue-500/40 flex items-center justify-center text-blue-400">
+                <Milk className="w-4 h-4" />
               </div>
               <div>
                 <span className="text-[10px] text-gray-400 uppercase tracking-wider font-bold block">
                   Total consumido pelo bebê
                 </span>
                 <span className="text-base font-extrabold text-white">
-                  {consumedMl} ml <span className="text-purple-300 text-sm font-bold">({consumedPercentage}%)</span>
+                  {consumedMl} ml <span className="text-blue-300 text-sm font-bold">({consumedPercentage}%)</span>
                 </span>
               </div>
             </div>

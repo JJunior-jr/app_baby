@@ -12,6 +12,7 @@ import {
   ChevronDown,
   Info,
   Edit3,
+  Layers,
 } from 'lucide-react';
 import { UserProfile, ActivityItem } from '../types';
 
@@ -208,7 +209,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
     setLastDiaperInfo({ timestamp: now, type });
     setElapsedSeconds(0);
 
-    const notes = hasAppliedCream ? 'Pomada antiassaduras aplicada 🧴' : undefined;
+    const notes = hasAppliedCream ? 'Pomada antiassaduras aplicada' : undefined;
     onQuickSaveDiaper(type, notes);
 
     setCounts24h((prev) => {
@@ -220,7 +221,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
       return next;
     });
 
-    const label = type === 'xixi' ? 'Xixi 💧' : type === 'coco' ? 'Cocô 💩' : 'Xixi + Cocô 🧷';
+    const label = type === 'xixi' ? 'Xixi' : type === 'coco' ? 'Cocô' : 'Xixi + Cocô';
     showToast(`Fralda trocada com sucesso (${label})!`);
   };
 
@@ -381,14 +382,14 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
             type="button"
             onClick={() => setIsAdjustPopoverOpen(!isAdjustPopoverOpen)}
             title="Ajustar horário da última troca"
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-gray-200 hover:text-white backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 transition active:scale-95 cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-slate-200 hover:text-white bg-[#1e293b] border border-[#334155] hover:bg-slate-700/60 transition active:scale-95 cursor-pointer shadow-sm"
           >
             <Settings2 className="w-4 h-4 text-teal-300" />
           </button>
           <button
             type="button"
             onClick={onSwitchToCardsView}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-gray-200 hover:text-white backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 transition active:scale-95 cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-slate-200 hover:text-white bg-[#1e293b] border border-[#334155] hover:bg-slate-700/60 transition active:scale-95 cursor-pointer shadow-sm"
             title="Voltar para lista"
           >
             <List className="w-4 h-4 text-gray-200" />
@@ -402,7 +403,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute top-12 right-2 w-72 bg-[#0d1624] border border-teal-500/40 rounded-2xl p-3.5 shadow-2xl shadow-black/90 z-50 backdrop-blur-2xl text-white"
+                className="absolute top-12 right-2 w-72 bg-[#1e293b] border border-[#334155] rounded-xl p-3.5 shadow-xl z-50 text-white"
               >
                 <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
                   <span className="text-xs font-bold text-teal-200">Ajustar Última Troca</span>
@@ -603,54 +604,56 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
 
             {/* Secondary Compact Details */}
             <span className="text-[10px] text-gray-300 mt-1 whitespace-nowrap">
-              Última às <strong className="text-white">{lastTimeStr}</strong> · {lastDiaperInfo.type === 'xixi' ? '💧 Xixi' : lastDiaperInfo.type === 'coco' ? '💩 Cocô' : '🧷 Ambos'}
+              Última às <strong className="text-white">{lastTimeStr}</strong> · {lastDiaperInfo.type === 'xixi' ? 'Xixi' : lastDiaperInfo.type === 'coco' ? 'Cocô' : 'Xixi + Cocô'}
             </span>
           </div>
         </div>
 
-        {/* 24h Summary Pill: xixi, cocô, ambos, total - positioned below gauge so it never overlaps the arc */}
-        <div className="mt-1 flex items-center justify-center space-x-2 bg-gradient-to-r from-white/10 via-white/15 to-white/10 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/20 text-[10.5px] font-bold shadow-sm select-none">
-          <span className="text-cyan-300">💧 {counts24h.xixi}</span>
-          <span className="text-white/25">·</span>
-          <span className="text-amber-300">💩 {counts24h.coco}</span>
+        {/* 24h Summary Pill: xixi, cocô, ambos, total - positioned below gauge */}
+        <div className="mt-1 flex items-center justify-center space-x-2 bg-[#1e293b] px-3.5 py-1 rounded-xl border border-[#334155] text-[11px] font-bold shadow-sm select-none">
+          <span className="text-cyan-300 flex items-center gap-1">
+            <Droplets className="w-3 h-3" /> {counts24h.xixi}
+          </span>
+          <span className="text-slate-600">·</span>
+          <span className="text-amber-300 flex items-center gap-1">
+            <Sparkles className="w-3 h-3" /> {counts24h.coco}
+          </span>
           {counts24h.ambos > 0 && (
             <>
-              <span className="text-white/25">·</span>
-              <span className="text-emerald-300">🧷 {counts24h.ambos}</span>
+              <span className="text-slate-600">·</span>
+              <span className="text-emerald-300 flex items-center gap-1">
+                <Layers className="w-3 h-3" /> {counts24h.ambos}
+              </span>
             </>
           )}
-          <span className="text-white/25">·</span>
-          <span className="text-teal-200">Total: {counts24h.total} hoje</span>
+          <span className="text-slate-600">·</span>
+          <span className="text-slate-300">Total: {counts24h.total} hoje</span>
         </div>
       </div>
 
-      {/* Bottom Controls: 3 Liquid Glass Action Buttons (Xixi, Cocô, Detalhes/Ambos) */}
+      {/* Bottom Controls: 3 Action Buttons (Xixi, Cocô, Detalhes/Ambos) */}
       <div className="relative z-20 pb-4 px-4 sm:px-6 h-[100px] flex items-center justify-center">
         <div className="grid grid-cols-3 gap-2.5 w-full max-w-[420px] mx-auto items-stretch relative">
           {/* Button 1: Xixi (Urina) */}
           <button
             type="button"
             onClick={() => handleQuickChange('xixi')}
-            className="relative p-2.5 h-[84px] rounded-2xl flex flex-col items-center justify-between text-center transition-all duration-200 active:scale-95 cursor-pointer border-t border-l border-b border-r select-none overflow-hidden backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t-white/40 border-l-white/35 border-b-white/15 border-r-white/15 text-cyan-200 hover:border-white/45 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] group"
+            className="p-2.5 h-[84px] rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-cyan-200 shadow-sm group select-none"
           >
-            {/* Convex reflection highlight */}
-            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 via-white/5 to-transparent rounded-t-2xl pointer-events-none" />
-            <div className="glass-reflection-line" />
-
-            <div className="h-5 flex items-center justify-center space-x-1.5 relative z-10 w-full text-center">
+            <div className="h-5 flex items-center justify-center space-x-1.5 w-full text-center">
               <Droplets className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
-              <span className="text-[11px] font-black uppercase tracking-tight text-cyan-200">
+              <span className="text-[11px] font-bold uppercase tracking-tight text-cyan-200">
                 Xixi
               </span>
             </div>
 
             {/* Quick Count */}
-            <span className="h-6 flex items-center justify-center text-base font-black font-mono text-white leading-none relative z-10 w-full text-center">
+            <span className="h-6 flex items-center justify-center text-base font-bold font-mono text-white leading-none w-full text-center">
               {counts24h.xixi} hoje
             </span>
 
             {/* Prompt */}
-            <span className="h-4 flex items-center justify-center text-[10px] font-semibold text-cyan-300 relative z-10 w-full text-center">
+            <span className="h-4 flex items-center justify-center text-[10px] font-medium text-cyan-300 w-full text-center">
               1 toque p/ salvar
             </span>
           </button>
@@ -659,26 +662,22 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
           <button
             type="button"
             onClick={() => handleQuickChange('coco')}
-            className="relative p-2.5 h-[84px] rounded-2xl flex flex-col items-center justify-between text-center transition-all duration-200 active:scale-95 cursor-pointer border-t border-l border-b border-r select-none overflow-hidden backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t-white/40 border-l-white/35 border-b-white/15 border-r-white/15 text-amber-200 hover:border-white/45 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] group"
+            className="p-2.5 h-[84px] rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-amber-200 shadow-sm group select-none"
           >
-            {/* Convex reflection highlight */}
-            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 via-white/5 to-transparent rounded-t-2xl pointer-events-none" />
-            <div className="glass-reflection-line" />
-
-            <div className="h-5 flex items-center justify-center space-x-1.5 relative z-10 w-full text-center">
-              <span className="text-xs group-hover:scale-110 transition-transform">💩</span>
-              <span className="text-[11px] font-black uppercase tracking-tight text-amber-200">
+            <div className="h-5 flex items-center justify-center space-x-1.5 w-full text-center">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
+              <span className="text-[11px] font-bold uppercase tracking-tight text-amber-200">
                 Cocô
               </span>
             </div>
 
             {/* Quick Count */}
-            <span className="h-6 flex items-center justify-center text-base font-black font-mono text-white leading-none relative z-10 w-full text-center">
+            <span className="h-6 flex items-center justify-center text-base font-bold font-mono text-white leading-none w-full text-center">
               {counts24h.coco} hoje
             </span>
 
             {/* Prompt */}
-            <span className="h-4 flex items-center justify-center text-[10px] font-semibold text-amber-300 relative z-10 w-full text-center">
+            <span className="h-4 flex items-center justify-center text-[10px] font-medium text-amber-300 w-full text-center">
               1 toque p/ salvar
             </span>
           </button>
@@ -688,30 +687,26 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
             <button
               type="button"
               onClick={() => setIsOptionsPopoverOpen(!isOptionsPopoverOpen)}
-              className={`w-full h-full relative p-2.5 rounded-2xl flex flex-col items-center justify-between text-center transition-all duration-200 active:scale-95 cursor-pointer border-t border-l border-b border-r select-none overflow-hidden backdrop-blur-[12px] ${
+              className={`w-full h-full p-2.5 rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer border select-none ${
                 isOptionsPopoverOpen
-                  ? 'bg-gradient-to-br from-teal-500/40 via-emerald-600/35 to-teal-700/40 border-t-white/60 border-l-white/50 border-b-teal-400/30 border-r-teal-400/30 ring-2 ring-teal-400/80 shadow-[0_0_24px_rgba(20,184,166,0.5),inset_0_1.5px_2px_rgba(255,255,255,0.5)] text-white'
-                  : 'bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t-white/40 border-l-white/35 border-b-white/15 border-r-white/15 text-teal-200 hover:border-white/45 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)]'
+                  ? 'bg-teal-700 text-white border-teal-500 shadow-md'
+                  : 'bg-[#1e293b] hover:bg-slate-700/60 border-[#334155] text-teal-200 shadow-sm'
               }`}
             >
-              {/* Convex reflection highlight */}
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 via-white/5 to-transparent rounded-t-2xl pointer-events-none" />
-              <div className="glass-reflection-line" />
-
-              <div className="h-5 flex items-center justify-center space-x-1.5 relative z-10 w-full text-center">
-                <span className="text-xs">🧷</span>
-                <span className="text-[11px] font-black uppercase tracking-tight text-teal-200">
+              <div className="h-5 flex items-center justify-center space-x-1.5 w-full text-center">
+                <Layers className="w-3.5 h-3.5 text-teal-300" />
+                <span className="text-[11px] font-bold uppercase tracking-tight text-teal-200">
                   Ambos
                 </span>
               </div>
 
               {/* Label */}
-              <span className="h-6 flex items-center justify-center text-xs font-black uppercase tracking-wider text-white leading-none relative z-10 w-full text-center">
+              <span className="h-6 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-white leading-none w-full text-center">
                 Xixi + Cocô
               </span>
 
               {/* Status prompt */}
-              <span className="h-4 flex items-center justify-center text-[10px] font-semibold text-teal-300 relative z-10 w-full text-center flex items-center gap-0.5">
+              <span className="h-4 flex items-center justify-center text-[10px] font-medium text-teal-300 w-full text-center flex items-center gap-0.5">
                 Opções <ChevronDown className="w-2.5 h-2.5" />
               </span>
             </button>
@@ -724,13 +719,13 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute bottom-full mb-3 right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 w-72 bg-[#0c1622] border border-teal-500/40 rounded-3xl p-3.5 shadow-2xl shadow-black/90 z-50 backdrop-blur-2xl text-white"
+                  className="absolute bottom-full mb-3 right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 w-72 bg-[#1e293b] border border-[#334155] rounded-xl p-3.5 shadow-xl z-50 text-white"
                 >
                   <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2.5">
                     <div className="flex items-center space-x-2">
-                      <span className="text-lg">🧷</span>
+                      <Layers className="w-4 h-4 text-teal-400" />
                       <div>
-                        <h4 className="text-xs font-extrabold text-white">Opções da Troca</h4>
+                        <h4 className="text-xs font-bold text-white">Opções da Troca</h4>
                         <p className="text-[10px] text-teal-200/80">Ações rápidas e detalhes</p>
                       </div>
                     </div>
@@ -743,10 +738,10 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
                       handleQuickChange('ambos');
                       setIsOptionsPopoverOpen(false);
                     }}
-                    className="w-full mb-2 p-2.5 rounded-2xl bg-gradient-to-r from-teal-600/30 to-emerald-600/30 hover:from-teal-600/40 hover:to-emerald-600/40 border border-teal-400/40 text-left flex items-center justify-between transition cursor-pointer active:scale-98"
+                    className="w-full mb-2 p-2.5 rounded-xl bg-teal-600/30 hover:bg-teal-600/50 border border-teal-500/40 text-left flex items-center justify-between transition cursor-pointer active:scale-98"
                   >
                     <div className="flex items-center space-x-2.5">
-                      <span className="text-base">💧💩</span>
+                      <Layers className="w-4 h-4 text-teal-300" />
                       <div>
                         <span className="text-xs font-bold text-white block">Registrar Ambos</span>
                         <span className="text-[10px] text-teal-300/80">Xixi e cocô juntos</span>
@@ -756,9 +751,9 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
                   </button>
 
                   {/* Option 2: Anti-rash cream toggle */}
-                  <div className="mb-2.5 p-2.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
+                  <div className="mb-2.5 p-2.5 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <span className="text-base">🧴</span>
+                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
                       <div>
                         <span className="text-xs font-semibold text-gray-200 block">
                           Pomada antiassaduras

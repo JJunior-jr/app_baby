@@ -17,6 +17,8 @@ import {
   Music,
   BellRing,
   Settings2,
+  Droplets,
+  Milk,
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { isDaytime, isDaytimeInBrazil, getBrazilTimeString } from '../services/brazilTime';
@@ -216,14 +218,14 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             type="button"
             onClick={() => setIsAdjustSleepOpen(!isAdjustSleepOpen)}
             title="Ajustar tempo de sono"
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-gray-200 hover:text-white backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 transition active:scale-95 cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-slate-200 hover:text-white bg-[#1e293b] border border-[#334155] hover:bg-slate-700/60 transition active:scale-95 cursor-pointer shadow-sm"
           >
             <Settings2 className="w-4 h-4 text-amber-300" />
           </button>
           <button
             type="button"
             onClick={onSwitchToCardsView}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-gray-200 hover:text-white backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 transition active:scale-95 cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] shrink-0"
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-slate-200 hover:text-white bg-[#1e293b] border border-[#334155] hover:bg-slate-700/60 transition active:scale-95 cursor-pointer shadow-sm shrink-0"
             title="Voltar para lista"
           >
             <List className="w-4 h-4 text-gray-200" />
@@ -237,7 +239,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute top-12 right-2 w-72 bg-[#12162a] border border-amber-500/40 rounded-2xl p-3.5 shadow-2xl shadow-black/90 z-50 backdrop-blur-2xl text-white"
+                className="absolute top-12 right-2 w-72 bg-[#1e293b] border border-[#334155] rounded-xl p-3.5 shadow-xl z-50 text-white"
               >
                 <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
                   <span className="text-xs font-bold text-amber-200">Ajustar Tempo de Sono</span>
@@ -469,45 +471,52 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
               )}
             </p>
 
-            {/* Center Icon: Sun ☀️ for day/soneca or Moon 🌙 for night/sono */}
+            {/* Center Icon: Sun for day/soneca or Moon for night/sono */}
             <div className="flex items-center justify-center mt-0.5">
               {isSleeping ? (
-                <span
-                  className="text-xl animate-pulse"
-                  title={isDaytime ? 'Soneca diurna em andamento ☀️' : 'Sono noturno em andamento 🌙'}
+                <div
+                  className="animate-pulse"
+                  title={isDaytime ? 'Soneca diurna em andamento' : 'Sono noturno em andamento'}
                 >
-                  {isDaytime ? '☀️' : '🌙'}
-                </span>
+                  {isDaytime ? (
+                    <Sun className="w-5 h-5 text-amber-400" />
+                  ) : (
+                    <Moon className="w-5 h-5 text-blue-400" />
+                  )}
+                </div>
               ) : (
-                <span
-                  className="text-xl drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"
-                  title={isDaytime ? 'Acordado (Dia / Soneca ☀️)' : 'Acordado (Noite / Sono 🌙)'}
+                <div
+                  title={isDaytime ? 'Acordado (Dia / Soneca)' : 'Acordado (Noite / Sono)'}
                 >
-                  {isDaytime ? '☀️' : '🌙'}
-                </span>
+                  {isDaytime ? (
+                    <Sun className="w-5 h-5 text-amber-400" />
+                  ) : (
+                    <Moon className="w-5 h-5 text-blue-400" />
+                  )}
+                </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Detailed Sleep Info Action - 3D Glass Button */}
+        {/* Detailed Sleep Info Action */}
         <button
           type="button"
           onClick={onOpenSleepModal}
-          className="mt-1.5 px-3.5 py-1.5 rounded-xl backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 text-xs text-white flex items-center gap-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] active:scale-95 transition cursor-pointer hover:border-white/50"
+          className="mt-1.5 px-3.5 py-1.5 rounded-xl bg-[#1e293b] border border-[#334155] text-xs text-white flex items-center gap-1.5 shadow-sm active:scale-95 transition cursor-pointer hover:border-slate-500"
         >
           <Info className="w-3.5 h-3.5 text-pink-300" />
           <span>
             {isSleeping
-              ? isDaytime ? 'Detalhes da Soneca ☀️' : 'Detalhes do Sono 🌙'
+              ? isDaytime ? 'Detalhes da Soneca' : 'Detalhes do Sono'
               : 'Configurar Horário Manualmente'}
           </span>
         </button>
       </div>
 
-      {/* Bottom Floating Quick Actions: 4 Circles matching the screenshot */}
+      {/* Bottom Floating Quick Actions: 4 buttons */}
       <div className="relative z-20 pb-4 px-6">
-        <div className="flex items-center justify-center space-x-5 sm:space-x-6">
+        <div className="flex items-center justify-center space-x-4 sm:space-x-5">
           {/* Action 1: Sun or Moon Button depending on Brazil time */}
           <button
             type="button"
@@ -519,26 +528,20 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
                   ? 'Iniciar modo soneca diurna'
                   : 'Iniciar modo sono noturno'
             }
-            className={`relative flex items-center justify-center w-13 h-13 rounded-full transition duration-200 active:scale-92 cursor-pointer backdrop-blur-[12px] ${
+            className={`relative flex items-center justify-center w-12 h-12 rounded-xl transition duration-150 active:scale-95 cursor-pointer border shadow-sm ${
               !isSleeping
                 ? isDaytime
-                  ? 'bg-gradient-to-br from-amber-400/35 via-yellow-500/25 to-white/10 border-t border-l border-white/50 border-b border-r border-amber-300/30 ring-2 ring-amber-400/90 shadow-[0_0_24px_rgba(251,191,36,0.55),inset_0_1.5px_2px_rgba(255,255,255,0.5)] text-amber-200'
-                  : 'bg-gradient-to-br from-indigo-500/35 via-purple-600/25 to-white/10 border-t border-l border-white/50 border-b border-r border-indigo-300/30 ring-2 ring-indigo-400/90 shadow-[0_0_24px_rgba(129,140,248,0.55),inset_0_1.5px_2px_rgba(255,255,255,0.5)] text-indigo-200'
-                : 'bg-gradient-to-br from-cyan-400/35 via-teal-500/25 to-white/10 border-t border-l border-white/50 border-b border-r border-cyan-300/30 ring-2 ring-cyan-400/80 shadow-[0_0_24px_rgba(56,189,248,0.5),inset_0_1.5px_2px_rgba(255,255,255,0.5)] text-cyan-200'
+                  ? 'bg-amber-600 hover:bg-amber-500 border-amber-400 text-white'
+                  : 'bg-indigo-600 hover:bg-indigo-500 border-indigo-400 text-white'
+                : 'bg-teal-600 hover:bg-teal-500 border-teal-400 text-white'
             }`}
           >
             {/* Sun or Moon icon */}
             <div className="flex flex-col items-center justify-center">
               {isDaytime ? (
-                <>
-                  <Sun className="w-6 h-6 stroke-[2.2] animate-spin-slow" />
-                  <div className="w-5 h-0.5 bg-current rounded-full mt-0.5 opacity-80" />
-                </>
+                <Sun className="w-5 h-5 stroke-[2.2]" />
               ) : (
-                <>
-                  <Moon className="w-6 h-6 stroke-[2.2]" />
-                  <div className="w-5 h-0.5 bg-current rounded-full mt-0.5 opacity-80" />
-                </>
+                <Moon className="w-5 h-5 stroke-[2.2]" />
               )}
             </div>
           </button>
@@ -552,19 +555,15 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
                 ? `Tocando: ${currentTrack.name} (Toque para abrir playlist)`
                 : 'Abrir Playlist de Ruídos Brancos para Dormir'
             }
-            className={`relative flex items-center justify-center w-12 h-12 rounded-full transition duration-200 active:scale-92 cursor-pointer backdrop-blur-[12px] ${
+            className={`relative flex items-center justify-center w-12 h-12 rounded-xl transition duration-150 active:scale-95 cursor-pointer border shadow-sm ${
               isPlayingSound
-                ? 'bg-gradient-to-br from-rose-500/40 to-pink-600/25 border-t border-l border-white/50 border-b border-r border-rose-300/30 ring-2 ring-rose-400/80 shadow-[0_0_20px_rgba(244,63,94,0.5),inset_0_1.5px_2px_rgba(255,255,255,0.4)] text-rose-200'
-                : 'bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 text-pink-300 hover:text-white shadow-[0_8px_20px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.35)]'
+                ? 'bg-rose-700 text-white border-rose-500'
+                : 'bg-[#1e293b] hover:bg-slate-700/60 border-[#334155] text-pink-300 hover:text-white'
             }`}
           >
-            {isPlayingSound ? (
-              <span className="text-xl animate-pulse">{currentTrack.emoji}</span>
-            ) : (
-              <CloudRain className="w-5 h-5 stroke-[2]" />
-            )}
+            <CloudRain className="w-5 h-5 stroke-[2]" />
             {isPlayingSound && (
-              <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-rose-400 animate-ping" />
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-400 animate-ping" />
             )}
           </button>
 
@@ -573,28 +572,24 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             type="button"
             onClick={onSwitchToDiaperGauge || onOpenDiaperModal}
             title="Abrir Medidor de Fralda"
-            className="relative flex items-center justify-center w-12 h-12 rounded-full backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 text-purple-200 hover:text-white transition duration-200 active:scale-92 cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.35)]"
+            className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-teal-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
           >
-            {/* Diaper shape emoji */}
-            <span className="text-xl">🧷</span>
-            {/* Small lock icon on top right just like in the screenshot */}
-            <div className="absolute -top-1 -right-0.5 w-4 h-4 rounded-full bg-black/50 border border-white/30 flex items-center justify-center backdrop-blur-xs">
-              <Lock className="w-2.5 h-2.5 text-gray-200" />
+            <Droplets className="w-5 h-5 text-teal-300" />
+            <div className="absolute -top-1 -right-0.5 w-4 h-4 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center">
+              <Lock className="w-2.5 h-2.5 text-gray-400" />
             </div>
           </button>
 
-          {/* Action 4: Formula / Mamadeira (with small lock glyph matching screenshot) */}
+          {/* Action 4: Formula / Mamadeira */}
           <button
             type="button"
             onClick={onOpenFormulaDrawer}
             title="Registrar Mamadeira"
-            className="relative flex items-center justify-center w-12 h-12 rounded-full bg-[#241f35] border border-purple-500/20 text-teal-300 hover:text-white transition duration-200 active:scale-92 cursor-pointer shadow-md"
+            className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-cyan-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
           >
-            {/* Baby bottle emoji */}
-            <span className="text-xl">🍼</span>
-            {/* Small lock icon on top right just like in the screenshot */}
-            <div className="absolute -top-1 -right-0.5 w-4 h-4 rounded-full bg-[#1b1c2e] border border-white/20 flex items-center justify-center">
-              <Lock className="w-2.5 h-2.5 text-gray-300" />
+            <Milk className="w-5 h-5 text-cyan-300" />
+            <div className="absolute -top-1 -right-0.5 w-4 h-4 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center">
+              <Lock className="w-2.5 h-2.5 text-gray-400" />
             </div>
           </button>
 
