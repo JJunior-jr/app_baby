@@ -411,7 +411,7 @@ export const EditActivityModal: React.FC<EditActivityModalProps> = ({
             </button>
             <button
               type="submit"
-              className="flex-1 py-3 rounded-2xl bg-gradient-to-r from-[#9a7ffc] to-[#7b5cf8] hover:from-[#8d6ff8] hover:to-[#6d4be6] text-[#0f0c22] font-extrabold text-xs shadow-lg shadow-purple-900/40 transition active:scale-95 flex items-center justify-center space-x-1.5"
+              className="flex-1 py-3 rounded-2xl bg-[#8d6ff8] hover:bg-[#7b5cf8] text-[#0f0c22] font-extrabold text-xs shadow-lg transition active:scale-95 flex items-center justify-center space-x-1.5"
             >
               <Save className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Salvar alterações</span>

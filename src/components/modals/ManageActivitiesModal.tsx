@@ -244,124 +244,40 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
           
           <div className="flex flex-col items-center">
             <h1 className="text-base font-bold text-white tracking-tight flex items-center gap-1.5">
-              <span>Configurações & Rotina</span>
+              <span>Gerenciar Atividades & Lembretes</span>
               {activeRemindersCount > 0 && (
                 <span className="text-purple-400 text-[10px] font-bold">
                   ({activeRemindersCount} ativo{activeRemindersCount > 1 ? 's' : ''})
                 </span>
               )}
             </h1>
-            <span className="text-[10px] text-gray-400">Lembretes regulares e personalização visual</span>
-          </div>
-
-          <div className="flex items-center space-x-1.5">
-            {onOpenSidebar && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenSidebar();
-                }}
-                title="Abrir Menu Lateral de Configurações"
-                className="h-8 px-2.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/35 border border-purple-500/30 flex items-center gap-1 text-purple-300 hover:text-white transition cursor-pointer text-xs font-bold"
-              >
-                <Sliders className="w-3.5 h-3.5" />
-                <span>Menu</span>
-              </button>
-            )}
-
-            {onOpenOfflineSync && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenOfflineSync();
-                }}
-                title="Sincronização Offline & Nuvem"
-                className="w-8 h-8 rounded-full bg-blue-500/20 hover:bg-blue-500/35 border border-blue-500/30 flex items-center justify-center text-blue-300 hover:text-white transition cursor-pointer"
-              >
-                <Cloud className="w-4 h-4" />
-              </button>
-            )}
-
-            {onOpenFeedback && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenFeedback();
-                }}
-                title="Opiniões & Sugestões"
-                className="w-8 h-8 rounded-full bg-purple-500/20 hover:bg-purple-500/35 border border-purple-500/30 flex items-center justify-center text-purple-300 hover:text-white transition cursor-pointer"
-              >
-                <MessageSquareHeart className="w-4 h-4" />
-              </button>
-            )}
-
-            {onOpenDiagnostics && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenDiagnostics();
-                }}
-                title="Permissões do Celular & Diagnóstico"
-                className="w-8 h-8 rounded-full bg-purple-500/20 hover:bg-purple-500/35 border border-purple-500/30 flex items-center justify-center text-purple-300 hover:text-white transition cursor-pointer"
-              >
-                <ShieldCheck className="w-4 h-4" />
-              </button>
-            )}
+            <span className="text-[10px] text-gray-400">Configure intervalos de lembretes e alertas para cada atividade</span>
           </div>
         </header>
 
-        {/* Tab Switcher: Lembretes vs Cores vs Calendário Celular with Gooey Animation */}
-        <div className="px-5 pt-3 shrink-0">
-          <GooeyTabs
-            tabs={[
-              {
-                id: 'reminders',
-                label: 'Lembretes',
-                icon: Bell,
-                badge: activeRemindersCount > 0 ? activeRemindersCount : undefined,
-              },
-              { id: 'palettes', label: 'Cores', icon: Palette },
-              { id: 'calendar', label: 'Calendário', icon: Smartphone },
-            ]}
-            activeTab={activeTab}
-            onChange={(id) => setActiveTab(id as 'reminders' | 'palettes' | 'calendar')}
-            layoutId="manage-main-tabs"
-            variant="light"
-            activeColor="#c49272"
-            activeTextColor="#ffffff"
-          />
-        </div>
-
         {/* In-Modal Toast Feedback */}
         {feedbackToast && (
-          <div className="absolute top-28 left-4 right-4 z-30 p-2.5 rounded-xl bg-gradient-to-r from-[#5a43c7] to-[#7158e2] text-white text-xs font-semibold shadow-xl border border-purple-300/40 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+          <div className="absolute top-28 left-4 right-4 z-30 p-2.5 rounded-xl bg-[#7158e2] text-white text-xs font-semibold shadow-xl border border-purple-300/40 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
             <span className="flex-1 pr-2">{feedbackToast}</span>
             <Check className="w-4 h-4 text-emerald-300 shrink-0" />
           </div>
         )}
 
-        {/* TAB 1: LEMBRETES */}
-        {activeTab === 'reminders' && (
-          <>
-            {/* Informative Guidance Banner: O que é e qual o objetivo */}
-            <div className="px-5 pt-3 shrink-0">
-              <div className="bg-[#151728] border border-purple-500/20 rounded-2xl p-3 flex items-start space-x-2.5">
-                <div className="w-7 h-7 rounded-xl bg-purple-900/50 border border-purple-500/30 flex items-center justify-center shrink-0 text-purple-300 mt-0.5">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <div className="text-[11px] text-gray-300 leading-relaxed">
-                  <span className="font-bold text-white">Lembretes automáticos: </span>
-                  Ative o toggle nas atividades para receber alertas nos intervalos recomendados. Isso ajuda a acompanhar a rotina e não perder horários cruciais.
-                </div>
-              </div>
+        {/* Guidance Banner */}
+        <div className="px-5 pt-3 shrink-0">
+          <div className="bg-[#151728] border border-purple-500/20 rounded-2xl p-3 flex items-start space-x-2.5">
+            <div className="w-7 h-7 rounded-xl bg-purple-900/50 border border-purple-500/30 flex items-center justify-center shrink-0 text-purple-300 mt-0.5">
+              <Sparkles className="w-4 h-4" />
             </div>
+            <div className="text-[11px] text-gray-300 leading-relaxed">
+              <span className="font-bold text-white">Lembretes automáticos: </span>
+              Ative o toggle nas atividades para receber alertas nos intervalos recomendados. Isso ajuda a acompanhar a rotina e não perder horários cruciais.
+            </div>
+          </div>
+        </div>
 
-            {/* Activities List */}
-            <div className="flex-1 overflow-y-auto px-5 py-3 space-y-3.5 no-scrollbar">
+        {/* Activities List */}
+        <div className="flex-1 overflow-y-auto px-5 py-3 space-y-3.5 no-scrollbar">
           {activities.map((act) => {
             const reminderConfig = getOrCreateReminder(act);
             const isEnabled = reminderConfig.enabled;
@@ -594,190 +510,33 @@ export const ManageActivitiesModal: React.FC<ManageActivitiesModalProps> = ({
             );
           })}
         </div>
-        </>
-        )}
-
-        {/* TAB 2: PALETAS DE CORES (60/30/10) */}
-        {activeTab === 'palettes' && (
-          <div className="flex-1 overflow-y-auto px-5 py-3 no-scrollbar">
-            <ThemeSelector initialTab={initialSubTab} />
-          </div>
-        )}
-
-        {/* TAB 3: CALENDÁRIOS DO CELULAR */}
-        {activeTab === 'calendar' && (
-          <div className="flex-1 overflow-y-auto px-5 py-3.5 space-y-3.5 no-scrollbar animate-in fade-in">
-            <div
-              className="p-3.5 rounded-2xl border text-xs space-y-1.5"
-              style={{
-                backgroundColor: 'var(--color-secondary)',
-                borderColor: 'var(--color-border)',
-              }}
-            >
-              <div className="flex items-center space-x-2 text-white font-bold">
-                <Smartphone className="w-4 h-4 text-emerald-400" />
-                <span>Sincronizar com seu Smartphone</span>
-              </div>
-              <p className="text-[11px] text-gray-300 leading-relaxed">
-                Conecte a rotina do John diretamente à sua agenda pessoal favorita no Android ou
-                computador.
-              </p>
-            </div>
-
-            {/* Provider Quick Cards */}
-            <div className="space-y-2.5">
-              {/* Google Calendar */}
-              <div className="p-3 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-between gooey-card-hover">
-                <div className="flex items-center space-x-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center shadow-xs">
-                    <span className="text-xs font-black text-blue-600">G</span>
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white">Google Agenda</h4>
-                    <p className="text-[10px] text-gray-400">Google Calendar no celular e web</p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onOpenCalendarSync) {
-                      onClose();
-                      onOpenCalendarSync();
-                    }
-                  }}
-                  className="px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer gooey-btn"
-                >
-                  <span>Gerenciar</span>
-                  <ExternalLink className="w-3 h-3" />
-                </button>
-              </div>
-
-              {/* Microsoft Outlook */}
-              <div className="p-3 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-between gooey-card-hover">
-                <div className="flex items-center space-x-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-[#0078d4] flex items-center justify-center shadow-xs">
-                    <span className="text-xs font-black text-white">O</span>
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white">Microsoft Outlook</h4>
-                    <p className="text-[10px] text-gray-400">Outlook & Office 365</p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onOpenCalendarSync) {
-                      onClose();
-                      onOpenCalendarSync();
-                    }
-                  }}
-                  className="px-2.5 py-1.5 rounded-xl bg-[#0078d4] hover:bg-[#006cc1] text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer gooey-btn"
-                >
-                  <span>Gerenciar</span>
-                  <ExternalLink className="w-3 h-3" />
-                </button>
-              </div>
-
-              {/* Calendário Nativo do Android / Celular */}
-              <div className="p-3 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 flex items-center justify-between gooey-card-hover">
-                <div className="flex items-center space-x-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center shadow-xs">
-                    <Smartphone className="w-3.5 h-3.5 text-black stroke-[2.5]" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white">Calendário Nativo Android</h4>
-                    <p className="text-[10px] text-gray-400">Samsung, Xiaomi & Motorola (.ics)</p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const sample = calendarSyncService.getDefaultRoutineEvents();
-                    calendarSyncService.exportToAndroidCalendar(sample);
-                    setFeedbackToast('Exportado para a agenda do celular!');
-                    setTimeout(() => setFeedbackToast(null), 3000);
-                  }}
-                  className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer gooey-btn"
-                >
-                  <Download className="w-3 h-3" />
-                  <span>Baixar .ics</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Big Launch Button */}
-            {onOpenCalendarSync && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenCalendarSync();
-                }}
-                className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg flex items-center justify-center gap-2 transition cursor-pointer active:scale-[0.99] gooey-btn"
-              >
-                <CalendarIcon className="w-4 h-4" />
-                <span>Abrir Central Completa de Integração</span>
-              </button>
-            )}
-          </div>
-        )}
 
         {/* Bottom Actions */}
         <footer
           className="p-4 pt-3 pb-5 border-t border-white/5 flex items-center gap-3 shrink-0"
           style={{ backgroundColor: 'var(--color-dominant)' }}
         >
-          {activeTab === 'reminders' ? (
-            <>
-              <button
-                type="button"
-                onClick={onOpenNewActivity}
-                className="flex-1 py-3.5 rounded-2xl bg-[#1b1e33] hover:bg-[#252945] active:scale-[0.99] text-purple-200 font-bold text-sm border border-purple-500/30 flex items-center justify-center space-x-2 transition shadow cursor-pointer"
-              >
-                <Plus className="w-4 h-4 stroke-[2.5]" />
-                <span>Nova Atividade</span>
-              </button>
+          <button
+            type="button"
+            onClick={onOpenNewActivity}
+            className="flex-1 py-3.5 rounded-2xl bg-[#1b1e33] hover:bg-[#252945] active:scale-[0.99] text-purple-200 font-bold text-sm border border-purple-500/30 flex items-center justify-center space-x-2 transition shadow cursor-pointer"
+          >
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            <span>Nova Atividade</span>
+          </button>
 
-              <button
-                type="button"
-                onClick={onClose}
-                style={{
-                  backgroundColor: 'var(--color-accent)',
-                  color: 'var(--color-accent-text)',
-                }}
-                className="flex-1 py-3.5 rounded-2xl active:scale-[0.99] font-extrabold text-sm shadow-lg flex items-center justify-center space-x-2 transition cursor-pointer"
-              >
-                <Check className="w-4 h-4 stroke-[2.5]" />
-                <span>Salvar & Fechar</span>
-              </button>
-            </>
-          ) : activeTab === 'palettes' ? (
-            <button
-              type="button"
-              onClick={onClose}
-              style={{
-                backgroundColor: 'var(--color-accent)',
-                color: 'var(--color-accent-text)',
-              }}
-              className="w-full py-3.5 rounded-2xl active:scale-[0.99] font-extrabold text-sm shadow-lg flex items-center justify-center space-x-2 transition cursor-pointer"
-            >
-              <Check className="w-4 h-4 stroke-[2.5]" />
-              <span>Concluir Seleção</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={onClose}
-              style={{
-                backgroundColor: 'var(--color-accent)',
-                color: 'var(--color-accent-text)',
-              }}
-              className="w-full py-3.5 rounded-2xl active:scale-[0.99] font-extrabold text-sm shadow-lg flex items-center justify-center space-x-2 transition cursor-pointer"
-            >
-              <Check className="w-4 h-4 stroke-[2.5]" />
-              <span>Fechar</span>
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              backgroundColor: 'var(--color-accent)',
+              color: 'var(--color-accent-text)',
+            }}
+            className="flex-1 py-3.5 rounded-2xl active:scale-[0.99] font-extrabold text-sm shadow-lg flex items-center justify-center space-x-2 transition cursor-pointer"
+          >
+            <Check className="w-4 h-4 stroke-[2.5]" />
+            <span>Salvar & Fechar</span>
+          </button>
         </footer>
 
       </div>

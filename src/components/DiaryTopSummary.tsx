@@ -292,11 +292,8 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
   return (
     <div
       id="diary-top-summary-container"
-      className="w-full mb-3 rounded-2xl backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 shadow-[0_12px_36px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] overflow-hidden transition-all duration-300 relative"
+      className="w-full mb-3 rounded-xl bg-[#1e293b] border border-[#334155] shadow-sm overflow-hidden transition-all duration-300 relative"
     >
-      {/* Specular Liquid Glass Top Highlight */}
-      <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-white/25 via-white/5 to-transparent pointer-events-none" />
-      <div className="glass-reflection-line" />
 
       {/* Header Bar: Title + Live Status Badge + Toggle */}
       <div className="px-3.5 py-2.5 flex items-center justify-between border-b border-white/15 relative z-10">
@@ -334,8 +331,7 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
           {/* 1. SECTION: DYNAMIC LIVE TIMERS (Tempo sem mamar e Tempo acordado) */}
           <div className="grid grid-cols-2 gap-2.5">
             {/* Live Timer 1: Tempo sem mamar */}
-            <div className="relative overflow-hidden rounded-xl backdrop-blur-md bg-gradient-to-br from-white/18 via-purple-500/15 to-white/5 border-t border-l border-white/35 border-b border-r border-white/15 p-2.5 flex flex-col justify-between shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]">
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+            <div className="relative overflow-hidden rounded-xl bg-[#0f172a] border border-[#334155] p-2.5 flex flex-col justify-between shadow-sm">
               <div className="flex items-center justify-between mb-1.5 relative z-10">
                 <span className="text-[10px] font-bold text-purple-200 uppercase tracking-wider flex items-center gap-1">
                   <Baby className="w-3 h-3 text-purple-300" />
@@ -366,13 +362,12 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
 
             {/* Live Timer 2: Tempo acordado / dormindo */}
             <div
-              className={`relative overflow-hidden rounded-xl backdrop-blur-md p-2.5 flex flex-col justify-between border-t border-l border-white/35 border-b border-r border-white/15 shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] ${
+              className={`relative overflow-hidden rounded-xl p-2.5 flex flex-col justify-between border border-[#334155] bg-[#0f172a] shadow-sm ${
                 liveDynamicMetrics.liveSleepStatus.isSleeping
-                  ? 'bg-gradient-to-br from-white/18 via-indigo-500/20 to-white/5 text-indigo-100'
-                  : 'bg-gradient-to-br from-white/18 via-amber-500/18 to-white/5 text-amber-100'
+                  ? 'text-indigo-100'
+                  : 'text-amber-100'
               }`}
             >
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
               <div className="flex items-center justify-between mb-1.5">
                 <span
                   className={`text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ${
@@ -426,9 +421,8 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
 
           {/* 2. SECTION: TOTALS (Quantidade Ofertada x Consumida & Sono Total x Acordado Total) */}
           <div className="grid grid-cols-2 gap-2.5 pt-0.5">
-            {/* Nutrição: Ofertado vs Consumido - 3D Glass Card */}
-            <div className="rounded-xl backdrop-blur-md bg-gradient-to-br from-white/18 via-cyan-500/10 to-white/5 border-t border-l border-white/35 border-b border-r border-white/15 p-2.5 flex flex-col justify-between shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] relative overflow-hidden">
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+            {/* Nutrição: Ofertado vs Consumido - Solid Card */}
+            <div className="rounded-xl backdrop-blur-md bg-[#1e293b]/90 border border-slate-700/60 p-2.5 flex flex-col justify-between shadow-lg relative overflow-hidden">
               <div className="flex items-center justify-between mb-2 relative z-10">
                 <div className="flex items-center space-x-1.5">
                   <div className="w-5 h-5 rounded-md bg-white/20 border border-white/35 flex items-center justify-center text-cyan-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
@@ -467,7 +461,7 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
               {/* Progress Bar */}
               <div className="w-full bg-black/40 h-1.5 rounded-full mt-2 overflow-hidden border border-white/10 relative z-10">
                 <div
-                  className="bg-gradient-to-r from-cyan-400 to-purple-400 h-full rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]"
+                  className="bg-cyan-500 h-full rounded-full transition-all duration-500"
                   style={{
                     width: `${
                       nutritionMetrics.totalOfferedMl > 0
@@ -487,9 +481,8 @@ export const DiaryTopSummary: React.FC<DiaryTopSummaryProps> = ({
               )}
             </div>
 
-            {/* Sono: Sono Total vs Acordado Total - 3D Glass Card */}
-            <div className="rounded-xl backdrop-blur-md bg-gradient-to-br from-white/18 via-amber-500/10 to-white/5 border-t border-l border-white/35 border-b border-r border-white/15 p-2.5 flex flex-col justify-between shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] relative overflow-hidden">
-              <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+            {/* Sono: Sono Total vs Acordado Total - Solid Card */}
+            <div className="rounded-xl backdrop-blur-md bg-[#1e293b]/90 border border-slate-700/60 p-2.5 flex flex-col justify-between shadow-lg relative overflow-hidden">
               <div className="flex items-center justify-between mb-2 relative z-10">
                 <div className="flex items-center space-x-1.5">
                   <div className="w-5 h-5 rounded-md bg-white/20 border border-white/35 flex items-center justify-center text-amber-300 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">

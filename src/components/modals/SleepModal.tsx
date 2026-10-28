@@ -265,7 +265,7 @@ export const SleepModal: React.FC<SleepModalProps> = ({ isOpen, onClose, onSave 
             onClick={handleSave}
             className={`w-full py-4 rounded-2xl font-extrabold text-base transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg active:scale-[0.98] ${
               isRegisteredGreen || isInProgress
-                ? 'bg-gradient-to-r from-[#16a34a] to-[#22c55e] text-white shadow-emerald-500/30 ring-2 ring-emerald-400/50'
+                ? 'bg-[#16a34a] text-white shadow-emerald-500/30 ring-2 ring-emerald-400/50'
                 : 'bg-[#eab308] hover:bg-[#f59e0b] text-[#1c1917] shadow-amber-500/20'
             }`}
           >

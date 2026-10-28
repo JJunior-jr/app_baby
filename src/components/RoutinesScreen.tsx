@@ -206,7 +206,8 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
           <button
             type="button"
             onClick={() => setIsAdding(!isAdding)}
-            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-[#9a7ffc] hover:bg-[#886cf2] text-[#131127] text-xs font-bold shadow-md shadow-purple-900/30 transition active:scale-95 cursor-pointer"
+            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold shadow-md transition active:scale-95 cursor-pointer"
+            style={{ backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }}
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Novo Agendamento</span>
@@ -214,38 +215,35 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
         </div>
       </header>
 
-      {/* Daily Progress Banner - 3D Glassmorphic Panel */}
-      <section className="backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-purple-500/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 rounded-2xl p-4 shadow-[0_12px_32px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] relative overflow-hidden space-y-2.5">
-        <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-        <div className="glass-reflection-line" />
-
-        <div className="flex items-center justify-between text-xs font-bold text-slate-100 relative z-10">
+      {/* Daily Progress Banner */}
+      <section className="bg-[#1e293b] border border-[#334155] rounded-xl p-4 shadow-sm relative overflow-hidden space-y-2.5">
+        <div className="flex items-center justify-between text-xs font-bold text-gray-100 relative z-10">
           <span className="flex items-center gap-1.5 text-purple-300">
             <Clock className="w-4 h-4" />
             <span>Progresso da Rotina Diária</span>
           </span>
-          <span className="text-emerald-300 font-extrabold font-mono tracking-tight">{progressPercent}% Concluído</span>
+          <span className="text-emerald-400 font-extrabold font-mono tracking-tight">{progressPercent}% Concluído</span>
         </div>
 
         {/* Bar */}
-        <div className="w-full h-2.5 bg-black/40 border border-white/10 rounded-full overflow-hidden p-0.5 relative z-10">
+        <div className="w-full h-2.5 bg-[#0f172a] border border-[#334155] rounded-full overflow-hidden p-0.5 relative z-10">
           <div
-            className="h-full bg-gradient-to-r from-purple-500 via-indigo-500 to-emerald-400 transition-all duration-300 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"
-            style={{ width: `${progressPercent}%` }}
+            className="h-full transition-all duration-300 rounded-full"
+            style={{ width: `${progressPercent}%`, backgroundColor: 'var(--color-accent)' }}
           />
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-slate-300 font-medium pt-0.5 relative z-10">
+        <div className="flex items-center justify-between text-[11px] text-gray-300 font-medium pt-0.5 relative z-10">
           <span>{completedCount} de {routines.length} agendamentos finalizados</span>
-          <span className="text-slate-400">Hoje</span>
+          <span className="text-gray-400">Hoje</span>
         </div>
       </section>
 
       {/* Calendar Integration Promo Banner */}
       {onOpenCalendarSync && (
-        <section className="bg-gradient-to-r from-[#171b36] via-[#1c1d3c] to-[#142633] border border-purple-500/25 hover:border-purple-500/40 rounded-2xl p-3.5 shadow-sm transition-all flex items-center justify-between gap-3">
+        <section className="bg-[#1e293b] border border-[#334155] hover:border-purple-500/40 rounded-xl p-3.5 shadow-sm transition-all flex items-center justify-between gap-3">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-300 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-purple-950/60 border border-purple-500/30 flex items-center justify-center text-purple-300 shrink-0">
               <Smartphone className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
@@ -264,7 +262,8 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
           <button
             type="button"
             onClick={onOpenCalendarSync}
-            className="px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 active:scale-95 text-white text-xs font-bold shrink-0 flex items-center gap-1 shadow-md shadow-purple-900/30 transition cursor-pointer"
+            className="px-3 py-2 rounded-xl active:scale-95 text-xs font-bold shrink-0 flex items-center gap-1 shadow-sm transition cursor-pointer"
+            style={{ backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }}
           >
             <span>Conectar</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -284,11 +283,16 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
             key={tab.id}
             type="button"
             onClick={() => setFilterPeriod(tab.id)}
-            className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl text-xs font-semibold transition shrink-0 backdrop-blur-[12px] shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] ${
+            className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl text-xs font-semibold transition shrink-0 ${
               filterPeriod === tab.id
-                ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white border border-white/35'
-                : 'bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 text-gray-200 hover:border-white/40'
+                ? 'text-white border border-white/30 shadow-sm'
+                : 'bg-[#1e293b] border border-[#334155] text-gray-200 hover:border-gray-400'
             }`}
+            style={
+              filterPeriod === tab.id
+                ? { backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }
+                : undefined
+            }
           >
             {tab.icon && <tab.icon className="w-3.5 h-3.5" />}
             <span>{tab.label}</span>
@@ -298,8 +302,7 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
 
       {/* Form: Add new schedule */}
       {isAdding && (
-        <form onSubmit={handleAddRoutine} className="backdrop-blur-[12px] bg-gradient-to-br from-white/25 via-white/10 to-white/5 border-t border-l border-white/45 border-b border-r border-white/20 rounded-2xl p-4 space-y-3 animate-in fade-in-50 shadow-[0_16px_40px_rgba(0,0,0,0.45),inset_0_1.5px_1.5px_rgba(255,255,255,0.55)] relative overflow-hidden">
-          <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+        <form onSubmit={handleAddRoutine} className="bg-[#1e293b] border border-[#334155] rounded-xl p-4 space-y-3 animate-in fade-in-50 shadow-sm relative overflow-hidden">
           <h3 className="text-sm font-bold text-white relative z-10">Criar Novo Horário</h3>
           
           <div className="grid grid-cols-2 gap-2 relative z-10">
@@ -309,7 +312,7 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
                 type="time"
                 value={newTime}
                 onChange={(e) => setNewTime(e.target.value)}
-                className="w-full bg-white/10 border border-white/20 rounded-xl p-2 text-xs text-white backdrop-blur-md"
+                className="w-full bg-[#0f172a] border border-[#334155] rounded-xl p-2 text-xs text-white"
               />
             </div>
             <div>
@@ -317,7 +320,7 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
               <select
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value as any)}
-                className="w-full bg-white/10 border border-white/20 rounded-xl p-2 text-xs text-white backdrop-blur-md"
+                className="w-full bg-[#0f172a] border border-[#334155] rounded-xl p-2 text-xs text-white"
               >
                 <option value="feed" className="bg-[#181a2d]">Alimentação</option>
                 <option value="sleep" className="bg-[#181a2d]">Sono</option>
@@ -336,21 +339,22 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Ex: Passeio ao ar livre"
-              className="w-full bg-white/10 border border-white/20 rounded-xl p-2.5 text-xs text-white backdrop-blur-md placeholder:text-gray-400"
+              className="w-full bg-[#0f172a] border border-[#334155] rounded-xl p-2.5 text-xs text-white placeholder:text-gray-400"
             />
           </div>
 
           <div className="flex space-x-2 pt-1 relative z-10">
             <button
               type="submit"
-              className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white text-xs font-bold shadow-md border border-white/35 active:scale-98 transition"
+              className="flex-1 py-2.5 rounded-xl text-xs font-bold shadow-sm active:scale-98 transition cursor-pointer"
+              style={{ backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }}
             >
               Salvar Agendamento
             </button>
             <button
               type="button"
               onClick={() => setIsAdding(false)}
-              className="px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-xs text-gray-200 hover:bg-white/15 transition"
+              className="px-4 py-2.5 rounded-xl bg-[#0f172a] border border-[#334155] text-xs text-gray-200 hover:bg-[#1e293b] transition"
             >
               Cancelar
             </button>
@@ -363,14 +367,12 @@ export const RoutinesScreen: React.FC<RoutinesScreenProps> = ({
         {displayedRoutines.map((routine) => (
           <div
             key={routine.id}
-            className={`p-3.5 rounded-2xl border-t border-l border-white/40 border-b border-r border-white/15 backdrop-blur-[12px] transition-all flex items-center justify-between relative overflow-hidden shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] ${
+            className={`p-3.5 rounded-xl border transition-all flex items-center justify-between relative overflow-hidden shadow-sm ${
               routine.completed
-                ? 'bg-gradient-to-br from-white/10 via-emerald-950/20 to-white/5 opacity-80 border-emerald-500/30'
-                : 'bg-gradient-to-br from-white/20 via-white/10 to-white/5 hover:border-white/50'
+                ? 'bg-emerald-950/20 border-emerald-500/30 text-gray-300'
+                : 'bg-[#1e293b] border-[#334155] hover:border-gray-400 text-white'
             }`}
           >
-            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-            <div className="glass-reflection-line" />
             {/* Left: Checkbox + Time + Info */}
             <div className="flex items-center space-x-3">
               <button

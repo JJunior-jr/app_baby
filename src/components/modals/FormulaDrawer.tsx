@@ -166,7 +166,7 @@ export const FormulaDrawer: React.FC<FormulaDrawerProps> = ({
                   onClick={() => setOfferedMl(vol)}
                   className={`py-1.5 px-1 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 ${
                     isSelected
-                      ? 'bg-gradient-to-br from-[#7158e2] to-[#9a7ffc] text-white shadow-md shadow-purple-900/40 ring-2 ring-purple-400'
+                      ? 'bg-[#7158e2] text-white shadow-md ring-2 ring-purple-400'
                       : 'bg-[#1b1e36] text-gray-300 hover:bg-[#232847] border border-gray-800'
                   }`}
                 >
@@ -230,7 +230,7 @@ export const FormulaDrawer: React.FC<FormulaDrawerProps> = ({
                   onClick={() => setLeftoverMl(vol)}
                   className={`py-1.5 px-1 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 ${
                     isSelected
-                      ? 'bg-gradient-to-br from-teal-600 to-teal-400 text-white shadow-md shadow-teal-900/40 ring-2 ring-teal-300'
+                      ? 'bg-teal-500 text-white shadow-md ring-2 ring-teal-300'
                       : 'bg-[#1b1e36] text-gray-300 hover:bg-[#232847] border border-gray-800'
                   }`}
                 >
@@ -275,10 +275,10 @@ export const FormulaDrawer: React.FC<FormulaDrawerProps> = ({
             <div
               className={`h-full transition-all duration-300 rounded-full ${
                 consumedPercentage >= 80
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-400'
+                  ? 'bg-emerald-500'
                   : consumedPercentage >= 50
-                  ? 'bg-gradient-to-r from-purple-500 to-indigo-400'
-                  : 'bg-gradient-to-r from-amber-500 to-rose-400'
+                  ? 'bg-purple-500'
+                  : 'bg-amber-500'
               }`}
               style={{ width: `${Math.min(100, consumedPercentage)}%` }}
             />
@@ -303,7 +303,7 @@ export const FormulaDrawer: React.FC<FormulaDrawerProps> = ({
           <button
             type="button"
             onClick={handleConfirm}
-            className="flex-1 py-3 rounded-2xl bg-gradient-to-r from-[#7158e2] to-[#9a7ffc] hover:opacity-95 text-[#0d0f1e] text-xs font-black flex items-center justify-center space-x-2 shadow-lg shadow-purple-900/40 active:scale-98 transition"
+            className="flex-1 py-3 rounded-2xl bg-[#7158e2] hover:bg-[#5f47c8] text-white text-xs font-black flex items-center justify-center space-x-2 shadow-lg active:scale-98 transition"
           >
             <Check className="w-4 h-4 stroke-[3]" />
             <span>Salvar {consumedMl}ml ({consumedPercentage}%)</span>

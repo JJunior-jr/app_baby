@@ -151,7 +151,7 @@ export const FeedbackPromptModal: React.FC<FeedbackPromptModalProps> = ({
             {/* Dynamic context trigger banner */}
             {triggerContext?.headline && (
               <div
-                className="p-3.5 rounded-2xl border text-xs space-y-1 bg-gradient-to-r from-purple-950/40 via-indigo-950/30 to-purple-950/20"
+                className="p-3.5 rounded-2xl border text-xs space-y-1 bg-[#1a1830]"
                 style={{ borderColor: 'var(--color-border)' }}
               >
                 <div className="flex items-center space-x-1.5 text-purple-300 font-bold">

@@ -626,7 +626,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         {/* VIP AI Assistant Bar (Desativado da interface do usuário, código preservado) */}
         {isAiAssistantVisible && (
           <section className="relative bg-[#16182a] border border-[#272a44] rounded-2xl p-3 shadow-sm">
-            <div className="absolute -top-2 left-4 px-1.5 py-0.2 rounded bg-gradient-to-r from-amber-500 to-yellow-400 text-[8.5px] font-black text-[#1c1917] tracking-wider uppercase flex items-center gap-1 shadow-sm">
+            <div className="absolute -top-2 left-4 px-1.5 py-0.2 rounded bg-amber-500 text-[8.5px] font-black text-[#1c1917] tracking-wider uppercase flex items-center gap-1 shadow-sm">
               <span>👑 VIP</span>
             </div>
 
@@ -676,9 +676,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 title="Lista de Atividades"
                 className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                   homeViewType === 'list'
-                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md border border-white/30'
+                    ? 'text-white shadow-md border border-white/30'
                     : 'text-gray-300 hover:text-white'
                 }`}
+                style={
+                  homeViewType === 'list'
+                    ? { backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }
+                    : undefined
+                }
               >
                 <List className="w-3.5 h-3.5" />
                 <span>Lista</span>
@@ -689,9 +694,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 title="Visão Minimalista / Gauge"
                 className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                   homeViewType === 'gauge'
-                    ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white shadow-md border border-white/30'
-                    : 'text-purple-300 hover:text-white'
+                    ? 'text-white shadow-md border border-white/30'
+                    : 'text-gray-300 hover:text-white'
                 }`}
+                style={
+                  homeViewType === 'gauge'
+                    ? { backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }
+                    : undefined
+                }
               >
                 <span>⭕</span>
                 <span>Gauge</span>
@@ -1079,7 +1089,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
           {/* Progress Bar */}
           <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-teal-400 to-emerald-400 w-full rounded-full"></div>
+            <div className="h-full bg-emerald-500 w-full rounded-full"></div>
           </div>
         </section>
       )}

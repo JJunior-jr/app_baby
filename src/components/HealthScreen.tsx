@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Calendar, Pill, Activity, CheckCircle2, ChevronRight, Plus } from 'lucide-react';
+import { ShieldCheck, Calendar, Pill, Activity, CheckCircle2, ChevronRight } from 'lucide-react';
 
 export const HealthScreen: React.FC = () => {
   return (
@@ -21,11 +21,8 @@ export const HealthScreen: React.FC = () => {
         </div>
       </header>
 
-      {/* Biometric Stats Card - 3D Glassmorphism */}
-      <section className="backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 rounded-2xl p-4 space-y-3 shadow-[0_12px_32px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] relative overflow-hidden">
-        <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent pointer-events-none" />
-        <div className="glass-reflection-line" />
-
+      {/* Biometric Stats Card - Solid Card */}
+      <section className="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 space-y-3 shadow-md relative overflow-hidden">
         <div className="flex items-center justify-between relative z-10">
           <span className="text-sm font-bold text-white flex items-center gap-1.5">
             <Activity className="w-4 h-4 text-pink-300" />
@@ -35,19 +32,19 @@ export const HealthScreen: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-3 gap-2 text-center pt-1 relative z-10">
-          <div className="bg-white/10 p-3 rounded-xl border border-white/20 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.25)]">
+          <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
             <span className="text-[10px] text-gray-300 block font-medium">Peso</span>
             <span className="text-lg font-black text-white block mt-0.5">6.85 kg</span>
             <span className="text-[9.5px] text-emerald-300 font-semibold">Percentil 50</span>
           </div>
 
-          <div className="bg-white/10 p-3 rounded-xl border border-white/20 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.25)]">
+          <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
             <span className="text-[10px] text-gray-300 block font-medium">Altura</span>
             <span className="text-lg font-black text-white block mt-0.5">64.0 cm</span>
             <span className="text-[9.5px] text-emerald-300 font-semibold">Percentil 55</span>
           </div>
 
-          <div className="bg-white/10 p-3 rounded-xl border border-white/20 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.25)]">
+          <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
             <span className="text-[10px] text-gray-300 block font-medium">Perímetro C.</span>
             <span className="text-lg font-black text-white block mt-0.5">41.5 cm</span>
             <span className="text-[9.5px] text-emerald-300 font-semibold">Percentil 50</span>
@@ -55,13 +52,10 @@ export const HealthScreen: React.FC = () => {
         </div>
       </section>
 
-      {/* Pediatric Appointment - 3D Glassmorphism */}
-      <section className="backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 rounded-2xl p-4 flex items-center justify-between shadow-[0_12px_32px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] relative overflow-hidden">
-        <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent pointer-events-none" />
-        <div className="glass-reflection-line" />
-
+      {/* Pediatric Appointment - Solid Card */}
+      <section className="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 flex items-center justify-between shadow-md relative overflow-hidden">
         <div className="flex items-center space-x-3 relative z-10">
-          <div className="w-11 h-11 rounded-xl bg-white/15 border-t border-l border-white/35 border-b border-r border-white/15 text-purple-200 flex items-center justify-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
+          <div className="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700 text-purple-200 flex items-center justify-center">
             <Calendar className="w-5 h-5 text-pink-300" />
           </div>
           <div>
@@ -77,11 +71,8 @@ export const HealthScreen: React.FC = () => {
         <ChevronRight className="w-5 h-5 text-gray-300 relative z-10" />
       </section>
 
-      {/* Vaccines Check - 3D Glassmorphism */}
-      <section className="backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 rounded-2xl p-4 space-y-3 shadow-[0_12px_32px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] relative overflow-hidden">
-        <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent pointer-events-none" />
-        <div className="glass-reflection-line" />
-
+      {/* Vaccines Check - Solid Card */}
+      <section className="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 space-y-3 shadow-md relative overflow-hidden">
         <div className="flex items-center justify-between relative z-10">
           <span className="text-sm font-bold text-white flex items-center gap-1.5">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
@@ -100,7 +91,7 @@ export const HealthScreen: React.FC = () => {
           ].map((vac) => (
             <div
               key={vac.name}
-              className="flex items-center justify-between p-2.5 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]"
+              className="flex items-center justify-between p-2.5 rounded-xl bg-slate-800/80 border border-slate-700"
             >
               <div>
                 <span className="font-semibold text-white block">{vac.name}</span>
@@ -118,13 +109,10 @@ export const HealthScreen: React.FC = () => {
         </div>
       </section>
 
-      {/* Daily Supplement - 3D Glassmorphism */}
-      <section className="backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 rounded-2xl p-4 flex items-center justify-between shadow-[0_12px_32px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)] relative overflow-hidden">
-        <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 via-white/5 to-transparent pointer-events-none" />
-        <div className="glass-reflection-line" />
-
+      {/* Daily Supplement - Solid Card */}
+      <section className="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 flex items-center justify-between shadow-md relative overflow-hidden">
         <div className="flex items-center space-x-3 relative z-10">
-          <div className="w-11 h-11 rounded-xl bg-amber-500/20 border-t border-l border-white/35 border-b border-r border-white/15 text-amber-300 flex items-center justify-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]">
+          <div className="w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-300 flex items-center justify-center">
             <Pill className="w-5 h-5" />
           </div>
           <div>

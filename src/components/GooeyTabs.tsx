@@ -84,21 +84,15 @@ export const GooeyTabs: React.FC<GooeyTabsProps> = ({
                 className={`absolute inset-0 rounded-xl pointer-events-none shadow-md ${
                   variant === 'light'
                     ? 'border-2 border-black/80 bg-[#c49272]'
-                    : variant === 'primary'
-                    ? 'bg-purple-600 shadow-[0_4px_16px_rgba(147,51,234,0.45)]'
-                    : 'bg-purple-600 shadow-[0_4px_14px_rgba(147,51,234,0.4)]'
+                    : ''
                 }`}
-                style={
-                  activeColor
-                    ? {
-                        backgroundColor: activeColor,
-                        color: activeTextColor || '#ffffff',
-                      }
-                    : undefined
-                }
+                style={{
+                  backgroundColor: activeColor || 'var(--color-accent)',
+                  color: activeTextColor || 'var(--color-accent-text)',
+                }}
               >
                 {/* Molten liquid sheen highlight */}
-                <div className="absolute top-0 inset-x-2 h-1/2 bg-gradient-to-b from-white/30 to-transparent rounded-t-lg pointer-events-none" />
+                <div className="absolute top-0 inset-x-2 h-1/2 bg-white/10 rounded-t-lg pointer-events-none" />
               </motion.div>
             );
           })}

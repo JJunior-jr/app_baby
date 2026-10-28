@@ -29,11 +29,13 @@ import { GooeyTabs } from './GooeyTabs';
 interface ThemeSelectorProps {
   onPaletteChanged?: (palette: PaletteTheme) => void;
   initialTab?: 'colors' | 'typography' | 'shapes';
+  hideHeaderTabs?: boolean;
 }
 
 export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
   onPaletteChanged,
   initialTab = 'colors',
+  hideHeaderTabs = false,
 }) => {
   const [currentPalette, setCurrentPalette] = useState<PaletteTheme>(themeService.getCurrentPalette());
   const [palettes, setPalettes] = useState<PaletteTheme[]>(themeService.getAllPalettes());
@@ -145,7 +147,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
     <div className="space-y-4">
       {/* Toast */}
       {toastMessage && (
-        <div className="p-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-semibold shadow-lg border border-purple-400/40 flex items-center justify-between animate-in fade-in slide-in-from-top-1">
+        <div className="p-2.5 rounded-xl bg-purple-600 text-white text-xs font-semibold shadow-md border border-purple-400/40 flex items-center justify-between animate-in fade-in slide-in-from-top-1">
           <span className="flex items-center gap-1.5">
             <Check className="w-3.5 h-3.5 text-emerald-300" />
             {toastMessage}
@@ -153,19 +155,20 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({
         </div>
       )}
 
-      {/* Navigation Tabs with Gooey Animation */}
-      <GooeyTabs
-        tabs={[
-          { id: 'colors', label: 'Cores 60/30/10', icon: Palette },
-          { id: 'typography', label: 'Tipografia', icon: Type },
-          { id: 'shapes', label: 'Formas & Brilho', icon: Box },
-        ]}
-        activeTab={activeTab}
-        onChange={(id) => setActiveTab(id as 'colors' | 'typography' | 'shapes')}
-        layoutId="theme-subtabs"
-        variant="dark"
-        activeColor="#9333ea"
-      />
+      {/* Navigation Tabs with Gooey Animation (Hidden when viewed directly from section) */}
+      {!hideHeaderTabs && (
+        <GooeyTabs
+          tabs={[
+            { id: 'colors', label: 'Cores 60/30/10', icon: Palette },
+            { id: 'typography', label: 'Tipografia', icon: Type },
+            { id: 'shapes', label: 'Formas & Brilho', icon: Box },
+          ]}
+          activeTab={activeTab}
+          onChange={(id) => setActiveTab(id as 'colors' | 'typography' | 'shapes')}
+          layoutId="theme-subtabs"
+          variant="dark"
+        />
+      )}
 
       {/* TAB 1: CORES 60/30/10 */}
       {activeTab === 'colors' && (

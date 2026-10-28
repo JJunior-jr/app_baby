@@ -36,9 +36,14 @@ export const FloatingGaugeSelector: React.FC<FloatingGaugeSelectorProps> = ({
           onClick={() => onSelectMode('sono')}
           className={`px-2.5 py-1 rounded-lg text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
             currentMode === 'sono'
-              ? 'bg-blue-600 text-white font-bold shadow-xs'
+              ? 'text-white font-bold shadow-xs'
               : 'font-medium text-slate-300 hover:text-white hover:bg-slate-700/50'
           }`}
+          style={
+            currentMode === 'sono'
+              ? { backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }
+              : undefined
+          }
           title={isDay ? 'Visão Soneca (Dia)' : 'Visão Sono (Noite)'}
         >
           {isDay ? (
@@ -55,9 +60,14 @@ export const FloatingGaugeSelector: React.FC<FloatingGaugeSelectorProps> = ({
           onClick={() => onSelectMode('amamentacao')}
           className={`px-2.5 py-1 rounded-lg text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
             currentMode === 'amamentacao'
-              ? 'bg-blue-600 text-white font-bold shadow-xs'
+              ? 'text-white font-bold shadow-xs'
               : 'font-medium text-slate-300 hover:text-white hover:bg-slate-700/50'
           }`}
+          style={
+            currentMode === 'amamentacao'
+              ? { backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }
+              : undefined
+          }
           title="Visão Peito"
         >
           <Baby className="w-3.5 h-3.5 text-rose-300" />
@@ -70,9 +80,14 @@ export const FloatingGaugeSelector: React.FC<FloatingGaugeSelectorProps> = ({
           onClick={() => onSelectMode('fralda')}
           className={`px-2.5 py-1 rounded-lg text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
             currentMode === 'fralda'
-              ? 'bg-blue-600 text-white font-bold shadow-xs'
+              ? 'text-white font-bold shadow-xs'
               : 'font-medium text-slate-300 hover:text-white hover:bg-slate-700/50'
           }`}
+          style={
+            currentMode === 'fralda'
+              ? { backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }
+              : undefined
+          }
           title="Visão Fralda"
         >
           <Droplets className="w-3.5 h-3.5 text-teal-300" />

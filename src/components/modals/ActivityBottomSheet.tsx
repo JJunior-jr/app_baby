@@ -56,7 +56,7 @@ export const ActivityBottomSheet: React.FC<ActivityBottomSheetProps> = ({
             onClick={() => {
               onSelectActivity('sono');
             }}
-            className="flex flex-col justify-between items-start h-[126px] p-4 rounded-2xl bg-gradient-to-br from-amber-400/20 via-amber-500/10 to-yellow-600/10 backdrop-blur-xl border border-amber-300/30 hover:border-amber-300/50 active:scale-[0.98] transition-all text-left group shadow-[0_4px_24px_rgba(245,158,11,0.12)]"
+            className="flex flex-col justify-between items-start h-[126px] p-4 rounded-2xl bg-[#1e293b] backdrop-blur-xl border border-amber-300/30 hover:border-amber-300/50 active:scale-[0.98] transition-all text-left group shadow-md"
           >
             <div className="text-amber-300 group-hover:scale-105 transition-transform">
               <Moon className="w-8 h-8 fill-current drop-shadow-sm" />
@@ -72,7 +72,7 @@ export const ActivityBottomSheet: React.FC<ActivityBottomSheetProps> = ({
             onClick={() => {
               onSelectActivity('amamentacao');
             }}
-            className="flex flex-col justify-between items-start h-[126px] p-4 rounded-2xl bg-gradient-to-br from-violet-500/20 via-purple-500/15 to-indigo-500/10 backdrop-blur-xl border border-purple-300/30 hover:border-purple-300/50 active:scale-[0.98] transition-all text-left group shadow-[0_4px_24px_rgba(139,92,246,0.12)]"
+            className="flex flex-col justify-between items-start h-[126px] p-4 rounded-2xl bg-[#1e293b] backdrop-blur-xl border border-purple-300/30 hover:border-purple-300/50 active:scale-[0.98] transition-all text-left group shadow-md"
           >
             <div className="text-purple-300 group-hover:scale-105 transition-transform">
               <Baby className="w-8 h-8 drop-shadow-sm" />
@@ -88,7 +88,7 @@ export const ActivityBottomSheet: React.FC<ActivityBottomSheetProps> = ({
             onClick={() => {
               onSelectActivity('fralda');
             }}
-            className="flex flex-col justify-between items-start h-[126px] p-4 rounded-2xl bg-gradient-to-br from-teal-400/20 via-emerald-400/15 to-cyan-500/10 backdrop-blur-xl border border-teal-300/30 hover:border-teal-300/50 active:scale-[0.98] transition-all text-left group shadow-[0_4px_24px_rgba(20,184,166,0.12)]"
+            className="flex flex-col justify-between items-start h-[126px] p-4 rounded-2xl bg-[#1e293b] backdrop-blur-xl border border-teal-300/30 hover:border-teal-300/50 active:scale-[0.98] transition-all text-left group shadow-md"
           >
             <div className="text-teal-300 group-hover:scale-105 transition-transform">
               <svg className="w-8 h-8 drop-shadow-sm" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -111,7 +111,7 @@ export const ActivityBottomSheet: React.FC<ActivityBottomSheetProps> = ({
             onClick={() => {
               onSelectActivity('comeu');
             }}
-            className="flex flex-col justify-between items-start h-[126px] p-4 rounded-2xl bg-gradient-to-br from-rose-400/20 via-pink-500/15 to-orange-400/10 backdrop-blur-xl border border-rose-300/30 hover:border-rose-300/50 active:scale-[0.98] transition-all text-left group shadow-[0_4px_24px_rgba(244,63,94,0.12)]"
+            className="flex flex-col justify-between items-start h-[126px] p-4 rounded-2xl bg-[#1e293b] backdrop-blur-xl border border-rose-300/30 hover:border-rose-300/50 active:scale-[0.98] transition-all text-left group shadow-md"
           >
             <div className="text-rose-300 group-hover:scale-105 transition-transform">
               <Utensils className="w-8 h-8 drop-shadow-sm" />

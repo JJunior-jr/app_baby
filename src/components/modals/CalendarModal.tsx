@@ -254,7 +254,7 @@ export const CalendarModal: React.FC<CalendarModalProps> = ({
                 onClick={() => handleSelect(item.dateStr)}
                 className={`relative h-11 rounded-xl flex flex-col items-center justify-center transition-all ${
                   isSelected
-                    ? 'bg-gradient-to-b from-[#9a7ffc] to-[#7b5cf8] text-[#110e24] font-extrabold scale-105 shadow-md shadow-purple-900/50 ring-2 ring-purple-300'
+                    ? 'bg-[#9a7ffc] text-[#110e24] font-extrabold scale-105 shadow-md ring-2 ring-purple-300'
                     : item.isCurrentMonth
                     ? 'text-gray-200 hover:bg-[#1f2342] hover:text-white active:scale-95'
                     : 'text-gray-600 hover:text-gray-400 hover:bg-[#181b30]'

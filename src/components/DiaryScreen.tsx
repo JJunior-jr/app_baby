@@ -193,11 +193,16 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
         <button
           type="button"
           onClick={onOpenFilterModal}
-          className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl text-xs font-semibold transition shrink-0 backdrop-blur-[12px] shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] ${
+          className={`flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl text-xs font-semibold transition shrink-0 ${
             selectedFilter !== 'all'
-              ? 'bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white border border-white/35'
-              : 'bg-gradient-to-br from-white/20 via-white/10 to-white/5 text-gray-200 border-t border-l border-white/40 border-b border-r border-white/15 hover:border-white/40'
+              ? 'text-white border border-white/30 shadow-sm'
+              : 'bg-[#1e293b] border border-[#334155] text-gray-200 hover:border-gray-400'
           }`}
+          style={
+            selectedFilter !== 'all'
+              ? { backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }
+              : undefined
+          }
         >
           <Filter className="w-3.5 h-3.5" />
           <span>{getFilterLabel()}</span>
@@ -207,7 +212,7 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
         <button
           type="button"
           onClick={() => setIsCalendarModalOpen(true)}
-          className="flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl backdrop-blur-[12px] bg-gradient-to-br from-white/20 via-white/10 to-white/5 border-t border-l border-white/40 border-b border-r border-white/15 text-xs font-semibold text-gray-200 shrink-0 hover:border-white/40 transition cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)]"
+          className="flex items-center space-x-1.5 px-3.5 py-1.8 rounded-xl bg-[#1e293b] border border-[#334155] text-xs font-semibold text-gray-200 shrink-0 hover:border-gray-400 transition cursor-pointer shadow-sm"
         >
           <Calendar className="w-3.5 h-3.5 text-purple-300" />
           <span>{formattedDateLabel}</span>
@@ -269,9 +274,6 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                   borderRadius: 'var(--app-card-radius)',
                 }}
               >
-                {/* Floating specular top highlight for liquid glass reflection */}
-                <div className="absolute inset-x-0 top-0 h-1/2 rounded-t-2xl bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
-
                 {/* Day name */}
                 <span
                   className={`text-[9.5px] uppercase tracking-wider relative z-10 ${
@@ -342,7 +344,8 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
             <button
               type="button"
               onClick={onOpenActivitySheet}
-              className="px-6 py-3.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-sm shadow-md active:scale-95 transition flex items-center space-x-2"
+              className="px-6 py-3.5 rounded-xl font-extrabold text-sm shadow-md active:scale-95 transition flex items-center space-x-2"
+              style={{ backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }}
             >
               <Plus className="w-4 h-4 stroke-[3]" />
               <span>Registrar agora</span>
@@ -378,7 +381,6 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                   <div className="space-y-3">
                     {periodActivities.map((act) => (
                       <div key={act.id} className="relative">
-                        {/* Card Container - Solid neutral card style */}
                         <div
                           className={`p-3.5 rounded-xl bg-[#1e293b] border border-[#334155] shadow-sm transition relative overflow-visible ${
                             act.type === 'fralda'
@@ -388,12 +390,6 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
                               : ''
                           }`}
                         >
-                          {/* Inner Clipped Highlights Layer */}
-                          <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
-                            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent" />
-                            <div className="glass-reflection-line" />
-                          </div>
-
                           <div className="flex items-center justify-between relative z-10">
                             {/* Title & Icon */}
                             <div className="flex items-center space-x-2.5">
@@ -521,7 +517,7 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
       </div>
 
       {/* Docked Day Summary Pill Bar with Clickable Filter Icons */}
-      <section className="shrink-0 px-3 pt-1.5 pb-1 z-20 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/95 to-transparent">
+      <section className="shrink-0 px-3 pt-1.5 pb-1 z-20 bg-[#0f172a]">
         {selectedFilter !== 'all' && (
           <div className="mb-1.5 flex items-center justify-between px-3 py-1 bg-[#1e293b] border border-purple-500/40 rounded-xl text-xs shadow-md animate-in fade-in slide-in-from-bottom-2">
             <span className="text-purple-200 flex items-center gap-1.5 font-medium text-[11px]">
@@ -614,7 +610,8 @@ export const DiaryScreen: React.FC<DiaryScreenProps> = ({
             type="button"
             onClick={onOpenActivitySheet}
             aria-label="Registrar nova atividade"
-            className="w-10 h-10 rounded-xl bg-[#9a7ffc] hover:bg-[#886cf2] text-[#131127] flex items-center justify-center shadow-lg shadow-purple-900/40 active:scale-95 transition shrink-0 ml-0.5 cursor-pointer"
+            className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg active:scale-95 transition shrink-0 ml-0.5 cursor-pointer"
+            style={{ backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }}
           >
             <Plus className="w-5 h-5 stroke-[2.8]" />
           </button>

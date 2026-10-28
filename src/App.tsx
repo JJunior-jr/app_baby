@@ -23,6 +23,7 @@ import { FeedbackPromptModal } from './components/modals/FeedbackPromptModal';
 import { FeedbackManagementModal } from './components/modals/FeedbackManagementModal';
 import { OfflineSyncModal } from './components/modals/OfflineSyncModal';
 import { NotificationCenterModal } from './components/modals/NotificationCenterModal';
+import { ThemeModal } from './components/modals/ThemeModal';
 import { EditActivityModal } from './components/modals/EditActivityModal';
 import { SettingsSidebar, SettingsSection } from './components/SettingsSidebar';
 
@@ -77,6 +78,7 @@ export default function App() {
   const [isOfflineSyncOpen, setIsOfflineSyncOpen] = useState(false);
   const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
   const [isSettingsSidebarOpen, setIsSettingsSidebarOpen] = useState(false);
+  const [themeModalSection, setThemeModalSection] = useState<'colors' | 'typography' | 'shapes' | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<ActivityItem | null>(null);
   const [manageActivitiesInitialTab, setManageActivitiesInitialTab] = useState<'reminders' | 'palettes' | 'calendar'>('reminders');
@@ -389,6 +391,7 @@ export default function App() {
     setIsFeedbackPromptOpen(false);
     setIsFeedbackManagementOpen(false);
     setIsSettingsSidebarOpen(false);
+    setThemeModalSection(null);
     setActiveTab(tab);
   };
 
@@ -396,23 +399,15 @@ export default function App() {
   const handleNavigateFromSettingsSidebar = (section: SettingsSection) => {
     setIsSettingsSidebarOpen(false);
     if (section === 'colors') {
-      setManageActivitiesInitialTab('palettes');
-      setManageActivitiesInitialSubTab('colors');
-      setIsManageActivitiesOpen(true);
+      setThemeModalSection('colors');
     } else if (section === 'typography') {
-      setManageActivitiesInitialTab('palettes');
-      setManageActivitiesInitialSubTab('typography');
-      setIsManageActivitiesOpen(true);
+      setThemeModalSection('typography');
     } else if (section === 'shapes') {
-      setManageActivitiesInitialTab('palettes');
-      setManageActivitiesInitialSubTab('shapes');
-      setIsManageActivitiesOpen(true);
+      setThemeModalSection('shapes');
     } else if (section === 'reminders') {
-      setManageActivitiesInitialTab('reminders');
       setIsManageActivitiesOpen(true);
     } else if (section === 'calendar') {
-      setManageActivitiesInitialTab('calendar');
-      setIsManageActivitiesOpen(true);
+      setIsCalendarSyncOpen(true);
     } else if (section === 'diagnostics') {
       setIsDiagnosticsOpen(true);
     } else if (section === 'notifications') {
@@ -582,6 +577,12 @@ export default function App() {
             setIsManageActivitiesOpen(false);
             setIsSettingsSidebarOpen(true);
           }}
+        />
+
+        <ThemeModal
+          isOpen={themeModalSection !== null}
+          section={themeModalSection || 'colors'}
+          onClose={() => setThemeModalSection(null)}
         />
 
         <NewActivityModal

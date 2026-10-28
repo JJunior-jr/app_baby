@@ -534,7 +534,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
                 const rightM = Math.max(0, Math.round(rightSeconds / 60));
                 onSaveSession(leftM, rightM);
               }}
-              className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-xs font-bold shadow-lg shadow-pink-600/30 flex items-center space-x-1.5 active:scale-95 transition cursor-pointer"
+              className="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-md flex items-center space-x-1.5 active:scale-95 transition cursor-pointer"
             >
               <Check className="w-3.5 h-3.5 stroke-[3]" />
               <span>Concluir e Salvar Mamada</span>
@@ -749,7 +749,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
                       onQuickSaveFormula(quickOffered, quickLeftover);
                       setIsFormulaPopoverOpen(false);
                     }}
-                    className="w-full py-2 px-3 mb-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-[#0c0d16] font-black text-xs flex items-center justify-center space-x-1.5 shadow-md active:scale-95 transition cursor-pointer"
+                    className="w-full py-2 px-3 mb-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-[#0c0d16] font-black text-xs flex items-center justify-center space-x-1.5 shadow-md active:scale-95 transition cursor-pointer"
                   >
                     <Check className="w-3.5 h-3.5 stroke-[3]" />
                     <span>

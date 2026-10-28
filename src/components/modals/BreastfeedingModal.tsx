@@ -168,7 +168,7 @@ export const BreastfeedingModal: React.FC<BreastfeedingModalProps> = ({
                     onClick={() => setActiveSide(activeSide === 'left' ? null : 'left')}
                     className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full flex flex-col items-center justify-center transition-all cursor-pointer ${
                       activeSide === 'left'
-                        ? 'bg-gradient-to-br from-[#7158e2] to-[#9a7ffc] text-white ring-4 ring-purple-300 shadow-xl shadow-purple-900/60 scale-105 animate-pulse'
+                        ? 'bg-[#7158e2] text-white ring-4 ring-purple-300 shadow-xl shadow-purple-900/60 scale-105 animate-pulse'
                         : 'bg-[#17192b] border-2 border-[#433c75]/90 text-gray-200 hover:border-purple-500'
                     }`}
                   >
@@ -198,7 +198,7 @@ export const BreastfeedingModal: React.FC<BreastfeedingModalProps> = ({
                     onClick={() => setActiveSide(activeSide === 'right' ? null : 'right')}
                     className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full flex flex-col items-center justify-center transition-all cursor-pointer ${
                       activeSide === 'right'
-                        ? 'bg-gradient-to-br from-[#7158e2] to-[#9a7ffc] text-white ring-4 ring-purple-300 shadow-xl shadow-purple-900/60 scale-105 animate-pulse'
+                        ? 'bg-[#7158e2] text-white ring-4 ring-purple-300 shadow-xl shadow-purple-900/60 scale-105 animate-pulse'
                         : 'bg-[#17192b] border-2 border-[#433c75]/90 text-gray-200 hover:border-purple-500'
                     }`}
                   >
@@ -393,7 +393,7 @@ export const BreastfeedingModal: React.FC<BreastfeedingModalProps> = ({
               </div>
 
               {/* Real-time Calculation Summary */}
-              <div className="bg-gradient-to-r from-[#1e1938] via-[#1a2238] to-[#12222a] border border-purple-500/40 rounded-2xl p-3 space-y-2">
+              <div className="bg-[#1e1938] border border-purple-500/40 rounded-2xl p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-white flex items-center gap-1.5">
                     <span>🍼 Ingerido pelo bebê:</span>
@@ -410,7 +410,7 @@ export const BreastfeedingModal: React.FC<BreastfeedingModalProps> = ({
 
                 <div className="w-full bg-black/40 h-2 rounded-full overflow-hidden border border-white/10">
                   <div
-                    className="h-full bg-gradient-to-r from-purple-500 to-teal-400 transition-all duration-300"
+                    className="h-full bg-purple-500 transition-all duration-300"
                     style={{ width: `${Math.min(100, consumedPercentage)}%` }}
                   />
                 </div>

@@ -12,7 +12,7 @@ export interface WhiteNoiseTrack {
   tag: string;
   description: string;
   color: string;
-  bgGradient: string;
+  bgColor: string;
   accentBorder: string;
 }
 
@@ -24,7 +24,7 @@ export const WHITE_NOISE_TRACKS: WhiteNoiseTrack[] = [
     tag: 'Chuva Calmante',
     description: 'Gotas aconchegantes com filtragem relaxante para embalar o sono',
     color: 'text-sky-300',
-    bgGradient: 'from-sky-500/20 to-blue-600/10',
+    bgColor: 'bg-sky-950/40',
     accentBorder: 'border-sky-500/40',
   },
   {
@@ -34,7 +34,7 @@ export const WHITE_NOISE_TRACKS: WhiteNoiseTrack[] = [
     tag: 'Estático Clássico',
     description: 'Som contínuo uniforme que mascara ruídos repentinos da casa',
     color: 'text-violet-300',
-    bgGradient: 'from-violet-500/20 to-purple-600/10',
+    bgColor: 'bg-violet-950/40',
     accentBorder: 'border-violet-500/40',
   },
   {
@@ -44,7 +44,7 @@ export const WHITE_NOISE_TRACKS: WhiteNoiseTrack[] = [
     tag: 'Fluxo Marítimo',
     description: 'Marés suaves que sobem e descem em ritmo calmante',
     color: 'text-teal-300',
-    bgGradient: 'from-teal-500/20 to-emerald-600/10',
+    bgColor: 'bg-teal-950/40',
     accentBorder: 'border-teal-500/40',
   },
   {
@@ -54,7 +54,7 @@ export const WHITE_NOISE_TRACKS: WhiteNoiseTrack[] = [
     tag: 'Aconchego Fetal',
     description: 'Som abafado e batimentos cardíacos que recriam a gestação',
     color: 'text-rose-300',
-    bgGradient: 'from-rose-500/20 to-pink-600/10',
+    bgColor: 'bg-rose-950/40',
     accentBorder: 'border-rose-500/40',
   },
   {
@@ -64,7 +64,7 @@ export const WHITE_NOISE_TRACKS: WhiteNoiseTrack[] = [
     tag: 'Zumbido Constante',
     description: 'Frequência estável e monótona que ajuda a aprofundar o sono',
     color: 'text-cyan-300',
-    bgGradient: 'from-cyan-500/20 to-blue-600/10',
+    bgColor: 'bg-cyan-950/40',
     accentBorder: 'border-cyan-500/40',
   },
   {
@@ -74,7 +74,7 @@ export const WHITE_NOISE_TRACKS: WhiteNoiseTrack[] = [
     tag: 'Brisa Tranquila',
     description: 'Oscilação relaxante do vento soprando suavemente',
     color: 'text-emerald-300',
-    bgGradient: 'from-emerald-500/20 to-teal-600/10',
+    bgColor: 'bg-emerald-950/40',
     accentBorder: 'border-emerald-500/40',
   },
 ];

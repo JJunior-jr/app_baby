@@ -112,7 +112,7 @@ export const WhiteNoisePlaylistModal: React.FC<WhiteNoisePlaylistModalProps> = (
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/10">
           <div className="flex items-center space-x-3">
-            <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-br from-rose-500/20 to-purple-600/20 border border-rose-500/30 flex items-center justify-center text-xl text-rose-300 shadow-inner">
+            <div className="relative w-10 h-10 rounded-2xl bg-purple-950/60 border border-purple-500/30 flex items-center justify-center text-xl text-purple-300">
               <span>🌧️</span>
               {isPlaying && (
                 <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-400 animate-ping" />
@@ -181,8 +181,8 @@ export const WhiteNoisePlaylistModal: React.FC<WhiteNoisePlaylistModalProps> = (
                 onClick={() => handleTogglePlay()}
                 className={`px-3.5 py-2 rounded-xl text-xs font-black flex items-center space-x-1.5 transition active:scale-95 cursor-pointer shadow-md ${
                   isPlaying
-                    ? 'bg-rose-500 text-white hover:bg-rose-600 shadow-rose-500/25'
-                    : 'bg-gradient-to-r from-teal-400 to-emerald-400 text-[#0c0d16] hover:from-teal-300 hover:to-emerald-300 shadow-teal-500/20'
+                    ? 'bg-rose-500 text-white hover:bg-rose-600'
+                    : 'bg-teal-500 text-[#0c0d16] hover:bg-teal-400 font-extrabold'
                 }`}
               >
                 {isPlaying ? (
@@ -305,7 +305,7 @@ export const WhiteNoisePlaylistModal: React.FC<WhiteNoisePlaylistModalProps> = (
                 onClick={() => handleTogglePlay(track.id)}
                 className={`p-2.5 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 active:scale-[0.98] ${
                   isSelected
-                    ? `bg-gradient-to-r ${track.bgGradient} ${track.accentBorder} shadow-lg ring-1 ring-purple-400/40`
+                    ? `${track.bgColor} ${track.accentBorder} shadow-md ring-1 ring-purple-400/40`
                     : 'bg-[#181a2f]/70 hover:bg-[#1f223d] border-white/5 text-gray-300'
                 }`}
               >
