@@ -15,6 +15,7 @@ import {
   Layers,
 } from 'lucide-react';
 import { UserProfile, ActivityItem } from '../types';
+import { FloatingGaugeSelector, GaugeMode } from './FloatingGaugeSelector';
 
 interface DiaperGaugeViewProps {
   currentUser: UserProfile | null;
@@ -24,6 +25,8 @@ interface DiaperGaugeViewProps {
   onSwitchToCardsView: () => void;
   onSwitchToSleepGauge: () => void;
   onSwitchToBreastfeedingGauge: () => void;
+  gaugeSubView?: GaugeMode;
+  onSelectGaugeMode?: (mode: GaugeMode) => void;
 }
 
 // Background twinkling stars
@@ -48,6 +51,8 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
   onSwitchToCardsView,
   onSwitchToSleepGauge,
   onSwitchToBreastfeedingGauge,
+  gaugeSubView,
+  onSelectGaugeMode,
 }) => {
   // State for popovers
   const [isOptionsPopoverOpen, setIsOptionsPopoverOpen] = useState(false);
@@ -374,110 +379,7 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
         ))}
       </div>
 
-      {/* Top Header Bar inside Gauge View (30% Secondary token) */}
-      <div className="relative z-20 px-4 pt-2.5 flex items-center justify-end">
-        {/* Right: Quick adjustment for last diaper & Lista switch */}
-        <div className="flex items-center space-x-1.5 shrink-0 pt-0.5" ref={adjustRef}>
-          <button
-            type="button"
-            onClick={() => setIsAdjustPopoverOpen(!isAdjustPopoverOpen)}
-            title="Ajustar horário da última troca"
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-slate-200 hover:text-white bg-[#1e293b] border border-[#334155] hover:bg-slate-700/60 transition active:scale-95 cursor-pointer shadow-sm"
-          >
-            <Settings2 className="w-4 h-4 text-teal-300" />
-          </button>
-          <button
-            type="button"
-            onClick={onSwitchToCardsView}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-slate-200 hover:text-white bg-[#1e293b] border border-[#334155] hover:bg-slate-700/60 transition active:scale-95 cursor-pointer shadow-sm"
-            title="Voltar para lista"
-          >
-            <List className="w-4 h-4 text-gray-200" />
-          </button>
 
-          {/* Popover to adjust last change time */}
-          <AnimatePresence>
-            {isAdjustPopoverOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                transition={{ duration: 0.15 }}
-                className="absolute top-12 right-2 w-72 bg-[#1e293b] border border-[#334155] rounded-xl p-3.5 shadow-xl z-50 text-white"
-              >
-                <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
-                  <span className="text-xs font-bold text-teal-200">Ajustar Última Troca</span>
-                  <span className="text-[10px] text-gray-400">Registrada às {lastTimeStr}</span>
-                </div>
-                <p className="text-[10px] text-gray-300 mb-2.5 leading-relaxed">
-                  Defina quando foi a última troca para atualizar o indicador de intervalo:
-                </p>
-                <div className="grid grid-cols-2 gap-1.5 mb-2.5">
-                  <button
-                    type="button"
-                    onClick={() => handleAdjustLastChange(0)}
-                    className="py-1 px-2 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 border border-teal-400/40 text-[11px] font-bold text-teal-200 cursor-pointer"
-                  >
-                    Agora mesmo
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleAdjustLastChange(30)}
-                    className="py-1 px-2 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 border border-teal-400/40 text-[11px] font-bold text-teal-200 cursor-pointer"
-                  >
-                    30 min atrás
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleAdjustLastChange(60)}
-                    className="py-1 px-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-[11px] font-bold text-cyan-200 cursor-pointer"
-                  >
-                    1 hora atrás
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleAdjustLastChange(120)}
-                    className="py-1 px-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-[11px] font-bold text-amber-200 cursor-pointer"
-                  >
-                    2 horas atrás
-                  </button>
-                </div>
-
-                {/* Opção personalizada de tempo solicitado pelo usuário */}
-                <div className="border-t border-white/10 pt-2.5">
-                  <span className="text-[10px] font-bold text-teal-300 block mb-1.5">
-                    Ou tempo personalizado (minutos atrás):
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <input
-                      type="number"
-                      min="0"
-                      placeholder="Ex: 45"
-                      value={customMinutesAgo}
-                      onChange={(e) => setCustomMinutesAgo(e.target.value)}
-                      className="flex-1 bg-white/10 border border-white/20 rounded-xl px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-teal-400 font-mono"
-                    />
-                    <button
-                      type="button"
-                      disabled={!customMinutesAgo || parseInt(customMinutesAgo, 10) < 0}
-                      onClick={() => {
-                        const mins = parseInt(customMinutesAgo, 10);
-                        if (!isNaN(mins) && mins >= 0) {
-                          handleAdjustLastChange(mins);
-                          setCustomMinutesAgo('');
-                        }
-                      }}
-                      className="py-1 px-3 rounded-xl bg-teal-600/40 hover:bg-teal-600/60 disabled:opacity-40 border border-teal-400/50 text-[11px] font-bold text-teal-200 cursor-pointer"
-                    >
-                      Aplicar
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
 
       {/* Toast feedback */}
       <AnimatePresence>
@@ -494,8 +396,8 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
       </AnimatePresence>
 
       {/* Centerpiece: Circular Arc Gauge */}
-      <div className="relative z-10 flex flex-col items-center justify-center flex-1 min-h-0 px-3">
-        <div className="relative w-[300px] h-[300px] flex items-center justify-center">
+      <div className="relative z-10 flex flex-col items-center justify-center flex-1 min-h-0 px-3 mt-2 sm:mt-1">
+        <div className="relative w-[260px] h-[260px] xs:w-[280px] xs:h-[280px] sm:w-[290px] sm:h-[290px] flex items-center justify-center">
           {/* SVG Arc Gauge with 0h to 4h scale markers */}
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 320 320" fill="none">
             <defs>

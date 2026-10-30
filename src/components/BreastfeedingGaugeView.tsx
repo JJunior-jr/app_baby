@@ -19,6 +19,7 @@ import {
   Settings2,
 } from 'lucide-react';
 import { UserProfile } from '../types';
+import { FloatingGaugeSelector, GaugeMode } from './FloatingGaugeSelector';
 
 interface BreastfeedingGaugeViewProps {
   currentUser: UserProfile | null;
@@ -35,6 +36,8 @@ interface BreastfeedingGaugeViewProps {
   onSwitchToCardsView: () => void;
   onSwitchToSleepGauge: () => void;
   onSwitchToDiaperGauge?: () => void;
+  gaugeSubView?: GaugeMode;
+  onSelectGaugeMode?: (mode: GaugeMode) => void;
 }
 
 // Background cosmic stars
@@ -69,6 +72,8 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
   onSwitchToCardsView,
   onSwitchToSleepGauge,
   onSwitchToDiaperGauge,
+  gaugeSubView,
+  onSelectGaugeMode,
 }) => {
   // Popover state for formula / bottle
   const [isFormulaPopoverOpen, setIsFormulaPopoverOpen] = useState(false);
@@ -208,141 +213,39 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
         ))}
       </div>
 
-      {/* Top Header Bar inside Gauge View (30% Secondary token) */}
-      <div className="relative z-20 px-4 pt-2.5 flex items-center justify-end">
-        {/* Right: Quick adjustment for 24h baseline or switch to list */}
-        <div className="flex items-center space-x-1.5 shrink-0 pt-0.5" ref={adjustRef}>
-          <button
-            type="button"
-            onClick={() => setIsAdjust24hOpen(!isAdjust24hOpen)}
-            title="Ajustar tempo acumulado nas 24h"
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-slate-200 hover:text-white bg-[#1e293b] border border-[#334155] hover:bg-slate-700/60 transition active:scale-95 cursor-pointer shadow-sm"
-          >
-            <Settings2 className="w-4 h-4 text-pink-300" />
-          </button>
-          <button
-            type="button"
-            onClick={onSwitchToCardsView}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-slate-200 hover:text-white bg-[#1e293b] border border-[#334155] hover:bg-slate-700/60 transition active:scale-95 cursor-pointer shadow-sm"
-            title="Voltar para lista"
-          >
-            <List className="w-4 h-4 text-gray-200" />
-          </button>
 
-          {/* Popover to adjust 24h baseline */}
-          <AnimatePresence>
-            {isAdjust24hOpen && onAdjust24hNursingSeconds && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                transition={{ duration: 0.15 }}
-                className="absolute top-12 right-2 w-72 bg-[#1e293b] border border-[#334155] rounded-xl p-3.5 shadow-xl z-50 text-white"
-              >
-                <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
-                  <span className="text-xs font-bold text-pink-200">Ajustar Total em 24h</span>
-                  <span className="text-[10px] text-gray-400 font-mono">
-                    {hoursInt}h {minsInt}m atuais
-                  </span>
-                </div>
-                <p className="text-[10px] text-gray-300 mb-2.5 leading-relaxed">
-                  Adicione ou subtraia tempo de peito já realizado nas 24h para acertar o gráfico:
-                </p>
-                <div className="grid grid-cols-2 gap-1.5 mb-2.5">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onAdjust24hNursingSeconds(15 * 60);
-                      setIsAdjust24hOpen(false);
-                    }}
-                    className="py-1 px-2 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 border border-pink-400/40 text-[11px] font-bold text-pink-200 cursor-pointer"
-                  >
-                    +15 min
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onAdjust24hNursingSeconds(30 * 60);
-                      setIsAdjust24hOpen(false);
-                    }}
-                    className="py-1 px-2 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 border border-pink-400/40 text-[11px] font-bold text-pink-200 cursor-pointer"
-                  >
-                    +30 min
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onAdjust24hNursingSeconds(60 * 60);
-                      setIsAdjust24hOpen(false);
-                    }}
-                    className="py-1 px-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-[11px] font-bold text-purple-200 cursor-pointer"
-                  >
-                    +1 hora
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onAdjust24hNursingSeconds(-15 * 60);
-                      setIsAdjust24hOpen(false);
-                    }}
-                    className="py-1 px-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-[11px] font-bold text-gray-300 cursor-pointer"
-                  >
-                    -15 min
-                  </button>
-                </div>
-
-                {/* Opção personalizada de tempo solicitado pelo usuário */}
-                <div className="border-t border-white/10 pt-2.5">
-                  <span className="text-[10px] font-bold text-pink-300 block mb-1.5">
-                    Ou tempo personalizado (em minutos):
-                  </span>
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder="Ex: 45"
-                      value={customMinutesInput}
-                      onChange={(e) => setCustomMinutesInput(e.target.value)}
-                      className="flex-1 bg-white/10 border border-white/20 rounded-xl px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-pink-400 font-mono"
-                    />
-                    <span className="text-[11px] text-gray-400 font-medium">min</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1.5 mb-1.5">
-                    <button
-                      type="button"
-                      disabled={!customMinutesInput || parseInt(customMinutesInput, 10) <= 0}
-                      onClick={() => handleApplyCustomMinutes(1)}
-                      className="py-1 px-2 rounded-xl bg-pink-600/40 hover:bg-pink-600/60 disabled:opacity-40 disabled:cursor-not-allowed border border-pink-400/50 text-[10.5px] font-bold text-white transition active:scale-95 cursor-pointer"
-                    >
-                      + Adicionar
-                    </button>
-                    <button
-                      type="button"
-                      disabled={!customMinutesInput || parseInt(customMinutesInput, 10) <= 0}
-                      onClick={() => handleApplyCustomMinutes(-1)}
-                      className="py-1 px-2 rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed border border-white/20 text-[10.5px] font-bold text-gray-300 transition active:scale-95 cursor-pointer"
-                    >
-                      - Subtrair
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    disabled={!customMinutesInput || parseInt(customMinutesInput, 10) < 0}
-                    onClick={handleSetExactTotalMinutes}
-                    className="w-full py-1 px-2 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 disabled:opacity-40 disabled:cursor-not-allowed border border-purple-400/40 text-[10px] font-bold text-purple-200 transition active:scale-95 cursor-pointer"
-                  >
-                    Definir total exato ({customMinutesInput || 0} min)
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
 
       {/* Centerpiece: The Circular 24-Hour Arc Gauge */}
-      <div className="relative z-10 flex flex-col items-center justify-center flex-1 min-h-0 px-3">
-        <div className="relative w-[300px] h-[300px] flex items-center justify-center">
+      <div className="relative z-10 flex flex-col items-center justify-center flex-1 min-h-0 px-3 my-auto">
+        {/* Display Mode Toggle: Positioned OUTSIDE above the gauge SVG */}
+        <div className="flex items-center space-x-1 mb-2 bg-[#0f172a]/90 backdrop-blur-md p-1 rounded-xl border border-[#334155] shadow-xs shrink-0 z-20">
+          <button
+            type="button"
+            onClick={() => setCenterDisplayMode('24h')}
+            className={`px-3 py-1 rounded-lg text-[10.5px] font-extrabold transition cursor-pointer ${
+              centerDisplayMode === '24h'
+                ? 'bg-pink-600/90 text-white shadow-xs'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Total 24h
+          </button>
+          <button
+            type="button"
+            onClick={() => setCenterDisplayMode('session')}
+            className={`px-3 py-1 rounded-lg text-[10.5px] font-extrabold transition cursor-pointer flex items-center gap-1 ${
+              centerDisplayMode === 'session'
+                ? 'bg-purple-600/90 text-white shadow-xs'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            {activeSide && <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-ping shrink-0" />}
+            <span>Sessão</span>
+          </button>
+        </div>
+
+        {/* SVG Arc Gauge Wrapper */}
+        <div className="relative w-[250px] h-[250px] xs:w-[270px] xs:h-[270px] sm:w-[285px] sm:h-[285px] flex items-center justify-center shrink-0">
           {/* SVG Arc Gauge with 24 Hours scale markers */}
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 320 320" fill="none">
             <defs>
@@ -384,26 +287,17 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
             />
 
             {/* 24-Hour Tick dots along track */}
-            {/* 0h tick dot */}
             <circle cx="76.6" cy="243.4" r="2.5" fill="#f472b6" opacity="0.6" />
-            {/* 3h tick dot (intermediate) */}
             <circle cx="56.0" cy="180.0" r="1.5" fill="#ffffff" opacity="0.3" />
-            {/* 6h tick dot */}
             <circle cx="51.0" cy="114.8" r="2.5" fill="#c084fc" opacity="0.6" />
-            {/* 9h tick dot (intermediate) */}
             <circle cx="98.0" cy="62.0" r="1.5" fill="#ffffff" opacity="0.3" />
-            {/* 12h tick dot (top center) */}
             <circle cx="160.0" cy="42.0" r="3" fill="#818cf8" opacity="0.7" />
-            {/* 15h tick dot (intermediate) */}
             <circle cx="222.0" cy="62.0" r="1.5" fill="#ffffff" opacity="0.3" />
-            {/* 18h tick dot */}
             <circle cx="269.0" cy="114.8" r="2.5" fill="#c084fc" opacity="0.6" />
-            {/* 21h tick dot (intermediate) */}
             <circle cx="264.0" cy="180.0" r="1.5" fill="#ffffff" opacity="0.3" />
-            {/* 24h tick dot */}
             <circle cx="243.4" cy="243.4" r="2.5" fill="#f472b6" opacity="0.6" />
 
-            {/* Foreground Progress Arc (Calculated from Nursing Hours / 24 Hours) */}
+            {/* Foreground Progress Arc */}
             <path
               d={trackPath}
               stroke="url(#nursingProgressGrad)"
@@ -415,7 +309,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
               className="transition-all duration-700 ease-out"
             />
 
-            {/* Scale Numbers around the Arc (0h, 6h, 12h, 18h, 24h) */}
+            {/* Scale Numbers around the Arc */}
             <text x="60" y="268" fill="#f472b6" fontSize="10" fontWeight="800" textAnchor="middle" opacity="0.85">
               0h
             </text>
@@ -433,100 +327,77 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
             </text>
           </svg>
 
-          {/* Gauge Center Content */}
-          <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-[230px]">
-            {/* Display Mode: Toggle between 24h Total and Active Session */}
-            <div className="flex items-center space-x-1 mb-1.5 bg-[#0f172a] p-1 rounded-xl border border-[#334155]">
-              <button
-                type="button"
-                onClick={() => setCenterDisplayMode('24h')}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition cursor-pointer ${
-                  centerDisplayMode === '24h'
-                    ? 'bg-pink-600/80 text-white shadow-xs'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                Total 24h
-              </button>
-              <button
-                type="button"
-                onClick={() => setCenterDisplayMode('session')}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-extrabold transition cursor-pointer flex items-center gap-1 ${
-                  centerDisplayMode === 'session'
-                    ? 'bg-purple-600/80 text-white shadow-xs'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                {activeSide && <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-ping shrink-0" />}
-                <span>Sessão</span>
-              </button>
-            </div>
-
-            {/* Main Big Digits */}
+          {/* Gauge Center Content: Compact & essential only to fit comfortably inside the ring */}
+          <div className="relative z-10 flex flex-col items-center justify-center text-center px-2 max-w-[190px]">
             {centerDisplayMode === '24h' ? (
-              <div className="relative my-0.5 cursor-pointer" onClick={() => setCenterDisplayMode('session')} title="Toque para ver a sessão atual">
-                <span className="text-[40px] sm:text-[44px] font-black tracking-tight text-white leading-none drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] font-mono">
+              <div
+                className="relative cursor-pointer flex flex-col items-center"
+                onClick={() => setCenterDisplayMode('session')}
+                title="Toque para ver a sessão atual"
+              >
+                <span className="text-[10px] text-pink-300 font-bold uppercase tracking-wider mb-0.5">
+                  no peito (24h)
+                </span>
+                <span className="text-[36px] sm:text-[40px] font-black tracking-tight text-white leading-none drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] font-mono">
                   {hoursInt.toString().padStart(2, '0')}h {minsInt.toString().padStart(2, '0')}m
                 </span>
-                <div className="flex items-center justify-center space-x-1 mt-1">
-                  <span className="text-[10px] text-pink-300 font-bold uppercase tracking-wider">
-                    no peito / 24hrs
-                  </span>
-                </div>
+                <span className="text-[9.5px] text-gray-300/80 font-medium mt-1">
+                  {progressPercent.toFixed(1)}% do dia
+                </span>
               </div>
             ) : (
-              <div className="relative my-0.5 cursor-pointer" onClick={() => setCenterDisplayMode('24h')} title="Toque para ver o total das 24h">
-                <span className="text-[44px] sm:text-[48px] font-black tracking-tight text-white leading-none drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] font-mono">
-                  {formatTime(currentSessionSeconds)}
-                </span>
-                <span className="block text-[10px] text-purple-300 font-bold uppercase tracking-wider mt-1">
+              <div
+                className="relative cursor-pointer flex flex-col items-center"
+                onClick={() => setCenterDisplayMode('24h')}
+                title="Toque para ver o total das 24h"
+              >
+                <span className="text-[10px] text-purple-300 font-bold uppercase tracking-wider mb-0.5">
                   mamada atual
                 </span>
+                <span className="text-[38px] sm:text-[42px] font-black tracking-tight text-white leading-none drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] font-mono">
+                  {formatTime(currentSessionSeconds)}
+                </span>
+                {activeSide && (
+                  <span className="text-[9.5px] text-pink-300 font-bold mt-1 animate-pulse">
+                    Peito {activeSide === 'left' ? 'Esquerdo' : 'Direito'}
+                  </span>
+                )}
               </div>
             )}
-
-            {/* 24-Hour Accuracy: Proporção Exata do dia */}
-            <div className="mt-1 text-pink-200/90 text-[10px] font-semibold flex items-center gap-1.5">
-              <Sparkles className="w-2.5 h-2.5 text-pink-300" />
-              <span>
-                {progressPercent.toFixed(1)}% do dia ({totalHoursFloat.toFixed(1)}h / 24h)
-              </span>
-            </div>
-
-            {/* Active Session Status & Side Breakdown */}
-            <div className="mt-2 flex flex-col items-center">
-              {activeSide ? (
-                <div className="flex items-center space-x-1.5 text-[10.5px] font-bold text-pink-300 animate-pulse">
-                  <span className="w-2 h-2 rounded-full bg-pink-400" />
-                  <span>Mamando no {activeSide === 'left' ? 'Peito Esquerdo' : 'Peito Direito'}</span>
-                </div>
-              ) : currentSessionSeconds > 0 ? (
-                <span className="text-[10.5px] font-semibold text-gray-300">
-                  Mamada em pausa ({formatTime(currentSessionSeconds)})
-                </span>
-              ) : (
-                <span className="text-[10px] text-gray-400">
-                  Toque em um peito para mamar
-                </span>
-              )}
-
-              {/* Side Breakdown tag */}
-              <div className="flex items-center space-x-2 text-[10px] text-gray-300 mt-1">
-                <span className={activeSide === 'left' ? 'text-pink-300 font-extrabold' : 'opacity-80'}>
-                  Esq: {formatTime(leftSeconds)}
-                </span>
-                <span className="text-gray-500">·</span>
-                <span className={activeSide === 'right' ? 'text-purple-300 font-extrabold' : 'opacity-80'}>
-                  Dir: {formatTime(rightSeconds)}
-                </span>
-              </div>
-            </div>
           </div>
         </div>
 
+        {/* Secondary Details & Prompts: Positioned OUTSIDE below the gauge SVG */}
+        <div className="mt-2.5 flex flex-col items-center shrink-0 z-20">
+          {activeSide ? (
+            <div className="flex items-center space-x-1.5 text-xs font-bold text-pink-300 animate-pulse bg-pink-950/40 px-3 py-1 rounded-full border border-pink-500/30">
+              <span className="w-2 h-2 rounded-full bg-pink-400" />
+              <span>Mamando no {activeSide === 'left' ? 'Peito Esquerdo' : 'Peito Direito'}</span>
+            </div>
+          ) : currentSessionSeconds > 0 ? (
+            <span className="text-xs font-semibold text-gray-200 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
+              Mamada em pausa ({formatTime(currentSessionSeconds)})
+            </span>
+          ) : (
+            <span className="text-xs font-medium text-gray-300 bg-slate-800/60 px-3 py-1 rounded-full border border-slate-700/60">
+              Toque em um peito para mamar
+            </span>
+          )}
+
+          {/* Side Breakdown tag */}
+          <div className="flex items-center space-x-2 text-[11px] text-gray-300 mt-1.5 font-medium">
+            <span className={activeSide === 'left' ? 'text-pink-300 font-extrabold' : 'opacity-85'}>
+              Esq: {formatTime(leftSeconds)}
+            </span>
+            <span className="text-gray-500">·</span>
+            <span className={activeSide === 'right' ? 'text-purple-300 font-extrabold' : 'opacity-85'}>
+              Dir: {formatTime(rightSeconds)}
+            </span>
+          </div>
+        </div>
         {/* Finish & Save Session Button (appears when active or current session > 0) */}
         {currentSessionSeconds > 0 && (
-          <div className="flex items-center space-x-2 mt-1">
+          <div className="flex items-center space-x-2 mt-2 z-20">
             <button
               type="button"
               onClick={() => {

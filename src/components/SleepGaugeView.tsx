@@ -27,6 +27,7 @@ import {
   WhiteNoiseTrack,
 } from '../services/whiteNoiseAudio';
 import { WhiteNoisePlaylistModal } from './modals/WhiteNoisePlaylistModal';
+import { FloatingGaugeSelector, GaugeMode } from './FloatingGaugeSelector';
 
 interface SleepGaugeViewProps {
   currentUser: UserProfile | null;
@@ -41,6 +42,8 @@ interface SleepGaugeViewProps {
   onSwitchToDiaperGauge?: () => void;
   onOpenNotificationCenter?: () => void;
   onAdjustSleepSeconds?: (deltaSeconds: number) => void;
+  gaugeSubView?: GaugeMode;
+  onSelectGaugeMode?: (mode: GaugeMode) => void;
 }
 
 // Generate deterministic stars for the night sky backdrop
@@ -67,6 +70,8 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
   onSwitchToDiaperGauge,
   onOpenNotificationCenter,
   onAdjustSleepSeconds,
+  gaugeSubView,
+  onSelectGaugeMode,
 }) => {
   // Sleep time adjustment state
   const [isAdjustSleepOpen, setIsAdjustSleepOpen] = useState(false);
@@ -210,147 +215,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
         ))}
       </div>
 
-      {/* Top Header Bar inside Gauge View (30% Secondary token) */}
-      <div className="relative z-20 px-4 pt-2.5 flex items-center justify-end">
-        {/* Right: Quick adjustment for sleep time & Lista switch */}
-        <div className="flex items-center space-x-1.5 shrink-0 pt-0.5" ref={adjustRef}>
-          <button
-            type="button"
-            onClick={() => setIsAdjustSleepOpen(!isAdjustSleepOpen)}
-            title="Ajustar tempo de sono"
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-slate-200 hover:text-white bg-[#1e293b] border border-[#334155] hover:bg-slate-700/60 transition active:scale-95 cursor-pointer shadow-sm"
-          >
-            <Settings2 className="w-4 h-4 text-amber-300" />
-          </button>
-          <button
-            type="button"
-            onClick={onSwitchToCardsView}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-slate-200 hover:text-white bg-[#1e293b] border border-[#334155] hover:bg-slate-700/60 transition active:scale-95 cursor-pointer shadow-sm shrink-0"
-            title="Voltar para lista"
-          >
-            <List className="w-4 h-4 text-gray-200" />
-          </button>
 
-          {/* Popover to adjust sleep time */}
-          <AnimatePresence>
-            {isAdjustSleepOpen && onAdjustSleepSeconds && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                transition={{ duration: 0.15 }}
-                className="absolute top-12 right-2 w-72 bg-[#1e293b] border border-[#334155] rounded-xl p-3.5 shadow-xl z-50 text-white"
-              >
-                <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2">
-                  <span className="text-xs font-bold text-amber-200">Ajustar Tempo de Sono</span>
-                  <span className="text-[10px] text-gray-400 font-mono">
-                    {Math.floor(sleepSeconds / 3600)}h {Math.floor((sleepSeconds % 3600) / 60)}m atuais
-                  </span>
-                </div>
-                <p className="text-[10px] text-gray-300 mb-2.5 leading-relaxed">
-                  {isSleeping
-                    ? 'Adicione ou subtraia tempo do sono em andamento:'
-                    : 'Adicione ou subtraia tempo do último sono registrado:'}
-                </p>
-
-                {/* Quick Deltas */}
-                <div className="grid grid-cols-2 gap-1.5 mb-2.5">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onAdjustSleepSeconds(15 * 60);
-                      setIsAdjustSleepOpen(false);
-                    }}
-                    className="py-1 px-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-[11px] font-bold text-amber-200 cursor-pointer"
-                  >
-                    +15 min
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onAdjustSleepSeconds(30 * 60);
-                      setIsAdjustSleepOpen(false);
-                    }}
-                    className="py-1 px-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-[11px] font-bold text-amber-200 cursor-pointer"
-                  >
-                    +30 min
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onAdjustSleepSeconds(60 * 60);
-                      setIsAdjustSleepOpen(false);
-                    }}
-                    className="py-1 px-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-400/40 text-[11px] font-bold text-indigo-200 cursor-pointer"
-                  >
-                    +1 hora
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onAdjustSleepSeconds(-15 * 60);
-                      setIsAdjustSleepOpen(false);
-                    }}
-                    className="py-1 px-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-[11px] font-bold text-gray-300 cursor-pointer"
-                  >
-                    -15 min
-                  </button>
-                </div>
-
-                {/* Custom Minutes Input */}
-                <div className="border-t border-white/10 pt-2.5">
-                  <span className="text-[10px] font-bold text-amber-300 block mb-1.5">
-                    Ou tempo personalizado (em minutos):
-                  </span>
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder="Ex: 45"
-                      value={customMinutesInput}
-                      onChange={(e) => setCustomMinutesInput(e.target.value)}
-                      className="flex-1 bg-white/10 border border-white/20 rounded-xl px-2.5 py-1 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-400 font-mono"
-                    />
-                    <span className="text-[11px] text-gray-400 font-medium">min</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    <button
-                      type="button"
-                      disabled={!customMinutesInput || parseInt(customMinutesInput, 10) <= 0}
-                      onClick={() => {
-                        const mins = parseInt(customMinutesInput, 10);
-                        if (!isNaN(mins) && mins > 0) {
-                          onAdjustSleepSeconds(mins * 60);
-                          setCustomMinutesInput('');
-                          setIsAdjustSleepOpen(false);
-                        }
-                      }}
-                      className="py-1 px-2 rounded-xl bg-amber-600/40 hover:bg-amber-600/60 disabled:opacity-40 border border-amber-400/50 text-[10.5px] font-bold text-white transition active:scale-95 cursor-pointer"
-                    >
-                      + Adicionar
-                    </button>
-                    <button
-                      type="button"
-                      disabled={!customMinutesInput || parseInt(customMinutesInput, 10) <= 0}
-                      onClick={() => {
-                        const mins = parseInt(customMinutesInput, 10);
-                        if (!isNaN(mins) && mins > 0) {
-                          onAdjustSleepSeconds(-mins * 60);
-                          setCustomMinutesInput('');
-                          setIsAdjustSleepOpen(false);
-                        }
-                      }}
-                      className="py-1 px-2 rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-40 border border-white/20 text-[10.5px] font-bold text-gray-300 transition active:scale-95 cursor-pointer"
-                    >
-                      - Subtrair
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
 
       {/* Sound Toast Feedback */}
       <AnimatePresence>
@@ -367,8 +232,8 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
       </AnimatePresence>
 
       {/* Centerpiece: The Large Minimalist Circular Arc Gauge */}
-      <div className="relative z-10 flex flex-col items-center justify-center flex-1 px-4">
-        <div className="relative w-[300px] h-[300px] flex items-center justify-center">
+      <div className="relative z-10 flex flex-col items-center justify-center flex-1 px-4 mt-2 sm:mt-1">
+        <div className="relative w-[260px] h-[260px] xs:w-[280px] xs:h-[280px] sm:w-[290px] sm:h-[290px] flex items-center justify-center">
           {/* SVG Arc Gauge */}
           <svg
             className="absolute inset-0 w-full h-full -rotate-0"
@@ -431,14 +296,14 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             />
           </svg>
 
-          {/* Gauge Center Content (Exact typographic layout from screenshot) */}
+          {/* Gauge Center Content: Clean and compact inside the ring */}
           <div
             onClick={() => setDisplayMode(displayMode === 'clock' ? 'timer' : 'clock')}
             title="Toque para alternar entre relógio atual e tempo decorrido"
-            className="relative z-10 flex flex-col items-center justify-center text-center px-6 max-w-[230px] cursor-pointer group"
+            className="relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-[200px] cursor-pointer group"
           >
-            {/* Top Label: "Agora mesmo" or elapsed sleep label */}
-            <span className="text-xs sm:text-sm font-medium text-gray-300 tracking-wide mb-1 group-hover:text-purple-300 transition">
+            {/* Top Label */}
+            <span className="text-xs font-semibold text-gray-300 tracking-wide mb-0.5 group-hover:text-purple-300 transition">
               {isSleeping
                 ? displayMode === 'clock'
                   ? isDaytime ? 'Soneca diurna' : 'Sono noturno'
@@ -446,42 +311,27 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
                 : 'Agora mesmo'}
             </span>
 
-            {/* Big Main Digits: "21:46" or elapsed timer */}
+            {/* Big Main Digits */}
             <div className="flex flex-col items-center justify-center my-0.5">
-              <span className="text-[44px] sm:text-[48px] font-extrabold tracking-tight text-white leading-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)] font-mono">
+              <span className="text-[40px] sm:text-[44px] font-black tracking-tight text-white leading-none drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)] font-mono">
                 {displayMode === 'clock' ? currentTimeStr : formatTimer(sleepSeconds)}
               </span>
-              <span className="block text-[10px] text-purple-300 font-bold uppercase tracking-wider font-mono mt-1">
+              <span className="block text-[9.5px] text-purple-300 font-bold uppercase tracking-wider font-mono mt-1">
                 {displayMode === 'clock' ? 'horário (BR)' : 'cronômetro'}
               </span>
             </div>
 
-            {/* Subtitle Prompt: "Adicione a hora que John acordou para começar o seu dia!" */}
-            <p className="text-[11.5px] sm:text-[12px] text-gray-300/90 font-normal leading-relaxed mt-2.5 mb-1.5">
-              {isSleeping ? (
-                <>
-                  {babyName} está {isDaytime ? 'em uma soneca' : 'dormindo'} tranquilamente há{' '}
-                  <strong className="text-white">{formatTimer(sleepSeconds)}</strong>.
-                </>
-              ) : (
-                <>
-                  Adicione a hora que <strong className="text-white">{babyName}</strong> acordou
-                  para começar o seu dia!
-                </>
-              )}
-            </p>
-
-            {/* Center Icon: Sun for day/soneca or Moon for night/sono */}
-            <div className="flex items-center justify-center mt-0.5">
+            {/* Center Icon */}
+            <div className="flex items-center justify-center mt-1">
               {isSleeping ? (
                 <div
                   className="animate-pulse"
                   title={isDaytime ? 'Soneca diurna em andamento' : 'Sono noturno em andamento'}
                 >
                   {isDaytime ? (
-                    <Sun className="w-5 h-5 text-amber-400" />
+                    <Sun className="w-4 h-4 text-amber-400" />
                   ) : (
-                    <Moon className="w-5 h-5 text-blue-400" />
+                    <Moon className="w-4 h-4 text-blue-400" />
                   )}
                 </div>
               ) : (
@@ -489,15 +339,30 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
                   title={isDaytime ? 'Acordado (Dia / Soneca)' : 'Acordado (Noite / Sono)'}
                 >
                   {isDaytime ? (
-                    <Sun className="w-5 h-5 text-amber-400" />
+                    <Sun className="w-4 h-4 text-amber-400" />
                   ) : (
-                    <Moon className="w-5 h-5 text-blue-400" />
+                    <Moon className="w-4 h-4 text-blue-400" />
                   )}
                 </div>
               )}
             </div>
           </div>
         </div>
+
+        {/* Subtitle Prompt: Positioned OUTSIDE below the SVG ring */}
+        <p className="text-xs text-gray-300/90 font-normal leading-relaxed text-center max-w-[280px] mt-2 z-20">
+          {isSleeping ? (
+            <>
+              {babyName} está {isDaytime ? 'em uma soneca' : 'dormindo'} tranquilamente há{' '}
+              <strong className="text-white">{formatTimer(sleepSeconds)}</strong>.
+            </>
+          ) : (
+            <>
+              Adicione a hora que <strong className="text-white">{babyName}</strong> acordou
+              para começar o seu dia!
+            </>
+          )}
+        </p>
 
         {/* Detailed Sleep Info Action */}
         <button

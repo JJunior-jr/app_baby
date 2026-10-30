@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Wifi, WifiOff, Bell, RefreshCw, CloudCheck, CloudOff, Zap } from 'lucide-react';
 import { syncService } from '../services/syncService';
+import { getBrazilTimeString } from '../services/brazilTime';
 import { SyncStatusState } from '../types';
 
 interface StatusBarProps {
@@ -10,11 +11,23 @@ interface StatusBarProps {
 }
 
 export const StatusBar: React.FC<StatusBarProps> = ({
-  timeStr = '23:08',
+  timeStr: overrideTimeStr,
   batteryLevel = 68,
   onOpenOfflineSync,
 }) => {
   const [syncStatus, setSyncStatus] = useState<SyncStatusState>(syncService.getSyncStatus());
+  const [liveTime, setLiveTime] = useState<string>(() => getBrazilTimeString());
+
+  useEffect(() => {
+    const updateTime = () => setLiveTime(getBrazilTimeString());
+    updateTime();
+    const interval = setInterval(updateTime, 5000);
+    window.addEventListener('focus', updateTime);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', updateTime);
+    };
+  }, []);
 
   useEffect(() => {
     const unsubscribe = syncService.subscribe((status) => {
@@ -23,11 +36,13 @@ export const StatusBar: React.FC<StatusBarProps> = ({
     return () => unsubscribe();
   }, []);
 
+  const displayTime = overrideTimeStr || liveTime;
+
   return (
     <header className="w-full pt-3 px-6 pb-2 flex justify-between items-center text-xs font-semibold text-gray-200 select-none tracking-tight z-30">
       {/* Left side: Time and app notification glyphs */}
       <div className="flex items-center space-x-2">
-        <span className="font-bold text-[13.5px] text-white tracking-tight">{timeStr}</span>
+        <span className="font-bold text-[13.5px] text-white tracking-tight">{displayTime}</span>
         <div className="flex items-center space-x-1.5 opacity-80 text-[10px]">
           <Bell className="w-3 h-3 text-gray-300" />
           <Mail className="w-3 h-3 text-gray-300" />

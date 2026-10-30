@@ -35,6 +35,12 @@ import { syncService } from './services/syncService';
 import { remindersService } from './services/reminders';
 import { notificationService } from './services/notificationService';
 import {
+  getBrazilDateString,
+  getBrazilTimeString,
+  getBrazilPeriod,
+  syncGeolocationTimezone,
+} from './services/brazilTime';
+import {
   ActivityItem,
   ActivityType,
   CustomActivityDefinition,
@@ -45,7 +51,7 @@ import {
 export default function App() {
   // Navigation & View State
   const [activeTab, setActiveTab] = useState<TabType>('diario');
-  const [selectedDate, setSelectedDate] = useState<string>('2026-08-19');
+  const [selectedDate, setSelectedDate] = useState<string>(() => getBrazilDateString());
   const [selectedFilter, setSelectedFilter] = useState<string>('all');
   const [currentPalette, setCurrentPalette] = useState<PaletteTheme>(themeService.getCurrentPalette());
 
@@ -125,6 +131,17 @@ export default function App() {
     }
     setCurrentUser(user);
 
+    // Sincroniza fuso horário por Geolocalização/Dispositivo e atualiza data
+    syncGeolocationTimezone().then(() => {
+      setSelectedDate(getBrazilDateString());
+    });
+
+    const handleFocusSync = () => {
+      setSelectedDate(getBrazilDateString());
+    };
+    window.addEventListener('focus', handleFocusSync);
+    document.addEventListener('visibilitychange', handleFocusSync);
+
     // Avaliação periódica suave de tempo de plataforma (a cada 45s)
     const engagementInterval = setInterval(() => {
       const trigger = feedbackService.recordInteraction();
@@ -137,6 +154,8 @@ export default function App() {
     return () => {
       unsub();
       clearInterval(engagementInterval);
+      window.removeEventListener('focus', handleFocusSync);
+      document.removeEventListener('visibilitychange', handleFocusSync);
     };
   }, []);
 
@@ -187,8 +206,18 @@ export default function App() {
     }
   };
 
+  // Helper to get current execution timestamp info
+  const getCurrentTimeContext = () => {
+    const now = new Date();
+    const dateStr = getBrazilDateString(now);
+    const timeStr = getBrazilTimeString(now);
+    const period = getBrazilPeriod(now);
+    return { now, dateStr, timeStr, period };
+  };
+
   // Save Handlers
   const handleSaveBreastfeeding = async (data: any) => {
+    const ctx = getCurrentTimeContext();
     const isFormula = data.mode === 'formula';
     const isBottle = isFormula || data.mode === 'bottle';
     const consumed = data.consumedMl ?? data.formulaMl ?? 120;
@@ -207,10 +236,10 @@ export default function App() {
       type: 'amamentacao',
       title,
       subtitle,
-      timestamp: new Date().toISOString(),
-      dateStr: selectedDate,
-      timeStr: '22:54',
-      period: 'Noite',
+      timestamp: ctx.now.toISOString(),
+      dateStr: ctx.dateStr,
+      timeStr: ctx.timeStr,
+      period: ctx.period,
       assignee: currentUser?.name || 'Papai',
       details: {
         ...data,
@@ -227,12 +256,14 @@ export default function App() {
         },
       },
     });
+    setSelectedDate(ctx.dateStr);
     setActivities((prev) => [newAct, ...prev]);
     loadData();
     checkForFeedbackPrompt('activity', 'amamentacao');
   };
 
   const handleSaveFormula = async (data: any, notes?: string) => {
+    const ctx = getCurrentTimeContext();
     const isObject = typeof data === 'object' && data !== null;
     const consumed = isObject ? (data.consumedMl ?? data.formulaMl) : data;
     const offered = isObject ? data.offeredMl : data;
@@ -245,10 +276,10 @@ export default function App() {
       type: 'amamentacao',
       title: `Mamadeira (${milkLabel})`,
       subtitle: `${consumed}ml bebidos (${pct}%)`,
-      timestamp: new Date().toISOString(),
-      dateStr: selectedDate,
-      timeStr: '22:55',
-      period: 'Noite',
+      timestamp: ctx.now.toISOString(),
+      dateStr: ctx.dateStr,
+      timeStr: ctx.timeStr,
+      period: ctx.period,
       assignee: currentUser?.name || 'Papai',
       details: {
         notes,
@@ -263,12 +294,14 @@ export default function App() {
         },
       },
     });
+    setSelectedDate(ctx.dateStr);
     setActivities((prev) => [newAct, ...prev]);
     loadData();
     checkForFeedbackPrompt('activity', 'amamentacao');
   };
 
   const handleSaveDiaper = async (data: any) => {
+    const ctx = getCurrentTimeContext();
     let title = 'Fralda (Xixi + Cocô)';
     if (data.diaperType === 'xixi') title = 'Fralda (Xixi)';
     if (data.diaperType === 'coco') title = 'Fralda (Cocô)';
@@ -276,48 +309,53 @@ export default function App() {
     const newAct = await apiService.createActivity({
       type: 'fralda',
       title,
-      timestamp: new Date().toISOString(),
-      dateStr: selectedDate,
-      timeStr: '23:10',
-      period: 'Noite',
+      timestamp: ctx.now.toISOString(),
+      dateStr: ctx.dateStr,
+      timeStr: ctx.timeStr,
+      period: ctx.period,
       assignee: currentUser?.name || 'Papai',
       details: data,
     });
+    setSelectedDate(ctx.dateStr);
     setActivities((prev) => [newAct, ...prev]);
     loadData();
     checkForFeedbackPrompt('activity', 'fralda');
   };
 
   const handleSaveSleep = async (data: any) => {
+    const ctx = getCurrentTimeContext();
     const newAct = await apiService.createActivity({
       type: 'sono',
       title: data.sleepType === 'noturno' ? 'Sono Noturno' : 'Soneca',
       subtitle: data.isInProgress ? 'Em andamento' : 'Finalizado',
-      timestamp: new Date().toISOString(),
-      dateStr: selectedDate,
-      timeStr: '22:38',
-      period: 'Noite',
+      timestamp: ctx.now.toISOString(),
+      dateStr: ctx.dateStr,
+      timeStr: ctx.timeStr,
+      period: ctx.period,
       isInProgress: data.isInProgress,
       assignee: currentUser?.name || 'Papai',
       details: data,
     });
+    setSelectedDate(ctx.dateStr);
     setActivities((prev) => [newAct, ...prev]);
     loadData();
     checkForFeedbackPrompt('activity', 'sono');
   };
 
   const handleSaveMeal = async (data: any) => {
+    const ctx = getCurrentTimeContext();
     const newAct = await apiService.createActivity({
       type: 'comeu',
       title: 'Refeição',
       subtitle: data.mealType === 'janta' ? 'Janta' : 'Lanche',
-      timestamp: new Date().toISOString(),
-      dateStr: selectedDate,
-      timeStr: '23:05',
-      period: 'Noite',
+      timestamp: ctx.now.toISOString(),
+      dateStr: ctx.dateStr,
+      timeStr: ctx.timeStr,
+      period: ctx.period,
       assignee: currentUser?.name || 'Papai',
       details: data,
     });
+    setSelectedDate(ctx.dateStr);
     setActivities((prev) => [newAct, ...prev]);
     loadData();
     checkForFeedbackPrompt('activity', 'comeu');
@@ -328,6 +366,7 @@ export default function App() {
     type: 'sleep' | 'diaper_xixi' | 'diaper_coco' | 'custom',
     customName?: string
   ) => {
+    const ctx = getCurrentTimeContext();
     if (type === 'diaper_xixi') {
       await handleSaveDiaper({ diaperType: 'xixi' });
     } else if (type === 'diaper_coco') {
@@ -336,12 +375,13 @@ export default function App() {
       const newAct = await apiService.createActivity({
         type: 'custom',
         title: customName,
-        timestamp: new Date().toISOString(),
-        dateStr: selectedDate,
-        timeStr: '23:05',
-        period: 'Noite',
+        timestamp: ctx.now.toISOString(),
+        dateStr: ctx.dateStr,
+        timeStr: ctx.timeStr,
+        period: ctx.period,
         assignee: currentUser?.name || 'Papai',
       });
+      setSelectedDate(ctx.dateStr);
       setActivities((prev) => [newAct, ...prev]);
       loadData();
     }

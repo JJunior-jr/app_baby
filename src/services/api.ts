@@ -335,15 +335,6 @@ export const apiService = {
       }
     }
 
-    // If day is Qua 19 (match screenshot: 5h 36min, 3 sessões, 4 trocas)
-    if (dateStr === '2026-08-19') {
-      return {
-        totalSleepMinutes: 336, // 5h 36min
-        breastfeedingSessions: 3,
-        diaperChanges: 4,
-      };
-    }
-
     return {
       totalSleepMinutes,
       breastfeedingSessions,

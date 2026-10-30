@@ -30,7 +30,7 @@ import { isDaytimeInBrazil } from '../services/brazilTime';
 import { SleepGaugeView } from './SleepGaugeView';
 import { BreastfeedingGaugeView } from './BreastfeedingGaugeView';
 import { DiaperGaugeView } from './DiaperGaugeView';
-import { FloatingGaugeSelector } from './FloatingGaugeSelector';
+import { GaugeHeaderBar } from './GaugeHeaderBar';
 import { notificationService } from '../services/notificationService';
 
 interface HomeScreenProps {
@@ -437,73 +437,91 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   const gaugeContainerRef = useRef<HTMLDivElement>(null);
 
-  // If user selected minimalist gauge view, render SleepGaugeView or BreastfeedingGaugeView
+  // If user selected minimalist gauge view, render unified GaugeHeaderBar + active subview
   if (homeViewType === 'gauge') {
     return (
-      <div ref={gaugeContainerRef} className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-        {/* Floating Draggable Selector [Sono, Peito, Fralda] */}
-        <FloatingGaugeSelector
+      <div ref={gaugeContainerRef} className="flex-1 flex flex-col min-h-0 overflow-hidden relative bg-[#0c0d1c] text-white">
+        {/* Single Unified Header Bar for all Gauge views */}
+        <GaugeHeaderBar
           currentMode={gaugeSubView}
           onSelectMode={(mode) => handleSetGaugeSubView(mode)}
-          containerRef={gaugeContainerRef}
+          onSwitchToCardsView={() => handleSetHomeViewType('list')}
+          onAdjustSleepSeconds={(deltaSeconds) => {
+            setSleepSeconds((prev) => Math.max(0, prev + deltaSeconds));
+            showToast('Tempo de sono ajustado! 🌙');
+          }}
+          sleepSeconds={sleepSeconds}
+          isSleeping={isSleeping}
+          onAdjust24hNursingSeconds={handleAdjust24hNursingSeconds}
+          total24hNursingSeconds={past24hNursingSeconds}
+          onAdjustLastDiaperChange={(minutesAgo) => {
+            const adjustedTime = Date.now() - (minutesAgo * 60 * 1000);
+            try {
+              localStorage.setItem('babyjohn_last_diaper_timestamp', String(adjustedTime));
+            } catch {}
+            showToast(minutesAgo === 0 ? 'Fralda marcada como trocada agora!' : `Ajustado para ${minutesAgo}m atrás`);
+          }}
         />
 
-        {gaugeSubView === 'amamentacao' ? (
-          <BreastfeedingGaugeView
-            currentUser={currentUser}
-            leftSeconds={leftNursingSeconds}
-            rightSeconds={rightNursingSeconds}
-            activeSide={activeBreastSide}
-            past24hNursingSeconds={past24hNursingSeconds}
-            onAdjust24hNursingSeconds={handleAdjust24hNursingSeconds}
-            onToggleSide={handleToggleBreastSideGauge}
-            onResetTimers={handleResetNursingTimers}
-            onSaveSession={handleSaveNursingSession}
-            onOpenFormulaDrawer={() => setIsFormulaDrawerOpen(true)}
-            onQuickSaveFormula={handleQuickSaveFormula}
-            onSwitchToCardsView={() => handleSetHomeViewType('list')}
-            onSwitchToSleepGauge={() => handleSetGaugeSubView('sono')}
-            onSwitchToDiaperGauge={() => handleSetGaugeSubView('fralda')}
-          />
-        ) : gaugeSubView === 'fralda' ? (
-          <DiaperGaugeView
-            currentUser={currentUser}
-            activities={activities}
-            onQuickSaveDiaper={(type, notes) => {
-              if (onSaveDiaper) {
-                onSaveDiaper({ diaperType: type, notes });
-              } else if (type === 'xixi') {
-                onQuickTrack('diaper_xixi');
-              } else if (type === 'coco') {
-                onQuickTrack('diaper_coco');
-              } else {
-                onQuickTrack('custom', 'Fralda (Xixi + Cocô)');
-              }
-            }}
-            onOpenDiaperModal={onOpenDiaperModal}
-            onSwitchToCardsView={() => handleSetHomeViewType('list')}
-            onSwitchToSleepGauge={() => handleSetGaugeSubView('sono')}
-            onSwitchToBreastfeedingGauge={() => handleSetGaugeSubView('amamentacao')}
-          />
-        ) : (
-          <SleepGaugeView
-            currentUser={currentUser}
-            isSleeping={isSleeping}
-            sleepSeconds={sleepSeconds}
-            onToggleSleep={handleSleepClick}
-            onAdjustSleepSeconds={(deltaSeconds) => {
-              setSleepSeconds((prev) => Math.max(0, prev + deltaSeconds));
-              showToast('Tempo de sono ajustado! 🌙');
-            }}
-            onOpenSleepModal={onOpenSleepModal}
-            onOpenDiaperModal={onOpenDiaperModal}
-            onOpenFormulaDrawer={() => setIsFormulaDrawerOpen(true)}
-            onSwitchToCardsView={() => handleSetHomeViewType('list')}
-            onSwitchToBreastfeedingGauge={() => handleSetGaugeSubView('amamentacao')}
-            onSwitchToDiaperGauge={() => handleSetGaugeSubView('fralda')}
-            onOpenNotificationCenter={onOpenNotificationCenter}
-          />
-        )}
+        {/* Dynamic Center/Bottom Gauge Content */}
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
+          {gaugeSubView === 'amamentacao' ? (
+            <BreastfeedingGaugeView
+              currentUser={currentUser}
+              leftSeconds={leftNursingSeconds}
+              rightSeconds={rightNursingSeconds}
+              activeSide={activeBreastSide}
+              past24hNursingSeconds={past24hNursingSeconds}
+              onAdjust24hNursingSeconds={handleAdjust24hNursingSeconds}
+              onToggleSide={handleToggleBreastSideGauge}
+              onResetTimers={handleResetNursingTimers}
+              onSaveSession={handleSaveNursingSession}
+              onOpenFormulaDrawer={() => setIsFormulaDrawerOpen(true)}
+              onQuickSaveFormula={handleQuickSaveFormula}
+              onSwitchToCardsView={() => handleSetHomeViewType('list')}
+              onSwitchToSleepGauge={() => handleSetGaugeSubView('sono')}
+              onSwitchToDiaperGauge={() => handleSetGaugeSubView('fralda')}
+            />
+          ) : gaugeSubView === 'fralda' ? (
+            <DiaperGaugeView
+              currentUser={currentUser}
+              activities={activities}
+              onQuickSaveDiaper={(type, notes) => {
+                if (onSaveDiaper) {
+                  onSaveDiaper({ diaperType: type, notes });
+                } else if (type === 'xixi') {
+                  onQuickTrack('diaper_xixi');
+                } else if (type === 'coco') {
+                  onQuickTrack('diaper_coco');
+                } else {
+                  onQuickTrack('custom', 'Fralda (Xixi + Cocô)');
+                }
+              }}
+              onOpenDiaperModal={onOpenDiaperModal}
+              onSwitchToCardsView={() => handleSetHomeViewType('list')}
+              onSwitchToSleepGauge={() => handleSetGaugeSubView('sono')}
+              onSwitchToBreastfeedingGauge={() => handleSetGaugeSubView('amamentacao')}
+            />
+          ) : (
+            <SleepGaugeView
+              currentUser={currentUser}
+              isSleeping={isSleeping}
+              sleepSeconds={sleepSeconds}
+              onToggleSleep={handleSleepClick}
+              onAdjustSleepSeconds={(deltaSeconds) => {
+                setSleepSeconds((prev) => Math.max(0, prev + deltaSeconds));
+                showToast('Tempo de sono ajustado! 🌙');
+              }}
+              onOpenSleepModal={onOpenSleepModal}
+              onOpenDiaperModal={onOpenDiaperModal}
+              onOpenFormulaDrawer={() => setIsFormulaDrawerOpen(true)}
+              onSwitchToCardsView={() => handleSetHomeViewType('list')}
+              onSwitchToBreastfeedingGauge={() => handleSetGaugeSubView('amamentacao')}
+              onSwitchToDiaperGauge={() => handleSetGaugeSubView('fralda')}
+              onOpenNotificationCenter={onOpenNotificationCenter}
+            />
+          )}
+        </div>
         {/* Formula Drawer can still be opened from quick action or popover */}
         <FormulaDrawer
           isOpen={isFormulaDrawerOpen}
