@@ -19,6 +19,7 @@ import {
   Settings2,
   Droplets,
   Milk,
+  Baby,
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { isDaytime, isDaytimeInBrazil, getBrazilTimeString } from '../services/brazilTime';
@@ -379,7 +380,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
         </button>
       </div>
 
-      {/* Bottom Floating Quick Actions: 4 buttons with ideal UX spacing (12px mobile, 16px desktop) and 48x48px touch targets */}
+      {/* Bottom Floating Quick Actions: 5 buttons with ideal UX spacing (12px mobile, 16px desktop) and 48x48px touch targets */}
       <div className="relative z-20 pb-3 sm:pb-4 px-4 sm:px-6 shrink-0 w-full">
         <div
           className="quick-actions-buttons-container flex items-center justify-center mx-auto"
@@ -414,7 +415,37 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             </div>
           </button>
 
-          {/* Action 2: Cloud / White Noise / Rain Sounds Playlist */}
+          {/* Action 2: Breastfeeding / Peito */}
+          <button
+            type="button"
+            onClick={onSwitchToBreastfeedingGauge}
+            title="Ir para Medidor de Amamentação / Peito"
+            className="relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-pink-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
+          >
+            <Baby className="w-5 h-5 text-pink-300" />
+          </button>
+
+          {/* Action 3: Diaper / Fralda */}
+          <button
+            type="button"
+            onClick={onSwitchToDiaperGauge || onOpenDiaperModal}
+            title="Ir para Medidor de Fralda"
+            className="relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-teal-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
+          >
+            <Droplets className="w-5 h-5 text-teal-300" />
+          </button>
+
+          {/* Action 4: Formula / Mamadeira */}
+          <button
+            type="button"
+            onClick={onOpenFormulaDrawer}
+            title="Registrar Mamadeira"
+            className="relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-cyan-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
+          >
+            <Milk className="w-5 h-5 text-cyan-300" />
+          </button>
+
+          {/* Action 5: Cloud / White Noise / Rain Sounds Playlist */}
           <button
             type="button"
             onClick={handleOpenPlaylist}
@@ -433,32 +464,6 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             {isPlayingSound && (
               <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-400 animate-ping" />
             )}
-          </button>
-
-          {/* Action 3: Diaper / Fralda */}
-          <button
-            type="button"
-            onClick={onSwitchToDiaperGauge || onOpenDiaperModal}
-            title="Abrir Medidor de Fralda"
-            className="relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-teal-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
-          >
-            <Droplets className="w-5 h-5 text-teal-300" />
-            <div className="absolute -top-1 -right-0.5 w-4 h-4 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center">
-              <Lock className="w-2.5 h-2.5 text-gray-400" />
-            </div>
-          </button>
-
-          {/* Action 4: Formula / Mamadeira */}
-          <button
-            type="button"
-            onClick={onOpenFormulaDrawer}
-            title="Registrar Mamadeira"
-            className="relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-cyan-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
-          >
-            <Milk className="w-5 h-5 text-cyan-300" />
-            <div className="absolute -top-1 -right-0.5 w-4 h-4 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center">
-              <Lock className="w-2.5 h-2.5 text-gray-400" />
-            </div>
           </button>
         </div>
       </div>

@@ -10,11 +10,18 @@ import {
   Clock,
   ShieldCheck,
   ChevronDown,
+  ChevronUp,
   Info,
   Edit3,
   Layers,
+  Sun,
+  Moon,
+  Milk,
+  Lock,
+  Baby,
 } from 'lucide-react';
 import { UserProfile, ActivityItem } from '../types';
+import { isDaytimeInBrazil } from '../services/brazilTime';
 import { FloatingGaugeSelector, GaugeMode } from './FloatingGaugeSelector';
 
 interface DiaperGaugeViewProps {
@@ -27,6 +34,9 @@ interface DiaperGaugeViewProps {
   onSwitchToBreastfeedingGauge: () => void;
   gaugeSubView?: GaugeMode;
   onSelectGaugeMode?: (mode: GaugeMode) => void;
+  isSleeping?: boolean;
+  onToggleSleep?: () => void;
+  onOpenFormulaDrawer?: () => void;
 }
 
 // Background twinkling stars
@@ -53,7 +63,20 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
   onSwitchToBreastfeedingGauge,
   gaugeSubView,
   onSelectGaugeMode,
+  isSleeping = false,
+  onToggleSleep,
+  onOpenFormulaDrawer,
 }) => {
+  // Daytime state for Brazil timezone (updates every 10 seconds)
+  const [isDaytime, setIsDaytime] = useState<boolean>(() => isDaytimeInBrazil());
+
+  useEffect(() => {
+    const updateTime = () => setIsDaytime(isDaytimeInBrazil());
+    updateTime();
+    const timer = setInterval(updateTime, 10000);
+    return () => clearInterval(timer);
+  }, []);
+
   // State for popovers
   const [isOptionsPopoverOpen, setIsOptionsPopoverOpen] = useState(false);
   const [isAdjustPopoverOpen, setIsAdjustPopoverOpen] = useState(false);
@@ -61,6 +84,24 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
   const [centerDisplayMode, setCenterDisplayMode] = useState<'interval' | 'daily'>('interval');
   const [hasAppliedCream, setHasAppliedCream] = useState(false);
   const [feedbackToast, setFeedbackToast] = useState<string | null>(null);
+  const [isControlsExpanded, setIsControlsExpanded] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('babyjohn_diaper_controls_expanded');
+      return saved !== null ? saved === 'true' : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const toggleControlsExpanded = () => {
+    setIsControlsExpanded((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('babyjohn_diaper_controls_expanded', String(next));
+      } catch {}
+      return next;
+    });
+  };
 
   const popoverRef = useRef<HTMLDivElement>(null);
   const adjustRef = useRef<HTMLDivElement>(null);
@@ -396,8 +437,14 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
       </AnimatePresence>
 
       {/* Centerpiece: Circular Arc Gauge */}
-      <div className="relative z-10 flex flex-col items-center justify-center flex-1 min-h-0 px-3 mt-2 sm:mt-1">
-        <div className="relative w-[260px] h-[260px] xs:w-[280px] xs:h-[280px] sm:w-[290px] sm:h-[290px] flex items-center justify-center">
+      <div className="relative z-10 flex flex-col items-center justify-center flex-1 min-h-0 px-3 py-1">
+        <div
+          className={`relative flex items-center justify-center shrink-0 transition-all duration-300 ease-out ${
+            isControlsExpanded
+              ? 'w-[205px] h-[205px] xs:w-[225px] xs:h-[225px] sm:w-[245px] sm:h-[245px]'
+              : 'w-[260px] h-[260px] xs:w-[280px] xs:h-[280px] sm:w-[290px] sm:h-[290px]'
+          }`}
+        >
           {/* SVG Arc Gauge with 0h to 4h scale markers */}
           <svg className="absolute inset-0 w-full h-full" viewBox="0 0 320 320" fill="none">
             <defs>
@@ -480,7 +527,11 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
           </svg>
 
           {/* Gauge Center Content - perfectly proportioned without breaking layout */}
-          <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 max-w-[210px]">
+          <div
+            className={`relative z-10 flex flex-col items-center justify-center text-center px-4 transition-all duration-300 ${
+              isControlsExpanded ? 'max-w-[170px]' : 'max-w-[210px]'
+            }`}
+          >
             {/* Top Label */}
             <span className="text-xs sm:text-sm font-semibold text-teal-200 tracking-wide mb-0.5">
               Última troca de fralda
@@ -488,31 +539,43 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
 
             {/* Main Big Digits */}
             <div className="flex flex-col items-center justify-center my-0.5">
-              <span className="text-[40px] sm:text-[44px] font-black tracking-tight text-white leading-none drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] font-mono">
+              <span
+                className={`font-black tracking-tight text-white leading-none drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] font-mono transition-all duration-300 ${
+                  isControlsExpanded
+                    ? 'text-[32px] sm:text-[36px]'
+                    : 'text-[40px] sm:text-[44px]'
+                }`}
+              >
                 {hours.toString().padStart(2, '0')}h {mins.toString().padStart(2, '0')}m
               </span>
-              <span className="block text-[9.5px] text-teal-300 font-bold uppercase tracking-widest mt-1">
+              <span className="block text-[9.5px] text-teal-300 font-bold uppercase tracking-widest mt-0.5">
                 desde a última troca
               </span>
             </div>
 
             {/* Pediatric Health Status Indicator */}
             <div
-              className={`mt-1.5 text-xs font-bold flex items-center gap-1.5 ${status.textColor}`}
+              className={`text-xs font-bold flex items-center gap-1.5 ${status.textColor} ${
+                isControlsExpanded ? 'mt-0.5' : 'mt-1.5'
+              }`}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse shrink-0" />
               <span>{status.label}</span>
             </div>
 
             {/* Secondary Compact Details */}
-            <span className="text-[10px] text-gray-300 mt-1 whitespace-nowrap">
+            <span className="text-[10px] text-gray-300 mt-0.5 whitespace-nowrap">
               Última às <strong className="text-white">{lastTimeStr}</strong> · {lastDiaperInfo.type === 'xixi' ? 'Xixi' : lastDiaperInfo.type === 'coco' ? 'Cocô' : 'Xixi + Cocô'}
             </span>
           </div>
         </div>
 
         {/* 24h Summary Pill: xixi, cocô, ambos, total - positioned below gauge */}
-        <div className="mt-1 flex items-center justify-center space-x-2 bg-[#1e293b] px-3.5 py-1 rounded-xl border border-[#334155] text-[11px] font-bold shadow-sm select-none">
+        <div
+          className={`flex items-center justify-center space-x-2 bg-[#1e293b] px-3.5 py-1 rounded-xl border border-[#334155] text-[11px] font-bold shadow-sm select-none transition-all duration-300 ${
+            isControlsExpanded ? 'mt-1 mb-0.5' : 'mt-1.5 mb-1.5'
+          }`}
+        >
           <span className="text-cyan-300 flex items-center gap-1">
             <Droplets className="w-3 h-3" /> {counts24h.xixi}
           </span>
@@ -533,169 +596,288 @@ export const DiaperGaugeView: React.FC<DiaperGaugeViewProps> = ({
         </div>
       </div>
 
-      {/* Bottom Controls: 3 Action Buttons (Xixi, Cocô, Detalhes/Ambos) */}
-      <div className="relative z-20 pb-4 px-4 sm:px-6 h-[100px] flex items-center justify-center">
-        <div className="grid grid-cols-3 gap-2.5 w-full max-w-[420px] mx-auto items-stretch relative">
-          {/* Button 1: Xixi (Urina) */}
-          <button
-            type="button"
-            onClick={() => handleQuickChange('xixi')}
-            className="p-2.5 h-[84px] rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-cyan-200 shadow-sm group select-none"
-          >
-            <div className="h-5 flex items-center justify-center space-x-1.5 w-full text-center">
-              <Droplets className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
-              <span className="text-[11px] font-bold uppercase tracking-tight text-cyan-200">
-                Xixi
-              </span>
-            </div>
-
-            {/* Quick Count */}
-            <span className="h-6 flex items-center justify-center text-base font-bold font-mono text-white leading-none w-full text-center">
-              {counts24h.xixi} hoje
-            </span>
-
-            {/* Prompt */}
-            <span className="h-4 flex items-center justify-center text-[10px] font-medium text-cyan-300 w-full text-center">
-              1 toque p/ salvar
-            </span>
-          </button>
-
-          {/* Button 2: Cocô (Evacuação) */}
-          <button
-            type="button"
-            onClick={() => handleQuickChange('coco')}
-            className="p-2.5 h-[84px] rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-amber-200 shadow-sm group select-none"
-          >
-            <div className="h-5 flex items-center justify-center space-x-1.5 w-full text-center">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
-              <span className="text-[11px] font-bold uppercase tracking-tight text-amber-200">
-                Cocô
-              </span>
-            </div>
-
-            {/* Quick Count */}
-            <span className="h-6 flex items-center justify-center text-base font-bold font-mono text-white leading-none w-full text-center">
-              {counts24h.coco} hoje
-            </span>
-
-            {/* Prompt */}
-            <span className="h-4 flex items-center justify-center text-[10px] font-medium text-amber-300 w-full text-center">
-              1 toque p/ salvar
-            </span>
-          </button>
-
-          {/* Button 3: Ambos & Detalhes com Popover */}
-          <div className="relative w-full h-[84px]" ref={popoverRef}>
-            <button
-              type="button"
-              onClick={() => setIsOptionsPopoverOpen(!isOptionsPopoverOpen)}
-              className={`w-full h-full p-2.5 rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer border select-none ${
-                isOptionsPopoverOpen
-                  ? 'bg-teal-700 text-white border-teal-500 shadow-md'
-                  : 'bg-[#1e293b] hover:bg-slate-700/60 border-[#334155] text-teal-200 shadow-sm'
+      {/* Bottom Controls: 3 Action Buttons (Xixi, Cocô, Detalhes/Ambos) - Retrátil & Expansível */}
+      <div className="relative z-20 pb-1.5 pt-0.5 px-4 sm:px-6 flex flex-col items-center justify-center shrink-0 w-full">
+        <AnimatePresence mode="wait">
+          {!isControlsExpanded ? (
+            /* Retracted / Collapsed Dynamic Bar */
+            <motion.div
+              key="diaper-controls-collapsed"
+              initial={{ opacity: 0, y: 6, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 6, scale: 0.96 }}
+              transition={{ duration: 0.18 }}
+              className="w-full max-w-[420px] mx-auto flex items-center justify-center py-0.5"
+            >
+              <button
+                type="button"
+                onClick={toggleControlsExpanded}
+                className="group flex items-center justify-center space-x-2 py-1.5 px-4 rounded-full bg-[#1e293b]/95 hover:bg-slate-700/80 border border-[#334155] text-xs font-semibold text-slate-200 hover:text-white transition-all active:scale-95 cursor-pointer shadow-sm select-none"
+                title="Expandir botões de registro de fralda"
+              >
+                <span className="w-2 h-2 rounded-full bg-teal-400" />
+                <Droplets className="w-3.5 h-3.5 text-teal-300 group-hover:scale-110 transition-transform" />
+                <span>Troca de Fralda</span>
+                <span className="text-[10px] text-gray-400 group-hover:text-gray-300 font-normal">
+                  · Expandir
+                </span>
+                <ChevronUp className="w-3.5 h-3.5 text-teal-300 group-hover:translate-y-[-1px] transition-transform" />
+              </button>
+            </motion.div>
+          ) : (
+            /* Expanded Full Controls with Header and Retract Trigger */
+            <motion.div
+              key="diaper-controls-expanded"
+              initial={{ opacity: 0, height: 0, scale: 0.98 }}
+              animate={{ opacity: 1, height: 'auto', scale: 1 }}
+              exit={{ opacity: 0, height: 0, scale: 0.98 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
+              className={`w-full max-w-[420px] mx-auto flex flex-col items-center ${
+                isOptionsPopoverOpen ? 'overflow-visible' : 'overflow-hidden'
               }`}
             >
-              <div className="h-5 flex items-center justify-center space-x-1.5 w-full text-center">
-                <Layers className="w-3.5 h-3.5 text-teal-300" />
-                <span className="text-[11px] font-bold uppercase tracking-tight text-teal-200">
-                  Ambos
-                </span>
+              {/* Header bar with Retrair button */}
+              <div className="flex items-center justify-between w-full mb-1 px-1 select-none">
+                <div className="flex items-center space-x-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+                  <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">
+                    Troca de Fralda
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleControlsExpanded}
+                  className="flex items-center space-x-1 px-2 py-0.5 rounded-md hover:bg-slate-800/80 border border-transparent hover:border-slate-700 text-[10px] font-medium text-slate-400 hover:text-slate-200 transition active:scale-95 cursor-pointer"
+                  title="Retrair controles para liberar espaço"
+                >
+                  <span>Retrair</span>
+                  <ChevronDown className="w-3 h-3 text-slate-400" />
+                </button>
               </div>
 
-              {/* Label */}
-              <span className="h-6 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-white leading-none w-full text-center">
-                Xixi + Cocô
-              </span>
-
-              {/* Status prompt */}
-              <span className="h-4 flex items-center justify-center text-[10px] font-medium text-teal-300 w-full text-center flex items-center gap-0.5">
-                Opções <ChevronDown className="w-2.5 h-2.5" />
-              </span>
-            </button>
-
-            {/* Options Popover */}
-            <AnimatePresence>
-              {isOptionsPopoverOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute bottom-full mb-3 right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 w-72 bg-[#1e293b] border border-[#334155] rounded-xl p-3.5 shadow-xl z-50 text-white"
+              <div className="grid grid-cols-3 gap-2.5 w-full mx-auto items-stretch relative">
+                {/* Button 1: Xixi (Urina) */}
+                <button
+                  type="button"
+                  onClick={() => handleQuickChange('xixi')}
+                  className="p-2.5 h-[84px] rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-cyan-200 shadow-sm group select-none"
                 >
-                  <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2.5">
-                    <div className="flex items-center space-x-2">
-                      <Layers className="w-4 h-4 text-teal-400" />
-                      <div>
-                        <h4 className="text-xs font-bold text-white">Opções da Troca</h4>
-                        <p className="text-[10px] text-teal-200/80">Ações rápidas e detalhes</p>
-                      </div>
-                    </div>
+                  <div className="h-5 flex items-center justify-center space-x-1.5 w-full text-center">
+                    <Droplets className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
+                    <span className="text-[11px] font-bold uppercase tracking-tight text-cyan-200">
+                      Xixi
+                    </span>
                   </div>
 
-                  {/* Option 1: Quick Both (Xixi + Cocô) */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleQuickChange('ambos');
-                      setIsOptionsPopoverOpen(false);
-                    }}
-                    className="w-full mb-2 p-2.5 rounded-xl bg-teal-600/30 hover:bg-teal-600/50 border border-teal-500/40 text-left flex items-center justify-between transition cursor-pointer active:scale-98"
-                  >
-                    <div className="flex items-center space-x-2.5">
-                      <Layers className="w-4 h-4 text-teal-300" />
-                      <div>
-                        <span className="text-xs font-bold text-white block">Registrar Ambos</span>
-                        <span className="text-[10px] text-teal-300/80">Xixi e cocô juntos</span>
-                      </div>
-                    </div>
-                    <Check className="w-4 h-4 text-teal-300" />
-                  </button>
+                  {/* Quick Count */}
+                  <span className="h-6 flex items-center justify-center text-base font-bold font-mono text-white leading-none w-full text-center">
+                    {counts24h.xixi} hoje
+                  </span>
 
-                  {/* Option 2: Anti-rash cream toggle */}
-                  <div className="mb-2.5 p-2.5 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                      <div>
-                        <span className="text-xs font-semibold text-gray-200 block">
-                          Pomada antiassaduras
-                        </span>
-                        <span className="text-[10px] text-gray-400">
-                          {hasAppliedCream ? 'Marcada como aplicada' : 'Marcar proteção na pele'}
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setHasAppliedCream(!hasAppliedCream)}
-                      className={`w-9 h-5 rounded-full p-0.5 transition cursor-pointer ${
-                        hasAppliedCream ? 'bg-teal-500' : 'bg-gray-700'
-                      }`}
-                    >
-                      <div
-                        className={`w-4 h-4 rounded-full bg-white transition-transform ${
-                          hasAppliedCream ? 'translate-x-4' : 'translate-x-0'
-                        }`}
-                      />
-                    </button>
+                  {/* Prompt */}
+                  <span className="h-4 flex items-center justify-center text-[10px] font-medium text-cyan-300 w-full text-center">
+                    1 toque p/ salvar
+                  </span>
+                </button>
+
+                {/* Button 2: Cocô (Evacuação) */}
+                <button
+                  type="button"
+                  onClick={() => handleQuickChange('coco')}
+                  className="p-2.5 h-[84px] rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-amber-200 shadow-sm group select-none"
+                >
+                  <div className="h-5 flex items-center justify-center space-x-1.5 w-full text-center">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
+                    <span className="text-[11px] font-bold uppercase tracking-tight text-amber-200">
+                      Cocô
+                    </span>
                   </div>
 
-                  {/* Option 3: Complete Details Modal (DiaperModal) */}
+                  {/* Quick Count */}
+                  <span className="h-6 flex items-center justify-center text-base font-bold font-mono text-white leading-none w-full text-center">
+                    {counts24h.coco} hoje
+                  </span>
+
+                  {/* Prompt */}
+                  <span className="h-4 flex items-center justify-center text-[10px] font-medium text-amber-300 w-full text-center">
+                    1 toque p/ salvar
+                  </span>
+                </button>
+
+                {/* Button 3: Ambos & Detalhes com Popover */}
+                <div className="relative w-full h-[84px]" ref={popoverRef}>
                   <button
                     type="button"
-                    onClick={() => {
-                      setIsOptionsPopoverOpen(false);
-                      onOpenDiaperModal();
-                    }}
-                    className="w-full py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-bold text-gray-200 hover:text-white flex items-center justify-center space-x-1.5 transition active:scale-95 cursor-pointer"
+                    onClick={() => setIsOptionsPopoverOpen(!isOptionsPopoverOpen)}
+                    className={`w-full h-full p-2.5 rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer border select-none ${
+                      isOptionsPopoverOpen
+                        ? 'bg-teal-700 text-white border-teal-500 shadow-md'
+                        : 'bg-[#1e293b] hover:bg-slate-700/60 border-[#334155] text-teal-200 shadow-sm'
+                    }`}
                   >
-                    <Edit3 className="w-3.5 h-3.5 text-teal-300" />
-                    <span>Detalhar Cor, Consistência e Notas</span>
+                    <div className="h-5 flex items-center justify-center space-x-1.5 w-full text-center">
+                      <Layers className="w-3.5 h-3.5 text-teal-300" />
+                      <span className="text-[11px] font-bold uppercase tracking-tight text-teal-200">
+                        Ambos
+                      </span>
+                    </div>
+
+                    {/* Label */}
+                    <span className="h-6 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-white leading-none w-full text-center">
+                      Xixi + Cocô
+                    </span>
+
+                    {/* Status prompt */}
+                    <span className="h-4 flex items-center justify-center text-[10px] font-medium text-teal-300 w-full text-center flex items-center gap-0.5">
+                      Opções <ChevronDown className="w-2.5 h-2.5" />
+                    </span>
                   </button>
-                </motion.div>
+
+                  {/* Options Popover */}
+                  <AnimatePresence>
+                    {isOptionsPopoverOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute bottom-full mb-3 right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 w-72 bg-[#1e293b] border border-[#334155] rounded-xl p-3.5 shadow-xl z-50 text-white"
+                      >
+                        <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2.5">
+                          <div className="flex items-center space-x-2">
+                            <Layers className="w-4 h-4 text-teal-400" />
+                            <div>
+                              <h4 className="text-xs font-bold text-white">Opções da Troca</h4>
+                              <p className="text-[10px] text-teal-200/80">Ações rápidas e detalhes</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Option 1: Quick Both (Xixi + Cocô) */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleQuickChange('ambos');
+                            setIsOptionsPopoverOpen(false);
+                          }}
+                          className="w-full mb-2 p-2.5 rounded-xl bg-teal-600/30 hover:bg-teal-600/50 border border-teal-500/40 text-left flex items-center justify-between transition cursor-pointer active:scale-98"
+                        >
+                          <div className="flex items-center space-x-2.5">
+                            <Layers className="w-4 h-4 text-teal-300" />
+                            <div>
+                              <span className="text-xs font-bold text-white block">Registrar Ambos</span>
+                              <span className="text-[10px] text-teal-300/80">Xixi e cocô juntos</span>
+                            </div>
+                          </div>
+                          <Check className="w-4 h-4 text-teal-300" />
+                        </button>
+
+                        {/* Option 2: Anti-rash cream toggle */}
+                        <div className="mb-2.5 p-2.5 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                            <div>
+                              <span className="text-xs font-semibold text-gray-200 block">
+                                Pomada antiassaduras
+                              </span>
+                              <span className="text-[10px] text-gray-400">
+                                {hasAppliedCream ? 'Marcada como aplicada' : 'Marcar proteção na pele'}
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setHasAppliedCream(!hasAppliedCream)}
+                            className={`w-9 h-5 rounded-full p-0.5 transition cursor-pointer ${
+                              hasAppliedCream ? 'bg-teal-500' : 'bg-gray-700'
+                            }`}
+                          >
+                            <div
+                              className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                                hasAppliedCream ? 'translate-x-4' : 'translate-x-0'
+                              }`}
+                            />
+                          </button>
+                        </div>
+
+                        {/* Option 3: Complete Details Modal (DiaperModal) */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsOptionsPopoverOpen(false);
+                            onOpenDiaperModal();
+                          }}
+                          className="w-full py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-bold text-gray-200 hover:text-white flex items-center justify-center space-x-1.5 transition active:scale-95 cursor-pointer"
+                        >
+                          <Edit3 className="w-3.5 h-3.5 text-teal-300" />
+                          <span>Detalhar Cor, Consistência e Notas</span>
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Bottom Floating Quick Actions: 3 buttons with ideal UX spacing (12px mobile, 16px desktop) and 48x48px touch targets */}
+      <div className="relative z-20 pb-3 sm:pb-4 px-4 sm:px-6 shrink-0 w-full">
+        <div
+          className="quick-actions-buttons-container flex items-center justify-center mx-auto"
+          style={{ gap: 'var(--quick-actions-gap, 12px)' }}
+        >
+          {/* Action 1: Sun or Moon Button navigating to Sleep gauge */}
+          <button
+            type="button"
+            onClick={onSwitchToSleepGauge}
+            title={
+              isSleeping
+                ? 'Ir para Medidor de Sono (Em andamento)'
+                : isDaytime
+                  ? 'Ir para Medidor de Soneca'
+                  : 'Ir para Medidor de Sono'
+            }
+            className={`relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl transition duration-150 active:scale-95 cursor-pointer border shadow-sm ${
+              !isSleeping
+                ? isDaytime
+                  ? 'bg-amber-600 hover:bg-amber-500 border-amber-400 text-white'
+                  : 'bg-indigo-600 hover:bg-indigo-500 border-indigo-400 text-white'
+                : 'bg-teal-600 hover:bg-teal-500 border-teal-400 text-white'
+            }`}
+          >
+            <div className="flex flex-col items-center justify-center">
+              {isDaytime ? (
+                <Sun className="w-5 h-5 stroke-[2.2]" />
+              ) : (
+                <Moon className="w-5 h-5 stroke-[2.2]" />
               )}
-            </AnimatePresence>
-          </div>
+            </div>
+            {isSleeping && (
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-teal-400 animate-ping" />
+            )}
+          </button>
+
+          {/* Action 2: Breastfeeding / Peito */}
+          <button
+            type="button"
+            onClick={onSwitchToBreastfeedingGauge}
+            title="Ir para Medidor de Amamentação / Peito"
+            className="relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-pink-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
+          >
+            <Baby className="w-5 h-5 text-pink-300" />
+          </button>
+
+          {/* Action 3: Formula / Mamadeira */}
+          <button
+            type="button"
+            onClick={onOpenFormulaDrawer}
+            title="Registrar Mamadeira"
+            className="relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-cyan-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
+          >
+            <Milk className="w-5 h-5 text-cyan-300" />
+          </button>
         </div>
       </div>
     </div>

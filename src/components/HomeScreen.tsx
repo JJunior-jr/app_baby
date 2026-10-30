@@ -21,6 +21,7 @@ import {
   Droplets,
   Activity,
   Bell,
+  Gauge,
 } from 'lucide-react';
 import { ActivityItem, CustomActivityDefinition, UserProfile, SyncStatusState } from '../types';
 import { FormulaDrawer } from './modals/FormulaDrawer';
@@ -243,8 +244,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   const handleToggleBreastSideGauge = (side: 'left' | 'right') => {
     if (activeBreastSide === side) {
-      setActiveBreastSide(null);
-      showToast(`Amamentação no lado ${side === 'left' ? 'Esquerdo' : 'Direito'} pausada ⏸️`);
+      // Conclui e registra o fim da mamada diretamente ao tocar no botão ativo
+      let leftM = Math.round(leftNursingSeconds / 60);
+      let rightM = Math.round(rightNursingSeconds / 60);
+      if (leftM === 0 && rightM === 0) {
+        if (side === 'left' || leftNursingSeconds > 0) leftM = 1;
+        else rightM = 1;
+      }
+      handleSaveNursingSession(leftM, rightM);
     } else {
       setActiveBreastSide(side);
       showToast(`Mamando no lado ${side === 'left' ? 'Esquerdo' : 'Direito'} ▶️`);
@@ -481,6 +488,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               onSwitchToCardsView={() => handleSetHomeViewType('list')}
               onSwitchToSleepGauge={() => handleSetGaugeSubView('sono')}
               onSwitchToDiaperGauge={() => handleSetGaugeSubView('fralda')}
+              isSleeping={isSleeping}
+              onToggleSleep={handleSleepClick}
+              onOpenDiaperModal={onOpenDiaperModal}
             />
           ) : gaugeSubView === 'fralda' ? (
             <DiaperGaugeView
@@ -501,6 +511,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               onSwitchToCardsView={() => handleSetHomeViewType('list')}
               onSwitchToSleepGauge={() => handleSetGaugeSubView('sono')}
               onSwitchToBreastfeedingGauge={() => handleSetGaugeSubView('amamentacao')}
+              isSleeping={isSleeping}
+              onToggleSleep={handleSleepClick}
+              onOpenFormulaDrawer={() => setIsFormulaDrawerOpen(true)}
             />
           ) : (
             <SleepGaugeView
@@ -591,6 +604,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </h1>
           </div>
         </div>
+
+        {/* Right: Master Switch Button to Gauge View (same position & styling as List button in Gauge view) */}
+        <button
+          type="button"
+          onClick={() => handleSetHomeViewType('gauge')}
+          className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-slate-200 hover:text-white bg-[#1e293b]/90 border border-[#334155] hover:bg-slate-700/70 transition active:scale-95 cursor-pointer shadow-xs shrink-0"
+          title="Alternar para visão em medidores (Gauge)"
+        >
+          <Gauge className="w-4 h-4 text-gray-200" />
+        </button>
       </header>
 
       {/* Offline Alert Banner (shown when offline or has pending items to sync) */}
