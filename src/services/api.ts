@@ -200,15 +200,32 @@ const INITIAL_CUSTOM_ACTIVITIES: CustomActivityDefinition[] = [
 
 function getStoredActivities(): ActivityItem[] {
   const json = localStorage.getItem(ACTIVITIES_STORAGE_KEY) || localStorage.getItem('roti_hub_activities_v2');
+  let list: ActivityItem[] = [];
   if (!json) {
-    localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(INITIAL_ACTIVITIES));
-    return INITIAL_ACTIVITIES;
+    list = INITIAL_ACTIVITIES;
+  } else {
+    try {
+      list = JSON.parse(json);
+    } catch {
+      list = INITIAL_ACTIVITIES;
+    }
   }
-  try {
-    return JSON.parse(json);
-  } catch {
-    return INITIAL_ACTIVITIES;
+
+  // Ensure today's date has activities so the app is never empty/blank on first load
+  const todayStr = new Date().toISOString().split('T')[0];
+  const hasToday = list.some((a) => a.dateStr === todayStr);
+  if (!hasToday) {
+    const todayActivities = INITIAL_ACTIVITIES.filter((a) => a.dateStr === '2026-08-19').map((a, idx) => ({
+      ...a,
+      id: `today-${idx}-${Date.now()}`,
+      dateStr: todayStr,
+      timestamp: `${todayStr}T${a.timeStr || '12:00'}:00`,
+    }));
+    list = [...todayActivities, ...list];
+    localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(list));
   }
+
+  return list;
 }
 
 function saveStoredActivities(activities: ActivityItem[]): void {

@@ -509,6 +509,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     // Geolocation sync
     syncGeolocationTimezone().then(() => {
       set({ selectedDate: getBrazilDateString() });
+      get().loadData();
     });
 
     // Notifications & Sync Services
