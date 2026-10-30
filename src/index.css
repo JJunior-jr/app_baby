@@ -85,6 +85,28 @@
   --adm-radius-s: var(--app-input-radius);
   --adm-radius-m: var(--app-button-radius);
   --adm-radius-l: var(--app-card-radius);
+
+  /* Quick Actions Bar spacing ideal: 12px mobile (8-12px range), 16px telas maiores (12-16px range) */
+  --quick-actions-gap: 12px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --quick-actions-gap: 16px;
+  }
+}
+
+.quick-actions-buttons-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+}
+
+@media (min-width: 640px) {
+  .quick-actions-buttons-container {
+    gap: 16px !important;
+  }
 }
 
 @layer base {

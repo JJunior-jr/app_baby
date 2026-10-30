@@ -232,7 +232,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
       </AnimatePresence>
 
       {/* Centerpiece: The Large Minimalist Circular Arc Gauge */}
-      <div className="relative z-10 flex flex-col items-center justify-center flex-1 px-4 mt-2 sm:mt-1">
+      <div className="relative z-10 flex flex-col items-center justify-center flex-1 min-h-0 px-4 mt-1 sm:mt-1">
         <div className="relative w-[260px] h-[260px] xs:w-[280px] xs:h-[280px] sm:w-[290px] sm:h-[290px] flex items-center justify-center">
           {/* SVG Arc Gauge */}
           <svg
@@ -379,9 +379,12 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
         </button>
       </div>
 
-      {/* Bottom Floating Quick Actions: 4 buttons */}
-      <div className="relative z-20 pb-4 px-6">
-        <div className="flex items-center justify-center space-x-4 sm:space-x-5">
+      {/* Bottom Floating Quick Actions: 4 buttons with ideal UX spacing (12px mobile, 16px desktop) and 48x48px touch targets */}
+      <div className="relative z-20 pb-3 sm:pb-4 px-4 sm:px-6 shrink-0 w-full">
+        <div
+          className="quick-actions-buttons-container flex items-center justify-center mx-auto"
+          style={{ gap: 'var(--quick-actions-gap, 12px)' }}
+        >
           {/* Action 1: Sun or Moon Button depending on Brazil time */}
           <button
             type="button"
@@ -393,7 +396,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
                   ? 'Iniciar modo soneca diurna'
                   : 'Iniciar modo sono noturno'
             }
-            className={`relative flex items-center justify-center w-12 h-12 rounded-xl transition duration-150 active:scale-95 cursor-pointer border shadow-sm ${
+            className={`relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl transition duration-150 active:scale-95 cursor-pointer border shadow-sm ${
               !isSleeping
                 ? isDaytime
                   ? 'bg-amber-600 hover:bg-amber-500 border-amber-400 text-white'
@@ -420,7 +423,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
                 ? `Tocando: ${currentTrack.name} (Toque para abrir playlist)`
                 : 'Abrir Playlist de Ruídos Brancos para Dormir'
             }
-            className={`relative flex items-center justify-center w-12 h-12 rounded-xl transition duration-150 active:scale-95 cursor-pointer border shadow-sm ${
+            className={`relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl transition duration-150 active:scale-95 cursor-pointer border shadow-sm ${
               isPlayingSound
                 ? 'bg-rose-700 text-white border-rose-500'
                 : 'bg-[#1e293b] hover:bg-slate-700/60 border-[#334155] text-pink-300 hover:text-white'
@@ -437,7 +440,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             type="button"
             onClick={onSwitchToDiaperGauge || onOpenDiaperModal}
             title="Abrir Medidor de Fralda"
-            className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-teal-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
+            className="relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-teal-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
           >
             <Droplets className="w-5 h-5 text-teal-300" />
             <div className="absolute -top-1 -right-0.5 w-4 h-4 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center">
@@ -450,25 +453,13 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             type="button"
             onClick={onOpenFormulaDrawer}
             title="Registrar Mamadeira"
-            className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-cyan-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
+            className="relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-cyan-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
           >
             <Milk className="w-5 h-5 text-cyan-300" />
             <div className="absolute -top-1 -right-0.5 w-4 h-4 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center">
               <Lock className="w-2.5 h-2.5 text-gray-400" />
             </div>
           </button>
-
-          {/* Action 5: Alarm / Notifications */}
-          {onOpenNotificationCenter && (
-            <button
-              type="button"
-              onClick={onOpenNotificationCenter}
-              title="Central de Notificações & Alarmes em Segundo Plano"
-              className="relative flex items-center justify-center w-12 h-12 rounded-full bg-[#241f35] border border-purple-500/30 text-purple-300 hover:text-amber-300 transition duration-200 active:scale-92 cursor-pointer shadow-md"
-            >
-              <BellRing className="w-5 h-5 text-purple-300" />
-            </button>
-          )}
         </div>
       </div>
 

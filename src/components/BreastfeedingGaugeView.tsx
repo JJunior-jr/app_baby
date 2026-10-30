@@ -397,7 +397,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
         </div>
         {/* Finish & Save Session Button (appears when active or current session > 0) */}
         {currentSessionSeconds > 0 && (
-          <div className="flex items-center space-x-2 mt-2 z-20">
+          <div className="flex items-center justify-center space-x-2 mt-2 z-20 w-full mx-auto">
             <button
               type="button"
               onClick={() => {
@@ -405,7 +405,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
                 const rightM = Math.max(0, Math.round(rightSeconds / 60));
                 onSaveSession(leftM, rightM);
               }}
-              className="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-md flex items-center space-x-1.5 active:scale-95 transition cursor-pointer"
+              className="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-md flex items-center justify-center space-x-1.5 active:scale-95 transition cursor-pointer"
             >
               <Check className="w-3.5 h-3.5 stroke-[3]" />
               <span>Concluir e Salvar Mamada</span>
@@ -414,7 +414,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
               type="button"
               onClick={onResetTimers}
               title="Zerar cronômetro da mamada atual"
-              className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white transition active:scale-95 cursor-pointer"
+              className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white flex items-center justify-center transition active:scale-95 cursor-pointer shrink-0"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -422,36 +422,38 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
         )}
       </div>
 
-      {/* Bottom Controls: Peito Esquerdo, Peito Direito & Fórmula / Mamadeira */}
-      <div className="relative z-20 pb-4 px-4 sm:px-6 h-[100px] flex items-center justify-center">
-        <div className="grid grid-cols-3 gap-2.5 w-full max-w-[420px] mx-auto items-stretch relative">
+      {/* Bottom Controls: Peito Esquerdo, Peito Direito & Fórmula */}
+      <div className="relative z-20 pb-4 px-3 sm:px-6 h-[90px] flex items-center justify-center">
+        <div className="grid grid-cols-3 gap-2 w-full max-w-[420px] mx-auto items-stretch relative">
           {/* Button 1: Peito Esquerdo com o timer */}
           <button
             type="button"
             onClick={() => onToggleSide('left')}
-            className={`p-2.5 h-[84px] rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer border select-none ${
+            className={`px-1 py-1.5 h-[74px] rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer border select-none overflow-hidden ${
               activeSide === 'left'
                 ? 'bg-pink-700 text-white border-pink-500 shadow-md'
                 : 'bg-[#1e293b] hover:bg-slate-700/60 border-[#334155] text-slate-200 shadow-sm'
             }`}
           >
-            <div className="h-5 flex items-center justify-center space-x-1.5 w-full text-center">
+            <div className="flex flex-col items-center justify-center w-full text-center shrink-0">
               {activeSide === 'left' ? (
                 <Pause className="w-3.5 h-3.5 text-pink-200 fill-current" />
               ) : (
                 <Play className="w-3.5 h-3.5 text-pink-400 -scale-x-100" />
               )}
-              <span className="text-[11px] font-bold uppercase tracking-tight">Esq</span>
+              <span className="text-[10px] font-bold uppercase tracking-tight leading-tight mt-0.5">
+                Esquerda
+              </span>
             </div>
 
             {/* Timer */}
-            <span className="h-6 flex items-center justify-center text-base font-bold font-mono text-white leading-none w-full text-center">
+            <span className="text-sm font-bold font-mono text-white leading-none w-full text-center my-0.5">
               {formatTime(leftSeconds)}
             </span>
 
             {/* Status */}
             <span
-              className={`h-4 flex items-center justify-center text-[10px] font-medium transition-colors w-full text-center ${
+              className={`text-[8.5px] sm:text-[9px] font-medium transition-colors w-full text-center whitespace-nowrap leading-tight tracking-tight ${
                 activeSide === 'left'
                   ? 'text-pink-200 font-bold'
                   : 'text-gray-400'
@@ -465,29 +467,31 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
           <button
             type="button"
             onClick={() => onToggleSide('right')}
-            className={`p-2.5 h-[84px] rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer border select-none ${
+            className={`px-1 py-1.5 h-[74px] rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer border select-none overflow-hidden ${
               activeSide === 'right'
                 ? 'bg-purple-700 text-white border-purple-500 shadow-md'
                 : 'bg-[#1e293b] hover:bg-slate-700/60 border-[#334155] text-slate-200 shadow-sm'
             }`}
           >
-            <div className="h-5 flex items-center justify-center space-x-1.5 w-full text-center">
+            <div className="flex flex-col items-center justify-center w-full text-center shrink-0">
               {activeSide === 'right' ? (
                 <Pause className="w-3.5 h-3.5 text-purple-200 fill-current" />
               ) : (
                 <Play className="w-3.5 h-3.5 text-purple-400" />
               )}
-              <span className="text-[11px] font-bold uppercase tracking-tight">Dir</span>
+              <span className="text-[10px] font-bold uppercase tracking-tight leading-tight mt-0.5">
+                Direita
+              </span>
             </div>
 
             {/* Timer */}
-            <span className="h-6 flex items-center justify-center text-base font-bold font-mono text-white leading-none w-full text-center">
+            <span className="text-sm font-bold font-mono text-white leading-none w-full text-center my-0.5">
               {formatTime(rightSeconds)}
             </span>
 
             {/* Status */}
             <span
-              className={`h-4 flex items-center justify-center text-[10px] font-medium transition-colors w-full text-center ${
+              className={`text-[8.5px] sm:text-[9px] font-medium transition-colors w-full text-center whitespace-nowrap leading-tight tracking-tight ${
                 activeSide === 'right'
                   ? 'text-purple-200 font-bold'
                   : 'text-gray-400'
@@ -497,31 +501,26 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
             </span>
           </button>
 
-          {/* Button 3: Fórmula / Mamadeira */}
-          <div className="relative w-full h-[84px]" ref={popoverRef}>
+          {/* Button 3: Fórmula */}
+          <div className="relative w-full h-[74px]" ref={popoverRef}>
             <button
               type="button"
               onClick={() => setIsFormulaPopoverOpen(!isFormulaPopoverOpen)}
-              className={`w-full h-full p-2.5 rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer border select-none ${
+              className={`w-full h-full px-1 py-1.5 rounded-xl flex flex-col items-center justify-between text-center transition-all duration-150 active:scale-95 cursor-pointer border select-none overflow-hidden ${
                 isFormulaPopoverOpen
                   ? 'bg-teal-700 text-white border-teal-500 shadow-md'
                   : 'bg-[#1e293b] hover:bg-slate-700/60 border-[#334155] text-teal-200 shadow-sm'
               }`}
             >
-              <div className="h-5 flex items-center justify-center space-x-1.5 w-full text-center">
+              <div className="flex flex-col items-center justify-center w-full text-center shrink-0">
                 <Milk className="w-3.5 h-3.5 text-teal-300" />
-                <span className="text-[11px] font-bold uppercase tracking-tight text-teal-300">
+                <span className="text-[10px] font-bold uppercase tracking-tight text-teal-300 leading-tight mt-0.5">
                   Fórmula
                 </span>
               </div>
 
-              {/* Title label matching timers */}
-              <span className="h-6 flex items-center justify-center text-xs font-bold uppercase tracking-wider text-white leading-none w-full text-center">
-                Mamadeira
-              </span>
-
               {/* Status prompt */}
-              <span className="h-4 flex items-center justify-center text-[10px] font-medium text-teal-300 w-full text-center">
+              <span className="text-[8.5px] sm:text-[9px] font-medium text-teal-300 w-full text-center whitespace-nowrap leading-tight tracking-tight">
                 Inserir Dados ▾
               </span>
             </button>
