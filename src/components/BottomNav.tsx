@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { LayoutGrid, BookOpen, Clock, TrendingUp, ShieldCheck } from 'lucide-react';
 
 export type TabType = 'inicio' | 'diario' | 'rotinas' | 'insights' | 'saude';
@@ -28,7 +27,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
     <nav
       role="tablist"
       aria-label="Navegação Principal"
-      className="relative w-full bg-[#1e293b] border border-[#334155] rounded-full p-1.5 flex items-center justify-between gap-1 select-none shadow-lg overflow-hidden touch-manipulation transition-all duration-300"
+      className="relative w-full bg-[#1e293b] border border-[#334155] rounded-full p-1.5 flex items-center justify-between gap-1 select-none shadow-lg overflow-hidden touch-manipulation transition-colors duration-200"
       data-purpose="bottom-tab-navigation"
     >
       {NAV_ITEMS.map((item) => {
@@ -43,47 +42,29 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
             aria-selected={isActive}
             aria-label={item.label}
             onClick={() => onTabChange(item.id)}
-            className="relative flex flex-col items-center justify-center flex-1 py-2 px-1 rounded-full transition-all duration-150 group z-10 touch-manipulation cursor-pointer active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-400"
+            className={`relative flex flex-col items-center justify-center flex-1 py-2 px-1 rounded-full transition-all duration-200 group z-10 touch-manipulation cursor-pointer active:scale-95 focus:outline-none hover:bg-white/10 ${
+              isActive
+                ? 'text-[var(--color-accent)]'
+                : 'text-[#858cae] hover:text-white'
+            }`}
           >
-            {/* Translucent Liquid Glass Pill for Active Tab */}
-            {isActive && (
-              <motion.div
-                layoutId="liquid-nav-indicator"
-                transition={{
-                  type: 'spring',
-                  stiffness: 480,
-                  damping: 30,
-                  mass: 0.35,
-                }}
-                className="absolute inset-0 rounded-full backdrop-blur-md pointer-events-none overflow-hidden shadow-inner"
-              >
-                {/* Translucent Theme Accent Glass Fill (35% opacity) */}
-                <div
-                  className="absolute inset-0 rounded-full opacity-35"
-                  style={{ backgroundColor: 'var(--color-accent)' }}
-                />
-                {/* Soft Liquid Top Highlight */}
-                <div className="absolute top-0 inset-x-3 h-1/2 bg-white/20 rounded-t-full pointer-events-none" />
-              </motion.div>
-            )}
-
-            {/* Icon with instant state and liquid bounce */}
+            {/* Icon */}
             <div
-              className={`relative z-10 w-9 h-6 rounded-xl flex items-center justify-center mb-0.5 transition-all duration-150 ${
+              className={`relative z-10 w-9 h-6 rounded-xl flex items-center justify-center mb-0.5 transition-all duration-200 ${
                 isActive
-                  ? 'text-white scale-110 -translate-y-0.5'
-                  : 'text-[#858cae] group-hover:text-gray-200'
+                  ? 'text-[var(--color-accent)] scale-110'
+                  : 'text-[#858cae] group-hover:text-white group-hover:scale-110'
               }`}
             >
-              <Icon className="w-4 h-4 stroke-[2.2]" />
+              <Icon className="w-4 h-4 stroke-[2.5]" />
             </div>
 
-            {/* Label with crisp immediate contrast */}
+            {/* Label */}
             <span
-              className={`relative z-10 text-[10.5px] tracking-tight leading-none transition-all duration-150 ${
+              className={`relative z-10 text-[10.5px] tracking-tight leading-none transition-all duration-200 ${
                 isActive
-                  ? 'font-extrabold text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] scale-105'
-                  : 'font-semibold text-[#858cae] group-hover:text-gray-300'
+                  ? 'font-extrabold text-[var(--color-accent)]'
+                  : 'font-semibold text-[#858cae] group-hover:text-white'
               }`}
             >
               {item.label}

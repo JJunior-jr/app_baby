@@ -323,7 +323,7 @@ export const CalendarSyncModal: React.FC<CalendarSyncModalProps> = ({
         )}
 
         {/* Content Body */}
-        <div className="p-5 overflow-y-auto space-y-4 max-h-[62vh] no-scrollbar">
+        <div className="flex-1 min-h-0 p-5 overflow-y-auto space-y-4 no-scrollbar">
           {activeTab === 'providers' && (
             <div className="space-y-3.5 animate-in fade-in">
               {/* Introduction Banner */}

@@ -142,7 +142,7 @@ export const PermissionsDiagnosticsModal: React.FC<PermissionsDiagnosticsModalPr
         )}
 
         {/* Body */}
-        <div className="p-5 overflow-y-auto space-y-4 max-h-[64vh] no-scrollbar">
+        <div className="flex-1 min-h-0 p-5 overflow-y-auto space-y-4 no-scrollbar">
           {/* Quick overview alert */}
           <div
             className="p-3.5 rounded-2xl border text-xs space-y-1"

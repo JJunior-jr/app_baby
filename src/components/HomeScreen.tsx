@@ -644,64 +644,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       )}
 
-      {/* Top Banner Row */}
-      <div className="flex flex-col gap-3">
-        {/* Next Nap Info Card - Solid neutral card */}
-        <section className="relative overflow-hidden bg-[#1e293b] border border-[#334155] rounded-xl px-4 py-3 flex items-center justify-between shadow-sm">
-          <div className="flex items-center space-x-2.5 relative z-10">
-            <Moon className="w-4 h-4 text-blue-300" />
-            <p className="text-xs text-gray-200 font-medium">
-              Próxima soneca <span className="font-extrabold text-white">00:44</span> · em 1h 40min
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onOpenSleepModal}
-            className="text-gray-300 hover:text-white p-1 rounded-lg hover:bg-white/10 transition relative z-10"
-            title="Detalhes do sono"
-          >
-            <Info className="w-4 h-4" />
-          </button>
-        </section>
 
-        {/* VIP AI Assistant Bar (Desativado da interface do usuário, código preservado) */}
-        {isAiAssistantVisible && (
-          <section className="relative bg-[#16182a] border border-[#272a44] rounded-2xl p-3 shadow-sm">
-            <div className="absolute -top-2 left-4 px-1.5 py-0.2 rounded bg-amber-500 text-[8.5px] font-black text-[#1c1917] tracking-wider uppercase flex items-center gap-1 shadow-sm">
-              <span>👑 VIP</span>
-            </div>
-
-            <form onSubmit={handleAiAsk} className="flex items-center space-x-2.5 mt-1">
-              <div className="relative w-9 h-9 rounded-xl bg-[#2b224c] border border-purple-500/30 flex items-center justify-center text-lg shrink-0">
-                <span>🧑‍🍼</span>
-                <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 border border-[#16182a]"></span>
-              </div>
-
-              <input
-                type="text"
-                value={aiQuestion}
-                onChange={(e) => setAiQuestion(e.target.value)}
-                placeholder={`Pergunte algo sobre o ${currentUser?.babyName || 'John'}...`}
-                className="flex-1 bg-transparent text-xs text-white placeholder-gray-400 focus:outline-none"
-              />
-
-              <button
-                type="submit"
-                aria-label="Enviar pergunta"
-                className="w-8 h-8 rounded-xl bg-[#7158e2] text-white flex items-center justify-center active:scale-95 shadow-md shadow-purple-600/30 transition shrink-0"
-              >
-                <Send className="w-3.5 h-3.5" />
-              </button>
-            </form>
-
-            {aiResponse && (
-              <div className="mt-2.5 pt-2 border-t border-white/5 text-[11px] text-purple-200 leading-relaxed bg-[#1b1933]/60 p-2.5 rounded-xl">
-                {aiResponse}
-              </div>
-            )}
-          </section>
-        )}
-      </div>
 
       {/* Section: "O que aconteceu agora?" + Grid Toggle */}
       <section className="space-y-3 pt-1">

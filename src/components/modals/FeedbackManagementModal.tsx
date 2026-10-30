@@ -126,7 +126,7 @@ export const FeedbackManagementModal: React.FC<FeedbackManagementModalProps> = (
         </header>
 
         {/* Body */}
-        <div className="p-5 overflow-y-auto space-y-4 max-h-[68vh] no-scrollbar">
+        <div className="flex-1 min-h-0 p-5 overflow-y-auto space-y-4 no-scrollbar">
           {/* Analytics Summary Card */}
           <div
             className="p-3.5 rounded-2xl border space-y-2.5"

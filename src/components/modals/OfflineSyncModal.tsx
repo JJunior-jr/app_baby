@@ -109,7 +109,7 @@ export const OfflineSyncModal: React.FC<OfflineSyncModalProps> = ({
         </header>
 
         {/* Content Body */}
-        <div className="p-5 overflow-y-auto space-y-4 max-h-[70vh] no-scrollbar">
+        <div className="flex-1 min-h-0 p-5 overflow-y-auto space-y-4 no-scrollbar">
           {/* Feedback Banner */}
           {syncFeedback && (
             <div className="p-3 rounded-xl bg-blue-950/60 border border-blue-500/40 text-xs text-blue-200 flex items-center space-x-2 animate-in fade-in">

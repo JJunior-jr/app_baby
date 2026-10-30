@@ -63,30 +63,56 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       {/* Click outside backdrop */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      <div className="relative z-10 w-full max-w-[430px] landscape:max-w-lg h-auto max-h-[90vh] bg-[#0d0f1e] rounded-3xl flex flex-col justify-between overflow-y-auto shadow-2xl border border-gray-800 animate-in zoom-in-95 duration-200">
+      <div
+        className="relative z-10 w-full max-w-[440px] landscape:max-w-xl max-h-[92vh] rounded-3xl flex flex-col justify-between overflow-hidden shadow-2xl border animate-in zoom-in-95 duration-200 transition-colors"
+        style={{
+          backgroundColor: 'var(--color-dominant)',
+          borderColor: 'var(--color-border)',
+        }}
+      >
         
         {/* Navigation Header */}
-        <header className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-white/5">
-          <div className="flex items-center space-x-2">
-            <Shield className="w-5 h-5 text-[#9a7ffc]" />
-            <h1 className="text-base font-bold text-white tracking-tight">Autenticação JWT</h1>
+        <header
+          className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-white/5 shrink-0"
+          style={{ backgroundColor: 'var(--color-dominant)' }}
+        >
+          <div className="flex items-center space-x-2.5">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center shadow-xs"
+              style={{
+                backgroundColor: 'var(--color-accent)',
+                color: 'var(--color-accent-text)',
+              }}
+            >
+              <Shield className="w-5 h-5 stroke-[2.2]" />
+            </div>
+            <div>
+              <h1 className="text-base font-bold text-white tracking-tight leading-tight">Autenticação JWT</h1>
+              <p className="text-[10px] text-gray-400">Segurança de tokens e dados do usuário</p>
+            </div>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Fechar"
-            className="p-1.5 text-gray-300 hover:text-white transition"
+            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition cursor-pointer"
           >
-            <X className="w-6 h-6 stroke-[2.2]" />
+            <X className="w-4 h-4 stroke-[2.2]" />
           </button>
         </header>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4.5 no-scrollbar">
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-4.5 no-scrollbar">
           {mode === 'status' && (
             <>
               {/* Authenticated Banner */}
-              <div className="bg-[#171a2d] border border-[#272a44] rounded-2xl p-4 flex items-center justify-between">
+              <div
+                className="p-4 rounded-2xl border flex items-center justify-between"
+                style={{
+                  backgroundColor: 'var(--color-secondary)',
+                  borderColor: 'var(--color-border)',
+                }}
+              >
                 <div className="flex items-center space-x-3">
                   <div className="w-12 h-12 rounded-2xl bg-[#232042] border border-purple-500/20 flex items-center justify-center text-[#8e79fd]">
                     <User className="w-6 h-6" />
@@ -106,7 +132,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   type="button"
                   onClick={handleLogout}
                   title="Sair da conta"
-                  className="p-2 text-gray-400 hover:text-rose-400 transition"
+                  className="p-2 text-gray-400 hover:text-rose-400 transition cursor-pointer"
                 >
                   <LogOut className="w-5 h-5" />
                 </button>
@@ -122,13 +148,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <button
                     type="button"
                     onClick={copyToken}
-                    className="text-xs text-[#9a7ffc] hover:underline flex items-center space-x-1"
+                    className="text-xs text-[#9a7ffc] hover:underline flex items-center space-x-1 cursor-pointer"
                   >
                     {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                     <span>{copied ? 'Copiado!' : 'Copiar'}</span>
                   </button>
                 </div>
-                <div className="bg-[#121422] p-3 rounded-xl border border-gray-800 text-[11px] font-mono text-purple-200/90 break-all select-all max-h-24 overflow-y-auto">
+                <div className="bg-[#121422] p-3 rounded-xl border border-white/10 text-[11px] font-mono text-purple-200/90 break-all select-all max-h-24 overflow-y-auto">
                   {currentToken || 'Nenhum token ativo'}
                 </div>
               </section>
@@ -137,7 +163,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               {parsedToken && (
                 <section className="space-y-2">
                   <span className="text-xs font-bold text-gray-300">Payload Decodificado (Claims):</span>
-                  <div className="bg-[#121422] p-3 rounded-xl border border-gray-800 text-xs font-mono text-emerald-300/90">
+                  <div className="bg-[#121422] p-3 rounded-xl border border-white/10 text-xs font-mono text-emerald-300/90">
                     <pre className="overflow-x-auto whitespace-pre-wrap text-[11px]">
                       {JSON.stringify(parsedToken.payload, null, 2)}
                     </pre>
@@ -146,7 +172,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               )}
 
               {/* FastAPI Protected Endpoints Info */}
-              <div className="bg-[#171a2d]/80 border border-[#2b2e4c] rounded-2xl p-3.5 text-xs text-gray-300 space-y-1.5 leading-relaxed">
+              <div
+                className="p-3.5 rounded-2xl border text-xs text-gray-300 space-y-1.5 leading-relaxed"
+                style={{
+                  backgroundColor: 'var(--color-secondary)',
+                  borderColor: 'var(--color-border)',
+                }}
+              >
                 <span className="font-bold text-white block">Proteção de Rotas com FastAPI:</span>
                 <p className="text-[11px] text-gray-400">
                   Todas as requisições de atividades e agendamentos incluem automaticamente o header{' '}
@@ -162,14 +194,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="flex-1 py-3 rounded-xl bg-[#1b1e33] hover:bg-[#252a46] text-xs font-semibold text-gray-200 transition"
+                  className="flex-1 py-3 rounded-xl bg-[#1b1e33] hover:bg-[#252a46] text-xs font-semibold text-gray-200 transition cursor-pointer"
                 >
                   Trocar de Conta
                 </button>
                 <button
                   type="button"
                   onClick={() => setMode('register')}
-                  className="flex-1 py-3 rounded-xl bg-[#9a7ffc] hover:bg-[#886cf2] text-xs font-bold text-[#131127] transition"
+                  style={{
+                    backgroundColor: 'var(--color-accent)',
+                    color: 'var(--color-accent-text)',
+                  }}
+                  className="flex-1 py-3 rounded-xl text-xs font-bold transition shadow-md cursor-pointer"
                 >
                   Novo Cadastro
                 </button>
@@ -205,7 +241,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
               <button
                 type="submit"
-                className="w-full py-4 bg-[#9a7ffc] hover:bg-[#886cf2] text-[#131127] font-bold text-sm rounded-2xl transition shadow-md shadow-purple-900/30"
+                style={{
+                  backgroundColor: 'var(--color-accent)',
+                  color: 'var(--color-accent-text)',
+                }}
+                className="w-full py-4 font-bold text-sm rounded-2xl transition shadow-md cursor-pointer"
               >
                 Entrar e Gerar JWT
               </button>
@@ -213,7 +253,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <button
                 type="button"
                 onClick={() => setMode('status')}
-                className="w-full py-2 text-xs text-gray-400 hover:text-white"
+                className="w-full py-2 text-xs text-gray-400 hover:text-white cursor-pointer"
               >
                 Cancelar
               </button>
@@ -260,7 +300,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
               <button
                 type="submit"
-                className="w-full py-4 bg-[#9a7ffc] hover:bg-[#886cf2] text-[#131127] font-bold text-sm rounded-2xl transition shadow-md shadow-purple-900/30"
+                style={{
+                  backgroundColor: 'var(--color-accent)',
+                  color: 'var(--color-accent-text)',
+                }}
+                className="w-full py-4 font-bold text-sm rounded-2xl transition shadow-md cursor-pointer"
               >
                 Cadastrar e Obter JWT
               </button>
@@ -268,7 +312,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <button
                 type="button"
                 onClick={() => setMode('status')}
-                className="w-full py-2 text-xs text-gray-400 hover:text-white"
+                className="w-full py-2 text-xs text-gray-400 hover:text-white cursor-pointer"
               >
                 Cancelar
               </button>
@@ -277,13 +321,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         </div>
 
         {/* Footer */}
-        <footer className="p-4 bg-[#0d0f1e] border-t border-white/5 text-center">
+        <footer
+          className="p-4 pt-3 pb-5 border-t border-white/5 text-center shrink-0"
+          style={{ backgroundColor: 'var(--color-dominant)' }}
+        >
           <button
             type="button"
             onClick={onClose}
-            className="text-xs text-[#878ca5] hover:text-white transition"
+            style={{
+              backgroundColor: 'var(--color-secondary)',
+              color: 'var(--color-text-primary)',
+            }}
+            className="w-full py-3 rounded-2xl font-bold text-xs border border-[var(--color-border)] hover:opacity-80 transition cursor-pointer"
           >
-            Fechar janela
+            Fechar Janela
           </button>
         </footer>
 
