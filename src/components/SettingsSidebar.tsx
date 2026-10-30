@@ -55,8 +55,6 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
   isSyncing = false,
 }) => {
   const currentPalette = themeService.getCurrentPalette();
-  const currentFont = themeService.getFont();
-  const currentRadius = themeService.getRadius();
 
   const totalPending =
     activeRemindersCount + pendingAlarmsCount + (syncPendingCount > 0 ? syncPendingCount : 0);
@@ -65,14 +63,19 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
     <>
       {isOpen && (
         <div className="fixed inset-0 z-50 flex justify-start pointer-events-auto animate-in fade-in duration-200">
-          {/* Subtle Frosted Backdrop - keeps background content visible */}
-          <div
+          {/* Subtle Frosted Backdrop as a Semantic Button */}
+          <button
+            type="button"
+            aria-label="Fechar menu lateral"
             onClick={onClose}
-            className="absolute inset-0 bg-black/25 backdrop-blur-[2px] cursor-pointer"
+            className="absolute inset-0 bg-black/25 backdrop-blur-[2px] cursor-pointer border-none p-0 m-0 w-full h-full"
           />
 
           {/* Sidebar Drawer */}
           <aside
+            role="dialog"
+            aria-modal="true"
+            aria-label="Configurações e Ajustes"
             className="relative w-[38vw] min-w-[210px] max-w-[500px] sm:w-[36vw] md:w-[35vw] lg:w-[32vw] h-full bg-[#0f172a] border-r border-[#334155] rounded-r-2xl text-white flex flex-col shadow-2xl z-10 overflow-hidden animate-in slide-in-from-left duration-200"
           >
             {/* Header Bar */}
@@ -97,8 +100,8 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
               <button
                 type="button"
                 onClick={onClose}
+                aria-label="Fechar menu"
                 className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 flex items-center justify-center text-gray-200 hover:text-white transition cursor-pointer active:scale-95 shrink-0 ml-1.5 shadow-sm"
-                title="Fechar menu lateral"
               >
                 <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
@@ -134,7 +137,7 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
                 </div>
               </div>
 
-              {/* SEÇÃO 1: CENTRAL DE AÇÕES & PENDÊNCIAS (Notificação, Sugestão, Sincronização, Lembretes) */}
+              {/* SEÇÃO 1: CENTRAL DE AÇÕES & PENDÊNCIAS */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between px-1">
                   <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-gray-300/80 block">

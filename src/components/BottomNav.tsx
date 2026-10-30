@@ -26,6 +26,8 @@ const NAV_ITEMS: NavItem[] = [
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) => {
   return (
     <nav
+      role="tablist"
+      aria-label="Navegação Principal"
       className="relative w-full bg-[#1e293b] border border-[#334155] rounded-full p-1.5 flex items-center justify-between gap-1 select-none shadow-lg overflow-hidden touch-manipulation transition-all duration-300"
       data-purpose="bottom-tab-navigation"
     >
@@ -37,10 +39,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
           <button
             key={item.id}
             type="button"
+            role="tab"
+            aria-selected={isActive}
+            aria-label={item.label}
             onClick={() => onTabChange(item.id)}
-            className="relative flex flex-col items-center justify-center flex-1 py-2 px-1 rounded-full transition-all duration-150 group z-10 touch-manipulation cursor-pointer active:scale-95 focus:outline-none"
+            className="relative flex flex-col items-center justify-center flex-1 py-2 px-1 rounded-full transition-all duration-150 group z-10 touch-manipulation cursor-pointer active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-400"
           >
-            {/* Translucent Liquid Glass Pill for Active Tab (No border outlines) */}
+            {/* Translucent Liquid Glass Pill for Active Tab */}
             {isActive && (
               <motion.div
                 layoutId="liquid-nav-indicator"
@@ -89,4 +94,3 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onTabChange }) 
     </nav>
   );
 };
-

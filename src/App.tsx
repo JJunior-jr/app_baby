@@ -1,465 +1,93 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useEffect, Suspense, lazy } from 'react';
 import { StatusBar } from './components/StatusBar';
-import { BottomNav, TabType } from './components/BottomNav';
-import { HomeScreen } from './components/HomeScreen';
-import { DiaryScreen } from './components/DiaryScreen';
-import { RoutinesScreen } from './components/RoutinesScreen';
-import { InsightsScreen } from './components/InsightsScreen';
-import { HealthScreen } from './components/HealthScreen';
-
-import { ActivityBottomSheet } from './components/modals/ActivityBottomSheet';
-import { BreastfeedingModal } from './components/modals/BreastfeedingModal';
-import { DiaperModal } from './components/modals/DiaperModal';
-import { SleepModal } from './components/modals/SleepModal';
-import { MealModal } from './components/modals/MealModal';
-import { FilterModal } from './components/modals/FilterModal';
-import { ManageActivitiesModal } from './components/modals/ManageActivitiesModal';
-import { NewActivityModal } from './components/modals/NewActivityModal';
-import { AuthModal } from './components/modals/AuthModal';
-import { DockerVpsGuideModal } from './components/modals/DockerVpsGuideModal';
-import { CalendarSyncModal } from './components/modals/CalendarSyncModal';
-import { PermissionsDiagnosticsModal } from './components/modals/PermissionsDiagnosticsModal';
-import { FeedbackPromptModal } from './components/modals/FeedbackPromptModal';
-import { FeedbackManagementModal } from './components/modals/FeedbackManagementModal';
-import { OfflineSyncModal } from './components/modals/OfflineSyncModal';
-import { NotificationCenterModal } from './components/modals/NotificationCenterModal';
-import { ThemeModal } from './components/modals/ThemeModal';
-import { EditActivityModal } from './components/modals/EditActivityModal';
-import { SettingsSidebar, SettingsSection } from './components/SettingsSidebar';
-
-import { apiService } from './services/api';
-import { authService } from './services/auth';
-import { themeService, PaletteTheme } from './services/theme';
-import { feedbackService, FeedbackPromptTrigger } from './services/feedback';
-import { syncService } from './services/syncService';
+import { BottomNav } from './components/BottomNav';
 import { remindersService } from './services/reminders';
-import { notificationService } from './services/notificationService';
-import {
-  getBrazilDateString,
-  getBrazilTimeString,
-  getBrazilPeriod,
-  syncGeolocationTimezone,
-} from './services/brazilTime';
-import {
-  ActivityItem,
-  ActivityType,
-  CustomActivityDefinition,
-  DailySummary,
-  UserProfile,
-} from './types';
+import { useAppStore } from './services/store';
+
+// Dynamic Screen Imports (Code Splitting for Mobile PWA/TWA Performance)
+const HomeScreen = lazy(() => import('./components/HomeScreen').then((m) => ({ default: m.HomeScreen })));
+const DiaryScreen = lazy(() => import('./components/DiaryScreen').then((m) => ({ default: m.DiaryScreen })));
+const RoutinesScreen = lazy(() => import('./components/RoutinesScreen').then((m) => ({ default: m.RoutinesScreen })));
+const InsightsScreen = lazy(() => import('./components/InsightsScreen').then((m) => ({ default: m.InsightsScreen })));
+const HealthScreen = lazy(() => import('./components/HealthScreen').then((m) => ({ default: m.HealthScreen })));
+
+// Dynamic Modal & Heavy Component Imports
+const ActivityBottomSheet = lazy(() => import('./components/modals/ActivityBottomSheet').then((m) => ({ default: m.ActivityBottomSheet })));
+const BreastfeedingModal = lazy(() => import('./components/modals/BreastfeedingModal').then((m) => ({ default: m.BreastfeedingModal })));
+const DiaperModal = lazy(() => import('./components/modals/DiaperModal').then((m) => ({ default: m.DiaperModal })));
+const SleepModal = lazy(() => import('./components/modals/SleepModal').then((m) => ({ default: m.SleepModal })));
+const MealModal = lazy(() => import('./components/modals/MealModal').then((m) => ({ default: m.MealModal })));
+const FilterModal = lazy(() => import('./components/modals/FilterModal').then((m) => ({ default: m.FilterModal })));
+const ManageActivitiesModal = lazy(() => import('./components/modals/ManageActivitiesModal').then((m) => ({ default: m.ManageActivitiesModal })));
+const NewActivityModal = lazy(() => import('./components/modals/NewActivityModal').then((m) => ({ default: m.NewActivityModal })));
+const AuthModal = lazy(() => import('./components/modals/AuthModal').then((m) => ({ default: m.AuthModal })));
+const DockerVpsGuideModal = lazy(() => import('./components/modals/DockerVpsGuideModal').then((m) => ({ default: m.DockerVpsGuideModal })));
+const CalendarSyncModal = lazy(() => import('./components/modals/CalendarSyncModal').then((m) => ({ default: m.CalendarSyncModal })));
+const PermissionsDiagnosticsModal = lazy(() => import('./components/modals/PermissionsDiagnosticsModal').then((m) => ({ default: m.PermissionsDiagnosticsModal })));
+const FeedbackPromptModal = lazy(() => import('./components/modals/FeedbackPromptModal').then((m) => ({ default: m.FeedbackPromptModal })));
+const FeedbackManagementModal = lazy(() => import('./components/modals/FeedbackManagementModal').then((m) => ({ default: m.FeedbackManagementModal })));
+const OfflineSyncModal = lazy(() => import('./components/modals/OfflineSyncModal').then((m) => ({ default: m.OfflineSyncModal })));
+const NotificationCenterModal = lazy(() => import('./components/modals/NotificationCenterModal').then((m) => ({ default: m.NotificationCenterModal })));
+const ThemeModal = lazy(() => import('./components/modals/ThemeModal').then((m) => ({ default: m.ThemeModal })));
+const EditActivityModal = lazy(() => import('./components/modals/EditActivityModal').then((m) => ({ default: m.EditActivityModal })));
+const SettingsSidebar = lazy(() => import('./components/SettingsSidebar').then((m) => ({ default: m.SettingsSidebar })));
+
+// Lightweight Loading Spinner Fallback for Smooth View Switching
+const ScreenFallback = () => (
+  <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-3 min-h-[300px]">
+    <div className="w-8 h-8 border-3 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+    <span className="text-xs font-semibold text-slate-400 tracking-wide animate-pulse">
+      Carregando...
+    </span>
+  </div>
+);
 
 export default function App() {
-  // Navigation & View State
-  const [activeTab, setActiveTab] = useState<TabType>('diario');
-  const [selectedDate, setSelectedDate] = useState<string>(() => getBrazilDateString());
-  const [selectedFilter, setSelectedFilter] = useState<string>('all');
-  const [currentPalette, setCurrentPalette] = useState<PaletteTheme>(themeService.getCurrentPalette());
+  const {
+    activeTab,
+    selectedDate,
+    selectedFilter,
+    currentPalette,
+    activeModal,
+    activities,
+    customActivities,
+    dailySummary,
+    currentUser,
+    syncStatus,
+    pendingAlarmsCount,
+    feedbackTriggerContext,
+    themeModalSection,
+    editingActivity,
 
-  // Core Data State
-  const [activities, setActivities] = useState<ActivityItem[]>([]);
-  const [customActivities, setCustomActivities] = useState<CustomActivityDefinition[]>([]);
-  const [dailySummary, setDailySummary] = useState<DailySummary>({
-    totalSleepMinutes: 336,
-    breastfeedingSessions: 3,
-    diaperChanges: 4,
-  });
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+    setActiveTab,
+    setSelectedDate,
+    setSelectedFilter,
+    setCurrentUser,
+    openModal,
+    closeModal,
+    openThemeModal,
+    openEditActivityModal,
 
-  // Modal Visibility State
-  const [isActivitySheetOpen, setIsActivitySheetOpen] = useState(false);
-  const [isBreastfeedingModalOpen, setIsBreastfeedingModalOpen] = useState(false);
-  const [isDiaperModalOpen, setIsDiaperModalOpen] = useState(false);
-  const [isSleepModalOpen, setIsSleepModalOpen] = useState(false);
-  const [isMealModalOpen, setIsMealModalOpen] = useState(false);
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [isManageActivitiesOpen, setIsManageActivitiesOpen] = useState(false);
-  const [isNewActivityModalOpen, setIsNewActivityModalOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isDockerGuideOpen, setIsDockerGuideOpen] = useState(false);
-  const [isCalendarSyncOpen, setIsCalendarSyncOpen] = useState(false);
-  const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState(false);
-  const [isFeedbackPromptOpen, setIsFeedbackPromptOpen] = useState(false);
-  const [isFeedbackManagementOpen, setIsFeedbackManagementOpen] = useState(false);
-  const [feedbackTriggerContext, setFeedbackTriggerContext] = useState<FeedbackPromptTrigger | null>(null);
-  const [isOfflineSyncOpen, setIsOfflineSyncOpen] = useState(false);
-  const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
-  const [isSettingsSidebarOpen, setIsSettingsSidebarOpen] = useState(false);
-  const [themeModalSection, setThemeModalSection] = useState<'colors' | 'typography' | 'shapes' | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingActivity, setEditingActivity] = useState<ActivityItem | null>(null);
-  const [manageActivitiesInitialTab, setManageActivitiesInitialTab] = useState<'reminders' | 'palettes' | 'calendar'>('reminders');
-  const [manageActivitiesInitialSubTab, setManageActivitiesInitialSubTab] = useState<'colors' | 'typography' | 'shapes'>('colors');
-  const [syncStatus, setSyncStatus] = useState(() => syncService.getSyncStatus());
-  const [pendingAlarmsCount, setPendingAlarmsCount] = useState<number>(() =>
-    notificationService.getPendingCount()
-  );
+    loadData,
+    saveBreastfeeding,
+    saveFormula,
+    saveDiaper,
+    saveSleep,
+    saveMeal,
+    quickTrack,
+    deleteActivity,
+    updateActivity,
+    createCustomActivity,
+    deleteCustomActivity,
+    checkForFeedbackPrompt,
+    initStore,
+  } = useAppStore();
 
-  // Helper to trigger contextual feedback prompt based on user engagement & time
-  const checkForFeedbackPrompt = (type: 'activity' | 'calendar' | 'general', featureType?: string) => {
-    let trigger: FeedbackPromptTrigger | null = null;
-    if (type === 'activity' && featureType) {
-      trigger = feedbackService.recordActivityCreated(featureType);
-    } else if (type === 'calendar') {
-      trigger = feedbackService.recordFeatureMilestone('calendario');
-    } else {
-      trigger = feedbackService.recordInteraction();
-    }
-
-    if (trigger && trigger.shouldShow) {
-      setFeedbackTriggerContext(trigger);
-      // Pequeno delay suave para não interromper bruscamente o fluxo de salvamento
-      setTimeout(() => {
-        setIsFeedbackPromptOpen(true);
-      }, 900);
-    }
-  };
-
-  // Initialize data and theme on mount
   useEffect(() => {
-    const pal = themeService.initTheme();
-    setCurrentPalette(pal);
-    const unsub = themeService.subscribe((p) => {
-      setCurrentPalette(p);
-    });
-
-    loadData();
-    // Check or create default parent user
-    let user = authService.getCurrentUser();
-    if (!user) {
-      const res = authService.login('jacsonsajr.study@gmail.com', 'default123');
-      user = res.user;
-    }
-    setCurrentUser(user);
-
-    // Sincroniza fuso horário por Geolocalização/Dispositivo e atualiza data
-    syncGeolocationTimezone().then(() => {
-      setSelectedDate(getBrazilDateString());
-    });
-
-    const handleFocusSync = () => {
-      setSelectedDate(getBrazilDateString());
-    };
-    window.addEventListener('focus', handleFocusSync);
-    document.addEventListener('visibilitychange', handleFocusSync);
-
-    // Avaliação periódica suave de tempo de plataforma (a cada 45s)
-    const engagementInterval = setInterval(() => {
-      const trigger = feedbackService.recordInteraction();
-      if (trigger.shouldShow) {
-        setFeedbackTriggerContext(trigger);
-        setIsFeedbackPromptOpen(true);
-      }
-    }, 45000);
-
-    return () => {
-      unsub();
-      clearInterval(engagementInterval);
-      window.removeEventListener('focus', handleFocusSync);
-      document.removeEventListener('visibilitychange', handleFocusSync);
-    };
-  }, []);
-
-  const loadData = async () => {
-    try {
-      const [acts, customs, summary] = await Promise.all([
-        apiService.getActivities(),
-        apiService.getCustomActivities(),
-        apiService.getDailySummary(selectedDate),
-      ]);
-      setActivities(acts);
-      setCustomActivities(customs);
-      setDailySummary(summary);
-    } catch (err) {
-      console.error('Erro ao carregar dados da API:', err);
-    }
-  };
-
-  // Observa sincronização offline e notificações para atualizar a UI em tempo real
-  useEffect(() => {
-    notificationService.init();
-    const unsubSync = syncService.subscribe((status) => {
-      setSyncStatus(status);
-      if (!status.isSyncing && status.pendingCount === 0) {
-        loadData();
-      }
-    });
-    const unsubNotif = notificationService.subscribe(() => {
-      setPendingAlarmsCount(notificationService.getPendingCount());
-    });
-    return () => {
-      unsubSync();
-      unsubNotif();
-    };
-  }, [selectedDate]);
-
-  // Activity Sheet selection handler
-  const handleSelectActivityType = (type: ActivityType) => {
-    setIsActivitySheetOpen(false);
-    if (type === 'sono') {
-      setIsSleepModalOpen(true);
-    } else if (type === 'amamentacao') {
-      setIsBreastfeedingModalOpen(true);
-    } else if (type === 'fralda') {
-      setIsDiaperModalOpen(true);
-    } else if (type === 'comeu') {
-      setIsMealModalOpen(true);
-    }
-  };
-
-  // Helper to get current execution timestamp info
-  const getCurrentTimeContext = () => {
-    const now = new Date();
-    const dateStr = getBrazilDateString(now);
-    const timeStr = getBrazilTimeString(now);
-    const period = getBrazilPeriod(now);
-    return { now, dateStr, timeStr, period };
-  };
-
-  // Save Handlers
-  const handleSaveBreastfeeding = async (data: any) => {
-    const ctx = getCurrentTimeContext();
-    const isFormula = data.mode === 'formula';
-    const isBottle = isFormula || data.mode === 'bottle';
-    const consumed = data.consumedMl ?? data.formulaMl ?? 120;
-    const pct = data.consumedPercentage ?? (data.offeredMl ? Math.round((consumed / data.offeredMl) * 100) : 100);
-    const milkLabel = data.milkType === 'maternal' ? 'Leite Materno' : 'Fórmula';
-
-    let title = 'Amamentação';
-    let subtitle = `Peito ${data.leftMinutes ? 'esquerdo' : 'direito'}`;
-
-    if (isFormula || isBottle) {
-      title = `Mamadeira (${milkLabel})`;
-      subtitle = `${consumed}ml bebidos (${pct}%)`;
-    }
-
-    const newAct = await apiService.createActivity({
-      type: 'amamentacao',
-      title,
-      subtitle,
-      timestamp: ctx.now.toISOString(),
-      dateStr: ctx.dateStr,
-      timeStr: ctx.timeStr,
-      period: ctx.period,
-      assignee: currentUser?.name || 'Papai',
-      details: {
-        ...data,
-        formulaMl: consumed,
-        breastfeeding: {
-          mode: data.mode,
-          milkType: data.milkType,
-          offeredMl: data.offeredMl,
-          leftoverMl: data.leftoverMl,
-          consumedMl: consumed,
-          consumedPercentage: pct,
-          leftMinutes: data.leftMinutes,
-          rightMinutes: data.rightMinutes,
-        },
-      },
-    });
-    setSelectedDate(ctx.dateStr);
-    setActivities((prev) => [newAct, ...prev]);
-    loadData();
-    checkForFeedbackPrompt('activity', 'amamentacao');
-  };
-
-  const handleSaveFormula = async (data: any, notes?: string) => {
-    const ctx = getCurrentTimeContext();
-    const isObject = typeof data === 'object' && data !== null;
-    const consumed = isObject ? (data.consumedMl ?? data.formulaMl) : data;
-    const offered = isObject ? data.offeredMl : data;
-    const leftover = isObject ? data.leftoverMl : 0;
-    const pct = isObject ? data.consumedPercentage : 100;
-    const milkType = isObject && data.milkType ? data.milkType : 'formula';
-    const milkLabel = milkType === 'maternal' ? 'Leite Materno' : 'Fórmula';
-
-    const newAct = await apiService.createActivity({
-      type: 'amamentacao',
-      title: `Mamadeira (${milkLabel})`,
-      subtitle: `${consumed}ml bebidos (${pct}%)`,
-      timestamp: ctx.now.toISOString(),
-      dateStr: ctx.dateStr,
-      timeStr: ctx.timeStr,
-      period: ctx.period,
-      assignee: currentUser?.name || 'Papai',
-      details: {
-        notes,
-        formulaMl: consumed,
-        breastfeeding: {
-          mode: 'formula',
-          milkType,
-          offeredMl: offered,
-          leftoverMl: leftover,
-          consumedMl: consumed,
-          consumedPercentage: pct,
-        },
-      },
-    });
-    setSelectedDate(ctx.dateStr);
-    setActivities((prev) => [newAct, ...prev]);
-    loadData();
-    checkForFeedbackPrompt('activity', 'amamentacao');
-  };
-
-  const handleSaveDiaper = async (data: any) => {
-    const ctx = getCurrentTimeContext();
-    let title = 'Fralda (Xixi + Cocô)';
-    if (data.diaperType === 'xixi') title = 'Fralda (Xixi)';
-    if (data.diaperType === 'coco') title = 'Fralda (Cocô)';
-
-    const newAct = await apiService.createActivity({
-      type: 'fralda',
-      title,
-      timestamp: ctx.now.toISOString(),
-      dateStr: ctx.dateStr,
-      timeStr: ctx.timeStr,
-      period: ctx.period,
-      assignee: currentUser?.name || 'Papai',
-      details: data,
-    });
-    setSelectedDate(ctx.dateStr);
-    setActivities((prev) => [newAct, ...prev]);
-    loadData();
-    checkForFeedbackPrompt('activity', 'fralda');
-  };
-
-  const handleSaveSleep = async (data: any) => {
-    const ctx = getCurrentTimeContext();
-    const newAct = await apiService.createActivity({
-      type: 'sono',
-      title: data.sleepType === 'noturno' ? 'Sono Noturno' : 'Soneca',
-      subtitle: data.isInProgress ? 'Em andamento' : 'Finalizado',
-      timestamp: ctx.now.toISOString(),
-      dateStr: ctx.dateStr,
-      timeStr: ctx.timeStr,
-      period: ctx.period,
-      isInProgress: data.isInProgress,
-      assignee: currentUser?.name || 'Papai',
-      details: data,
-    });
-    setSelectedDate(ctx.dateStr);
-    setActivities((prev) => [newAct, ...prev]);
-    loadData();
-    checkForFeedbackPrompt('activity', 'sono');
-  };
-
-  const handleSaveMeal = async (data: any) => {
-    const ctx = getCurrentTimeContext();
-    const newAct = await apiService.createActivity({
-      type: 'comeu',
-      title: 'Refeição',
-      subtitle: data.mealType === 'janta' ? 'Janta' : 'Lanche',
-      timestamp: ctx.now.toISOString(),
-      dateStr: ctx.dateStr,
-      timeStr: ctx.timeStr,
-      period: ctx.period,
-      assignee: currentUser?.name || 'Papai',
-      details: data,
-    });
-    setSelectedDate(ctx.dateStr);
-    setActivities((prev) => [newAct, ...prev]);
-    loadData();
-    checkForFeedbackPrompt('activity', 'comeu');
-  };
-
-  // Quick Action Tracking (from Home screen)
-  const handleQuickTrack = async (
-    type: 'sleep' | 'diaper_xixi' | 'diaper_coco' | 'custom',
-    customName?: string
-  ) => {
-    const ctx = getCurrentTimeContext();
-    if (type === 'diaper_xixi') {
-      await handleSaveDiaper({ diaperType: 'xixi' });
-    } else if (type === 'diaper_coco') {
-      await handleSaveDiaper({ diaperType: 'coco' });
-    } else if (type === 'custom' && customName) {
-      const newAct = await apiService.createActivity({
-        type: 'custom',
-        title: customName,
-        timestamp: ctx.now.toISOString(),
-        dateStr: ctx.dateStr,
-        timeStr: ctx.timeStr,
-        period: ctx.period,
-        assignee: currentUser?.name || 'Papai',
-      });
-      setSelectedDate(ctx.dateStr);
-      setActivities((prev) => [newAct, ...prev]);
-      loadData();
-    }
-  };
-
-  // Delete activity
-  const handleDeleteActivity = async (id: string) => {
-    await apiService.deleteActivity(id);
-    setActivities((prev) => prev.filter((a) => a.id !== id));
-    loadData();
-  };
-
-  // Update activity
-  const handleUpdateActivity = async (id: string, updates: Partial<ActivityItem>) => {
-    const updated = await apiService.updateActivity(id, updates);
-    if (updated) {
-      setActivities((prev) => prev.map((a) => (a.id === id ? { ...a, ...updated } : a)));
-      loadData();
-    }
-  };
-
-  // Custom activity definition creation
-  const handleCreateCustomActivity = async (def: Omit<CustomActivityDefinition, 'id'>) => {
-    const created = await apiService.createCustomActivity(def);
-    setCustomActivities((prev) => [...prev, created]);
-  };
-
-  const handleDeleteCustomActivity = async (id: string) => {
-    await apiService.deleteCustomActivity(id);
-    setCustomActivities((prev) => prev.filter((c) => c.id !== id));
-  };
-
-  // Switch tab and guarantee navigation is always persistent and immediate
-  const handleTabChange = (tab: TabType) => {
-    setIsActivitySheetOpen(false);
-    setIsBreastfeedingModalOpen(false);
-    setIsDiaperModalOpen(false);
-    setIsSleepModalOpen(false);
-    setIsMealModalOpen(false);
-    setIsFilterModalOpen(false);
-    setIsManageActivitiesOpen(false);
-    setIsNewActivityModalOpen(false);
-    setIsAuthModalOpen(false);
-    setIsDockerGuideOpen(false);
-    setIsCalendarSyncOpen(false);
-    setIsDiagnosticsOpen(false);
-    setIsFeedbackPromptOpen(false);
-    setIsFeedbackManagementOpen(false);
-    setIsSettingsSidebarOpen(false);
-    setThemeModalSection(null);
-    setActiveTab(tab);
-  };
-
-  // Navigate to corresponding screen/tab directly from the Settings Sidebar
-  const handleNavigateFromSettingsSidebar = (section: SettingsSection) => {
-    setIsSettingsSidebarOpen(false);
-    if (section === 'colors') {
-      setThemeModalSection('colors');
-    } else if (section === 'typography') {
-      setThemeModalSection('typography');
-    } else if (section === 'shapes') {
-      setThemeModalSection('shapes');
-    } else if (section === 'reminders') {
-      setIsManageActivitiesOpen(true);
-    } else if (section === 'calendar') {
-      setIsCalendarSyncOpen(true);
-    } else if (section === 'diagnostics') {
-      setIsDiagnosticsOpen(true);
-    } else if (section === 'notifications') {
-      setIsNotificationCenterOpen(true);
-    } else if (section === 'sync' || section === 'offline') {
-      setIsOfflineSyncOpen(true);
-    } else if (section === 'feedback' || section === 'suggestions') {
-      setIsFeedbackManagementOpen(true);
-    } else if (section === 'docker') {
-      setIsDockerGuideOpen(true);
-    }
-  };
+    const cleanup = initStore();
+    return cleanup;
+  }, [initStore]);
 
   return (
     <div
@@ -475,251 +103,231 @@ export default function App() {
           borderColor: currentPalette.border,
         }}
       >
-
         {/* Native Mobile Status Bar (9:41, WiFi, Battery) */}
         <div className="relative z-20">
-          <StatusBar onOpenOfflineSync={() => setIsOfflineSyncOpen(true)} />
+          <StatusBar onOpenOfflineSync={() => openModal('offlineSync')} />
         </div>
 
         {/* Dynamic Screen Tabs Container */}
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative z-10">
-          {activeTab === 'inicio' && (
-            <HomeScreen
-              currentUser={currentUser}
-              activities={activities}
-              onOpenAuth={() => setIsAuthModalOpen(true)}
-              onOpenDockerGuide={() => setIsDockerGuideOpen(true)}
-              onOpenManageActivities={() => setIsSettingsSidebarOpen(true)}
-              onOpenNewActivity={() => setIsNewActivityModalOpen(true)}
-              onOpenActivitySheet={() => setIsActivitySheetOpen(true)}
-              onOpenSleepModal={() => setIsSleepModalOpen(true)}
-              onOpenBreastfeedingModal={() => setIsBreastfeedingModalOpen(true)}
-              onOpenDiaperModal={() => setIsDiaperModalOpen(true)}
-              onOpenMealModal={() => setIsMealModalOpen(true)}
-              onQuickTrack={handleQuickTrack}
-              onSaveFormula={handleSaveFormula}
-              onSaveBreastfeeding={handleSaveBreastfeeding}
-              onSaveDiaper={handleSaveDiaper}
-              customActivities={customActivities}
-              onOpenFeedback={() => setIsFeedbackManagementOpen(true)}
-              onOpenOfflineSync={() => setIsOfflineSyncOpen(true)}
-              onOpenNotificationCenter={() => setIsNotificationCenterOpen(true)}
-            />
-          )}
+          <Suspense fallback={<ScreenFallback />}>
+            {activeTab === 'inicio' && (
+              <HomeScreen
+                currentUser={currentUser}
+                activities={activities}
+                onOpenAuth={() => openModal('auth')}
+                onOpenDockerGuide={() => openModal('dockerGuide')}
+                onOpenManageActivities={() => openModal('settingsSidebar')}
+                onOpenNewActivity={() => openModal('newActivity')}
+                onOpenActivitySheet={() => openModal('activitySheet')}
+                onOpenSleepModal={() => openModal('sleep')}
+                onOpenBreastfeedingModal={() => openModal('breastfeeding')}
+                onOpenDiaperModal={() => openModal('diaper')}
+                onOpenMealModal={() => openModal('meal')}
+                onQuickTrack={quickTrack}
+                onSaveFormula={saveFormula}
+                onSaveBreastfeeding={saveBreastfeeding}
+                onSaveDiaper={saveDiaper}
+                customActivities={customActivities}
+                onOpenFeedback={() => openModal('feedbackManagement')}
+                onOpenOfflineSync={() => openModal('offlineSync')}
+                onOpenNotificationCenter={() => openModal('notificationCenter')}
+              />
+            )}
 
-          {activeTab === 'diario' && (
-            <DiaryScreen
-              activities={activities}
-              selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
-              selectedFilter={selectedFilter}
-              onSelectFilter={setSelectedFilter}
-              onOpenFilterModal={() => setIsFilterModalOpen(true)}
-              onOpenActivitySheet={() => setIsActivitySheetOpen(true)}
-              onDeleteActivity={handleDeleteActivity}
-              onUpdateActivity={handleUpdateActivity}
-              onEditActivity={(act) => {
-                setEditingActivity(act);
-                setIsEditModalOpen(true);
-              }}
-              dailySummary={dailySummary}
-              onOpenCalendarSync={() => setIsCalendarSyncOpen(true)}
-            />
-          )}
+            {activeTab === 'diario' && (
+              <DiaryScreen
+                activities={activities}
+                selectedDate={selectedDate}
+                onSelectDate={setSelectedDate}
+                selectedFilter={selectedFilter}
+                onSelectFilter={setSelectedFilter}
+                onOpenFilterModal={() => openModal('filter')}
+                onOpenActivitySheet={() => openModal('activitySheet')}
+                onDeleteActivity={deleteActivity}
+                onUpdateActivity={updateActivity}
+                onEditActivity={openEditActivityModal}
+                dailySummary={dailySummary}
+                onOpenCalendarSync={() => openModal('calendarSync')}
+              />
+            )}
 
-          {activeTab === 'rotinas' && (
-            <RoutinesScreen
-              onOpenCalendarSync={() => setIsCalendarSyncOpen(true)}
-              onOpenDiagnostics={() => setIsDiagnosticsOpen(true)}
-              onOpenFeedback={() => setIsFeedbackManagementOpen(true)}
-              onOpenOfflineSync={() => setIsOfflineSyncOpen(true)}
-            />
-          )}
+            {activeTab === 'rotinas' && (
+              <RoutinesScreen
+                onOpenCalendarSync={() => openModal('calendarSync')}
+                onOpenDiagnostics={() => openModal('diagnostics')}
+                onOpenFeedback={() => openModal('feedbackManagement')}
+                onOpenOfflineSync={() => openModal('offlineSync')}
+              />
+            )}
 
-          {activeTab === 'insights' && <InsightsScreen />}
+            {activeTab === 'insights' && <InsightsScreen />}
 
-          {activeTab === 'saude' && <HealthScreen />}
+            {activeTab === 'saude' && <HealthScreen />}
+          </Suspense>
         </div>
 
         {/* Mobile Bottom Navigation Bar (Persistent across all registration screens) - Floating glass dock */}
         <div className="shrink-0 z-30 w-full px-3 pb-3 pt-1 pointer-events-none">
           <div className="pointer-events-auto w-full max-w-[400px] landscape:max-w-[480px] sm:max-w-[440px] mx-auto">
-            <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+            <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
           </div>
         </div>
 
-        {/* Modals & Bottom Sheets (Always preserve bottom-nav visibility) */}
-        <ActivityBottomSheet
-          isOpen={isActivitySheetOpen}
-          onClose={() => setIsActivitySheetOpen(false)}
-          onSelectActivity={handleSelectActivityType}
-        />
+        {/* Modals & Bottom Sheets (Wrapped in Suspense fallback={null}) */}
+        <Suspense fallback={null}>
+          <ActivityBottomSheet
+            isOpen={activeModal === 'activitySheet'}
+            onClose={closeModal}
+            onSelectActivity={(type) => {
+              if (type === 'sono') openModal('sleep');
+              else if (type === 'amamentacao') openModal('breastfeeding');
+              else if (type === 'fralda') openModal('diaper');
+              else if (type === 'comeu') openModal('meal');
+            }}
+          />
 
-        <BreastfeedingModal
-          isOpen={isBreastfeedingModalOpen}
-          onClose={() => setIsBreastfeedingModalOpen(false)}
-          onSave={handleSaveBreastfeeding}
-        />
+          <BreastfeedingModal
+            isOpen={activeModal === 'breastfeeding'}
+            onClose={closeModal}
+            onSave={saveBreastfeeding}
+          />
 
-        <DiaperModal
-          isOpen={isDiaperModalOpen}
-          onClose={() => setIsDiaperModalOpen(false)}
-          onSave={handleSaveDiaper}
-        />
+          <DiaperModal
+            isOpen={activeModal === 'diaper'}
+            onClose={closeModal}
+            onSave={saveDiaper}
+          />
 
-        <SleepModal
-          isOpen={isSleepModalOpen}
-          onClose={() => setIsSleepModalOpen(false)}
-          onSave={handleSaveSleep}
-        />
+          <SleepModal
+            isOpen={activeModal === 'sleep'}
+            onClose={closeModal}
+            onSave={saveSleep}
+          />
 
-        <MealModal
-          isOpen={isMealModalOpen}
-          onClose={() => setIsMealModalOpen(false)}
-          onSave={handleSaveMeal}
-        />
+          <MealModal
+            isOpen={activeModal === 'meal'}
+            onClose={closeModal}
+            onSave={saveMeal}
+          />
 
-        <FilterModal
-          isOpen={isFilterModalOpen}
-          onClose={() => setIsFilterModalOpen(false)}
-          selectedFilter={selectedFilter}
-          onSelectFilter={setSelectedFilter}
-        />
+          <FilterModal
+            isOpen={activeModal === 'filter'}
+            onClose={closeModal}
+            selectedFilter={selectedFilter}
+            onSelectFilter={setSelectedFilter}
+          />
 
-        <ManageActivitiesModal
-          isOpen={isManageActivitiesOpen}
-          onClose={() => setIsManageActivitiesOpen(false)}
-          activities={customActivities}
-          onDeleteActivity={handleDeleteCustomActivity}
-          onOpenNewActivity={() => {
-            setIsManageActivitiesOpen(false);
-            setIsNewActivityModalOpen(true);
-          }}
-          onOpenCalendarSync={() => {
-            setIsManageActivitiesOpen(false);
-            setIsCalendarSyncOpen(true);
-          }}
-          onOpenDiagnostics={() => {
-            setIsManageActivitiesOpen(false);
-            setIsDiagnosticsOpen(true);
-          }}
-          onOpenFeedback={() => {
-            setIsManageActivitiesOpen(false);
-            setIsFeedbackManagementOpen(true);
-          }}
-          onOpenOfflineSync={() => {
-            setIsManageActivitiesOpen(false);
-            setIsOfflineSyncOpen(true);
-          }}
-          initialTab={manageActivitiesInitialTab}
-          initialSubTab={manageActivitiesInitialSubTab}
-          onOpenSidebar={() => {
-            setIsManageActivitiesOpen(false);
-            setIsSettingsSidebarOpen(true);
-          }}
-        />
+          <ManageActivitiesModal
+            isOpen={activeModal === 'manageActivities'}
+            onClose={closeModal}
+            activities={customActivities}
+            onDeleteActivity={deleteCustomActivity}
+            onOpenNewActivity={() => openModal('newActivity')}
+            onOpenCalendarSync={() => openModal('calendarSync')}
+            onOpenDiagnostics={() => openModal('diagnostics')}
+            onOpenFeedback={() => openModal('feedbackManagement')}
+            onOpenOfflineSync={() => openModal('offlineSync')}
+            initialTab="reminders"
+            initialSubTab="colors"
+            onOpenSidebar={() => openModal('settingsSidebar')}
+          />
 
-        <ThemeModal
-          isOpen={themeModalSection !== null}
-          section={themeModalSection || 'colors'}
-          onClose={() => setThemeModalSection(null)}
-        />
+          <ThemeModal
+            isOpen={activeModal === 'theme'}
+            section={themeModalSection || 'colors'}
+            onClose={closeModal}
+          />
 
-        <NewActivityModal
-          isOpen={isNewActivityModalOpen}
-          onClose={() => setIsNewActivityModalOpen(false)}
-          onCreate={handleCreateCustomActivity}
-        />
+          <NewActivityModal
+            isOpen={activeModal === 'newActivity'}
+            onClose={closeModal}
+            onCreate={createCustomActivity}
+          />
 
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={() => setIsAuthModalOpen(false)}
-          currentUser={currentUser}
-          onUserChange={setCurrentUser}
-        />
+          <AuthModal
+            isOpen={activeModal === 'auth'}
+            onClose={closeModal}
+            currentUser={currentUser}
+            onUserChange={setCurrentUser}
+          />
 
-        <DockerVpsGuideModal
-          isOpen={isDockerGuideOpen}
-          onClose={() => setIsDockerGuideOpen(false)}
-        />
+          <DockerVpsGuideModal
+            isOpen={activeModal === 'dockerGuide'}
+            onClose={closeModal}
+          />
 
-        <CalendarSyncModal
-          isOpen={isCalendarSyncOpen}
-          onClose={() => setIsCalendarSyncOpen(false)}
-          onTriggerFeedback={() => {
-            checkForFeedbackPrompt('calendar');
-          }}
-        />
+          <CalendarSyncModal
+            isOpen={activeModal === 'calendarSync'}
+            onClose={closeModal}
+            onTriggerFeedback={() => checkForFeedbackPrompt('calendar')}
+          />
 
-        <PermissionsDiagnosticsModal
-          isOpen={isDiagnosticsOpen}
-          onClose={() => setIsDiagnosticsOpen(false)}
-          onOpenCalendarSync={() => setIsCalendarSyncOpen(true)}
-        />
+          <PermissionsDiagnosticsModal
+            isOpen={activeModal === 'diagnostics'}
+            onClose={closeModal}
+            onOpenCalendarSync={() => openModal('calendarSync')}
+          />
 
-        <FeedbackPromptModal
-          isOpen={isFeedbackPromptOpen}
-          onClose={() => setIsFeedbackPromptOpen(false)}
-          triggerContext={feedbackTriggerContext}
-          userName={currentUser?.name || 'Papai/Mamãe'}
-          userEmail={currentUser?.email || ''}
-          onFeedbackSubmitted={() => {
-            // Recarrega ou notifica se necessário
-          }}
-        />
+          <FeedbackPromptModal
+            isOpen={activeModal === 'feedbackPrompt'}
+            onClose={closeModal}
+            triggerContext={feedbackTriggerContext}
+            userName={currentUser?.name || 'Papai/Mamãe'}
+            userEmail={currentUser?.email || ''}
+            onFeedbackSubmitted={loadData}
+          />
 
-        <FeedbackManagementModal
-          isOpen={isFeedbackManagementOpen}
-          onClose={() => setIsFeedbackManagementOpen(false)}
-          onOpenNewFeedback={() => {
-            setFeedbackTriggerContext({
-              shouldShow: true,
-              triggerReason: 'manual',
-              suggestedFeature: 'geral',
-              headline: 'Sua opinião é fundamental!',
-              subheadline: 'Compartilhe suas ideias e sugestões para o Baby John.',
-            });
-            setIsFeedbackPromptOpen(true);
-          }}
-        />
+          <FeedbackManagementModal
+            isOpen={activeModal === 'feedbackManagement'}
+            onClose={closeModal}
+            onOpenNewFeedback={() => openModal('feedbackPrompt')}
+          />
 
-        <OfflineSyncModal
-          isOpen={isOfflineSyncOpen}
-          onClose={() => setIsOfflineSyncOpen(false)}
-          onSyncComplete={() => {
-            loadData();
-          }}
-        />
+          <OfflineSyncModal
+            isOpen={activeModal === 'offlineSync'}
+            onClose={closeModal}
+            onSyncComplete={loadData}
+          />
 
-        <NotificationCenterModal
-          isOpen={isNotificationCenterOpen}
-          onClose={() => setIsNotificationCenterOpen(false)}
-        />
+          <NotificationCenterModal
+            isOpen={activeModal === 'notificationCenter'}
+            onClose={closeModal}
+          />
 
-        <EditActivityModal
-          isOpen={isEditModalOpen}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setEditingActivity(null);
-          }}
-          activity={editingActivity}
-          onSave={(id, updates) => {
-            handleUpdateActivity(id, updates);
-          }}
-        />
+          <EditActivityModal
+            isOpen={activeModal === 'editActivity'}
+            onClose={closeModal}
+            activity={editingActivity}
+            onSave={(id, updates) => updateActivity(id, updates)}
+          />
 
-        {/* Lateral Settings Sidebar / Navbar */}
-        <SettingsSidebar
-          isOpen={isSettingsSidebarOpen}
-          onClose={() => setIsSettingsSidebarOpen(false)}
-          onNavigateTo={handleNavigateFromSettingsSidebar}
-          activeRemindersCount={remindersService.getActiveCount()}
-          pendingAlarmsCount={pendingAlarmsCount}
-          syncPendingCount={syncStatus.pendingCount}
-          isOnline={syncStatus.isOnline}
-          isSyncing={syncStatus.isSyncing}
-        />
+          {/* Lateral Settings Sidebar / Navbar */}
+          <SettingsSidebar
+            isOpen={activeModal === 'settingsSidebar'}
+            onClose={closeModal}
+            onNavigateTo={(section) => {
+              if (section === 'colors') openThemeModal('colors');
+              else if (section === 'typography') openThemeModal('typography');
+              else if (section === 'shapes') openThemeModal('shapes');
+              else if (section === 'reminders') openModal('manageActivities');
+              else if (section === 'calendar') openModal('calendarSync');
+              else if (section === 'diagnostics') openModal('diagnostics');
+              else if (section === 'notifications') openModal('notificationCenter');
+              else if (section === 'sync' || section === 'offline') openModal('offlineSync');
+              else if (section === 'feedback' || section === 'suggestions') openModal('feedbackManagement');
+              else if (section === 'docker') openModal('dockerGuide');
+            }}
+            activeRemindersCount={remindersService.getActiveCount()}
+            pendingAlarmsCount={pendingAlarmsCount}
+            syncPendingCount={syncStatus.pendingCount}
+            isOnline={syncStatus.isOnline}
+            isSyncing={syncStatus.isSyncing}
+          />
+        </Suspense>
       </main>
     </div>
   );
 }
+
+

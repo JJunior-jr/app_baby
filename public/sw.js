@@ -1,15 +1,29 @@
 /**
- * Baby John - Service Worker
- * Suporte a notificações locais em segundo plano, cliques de alerta e ciclo PWA.
+ * Baby John - Service Worker (PWA & TWA Compliance)
+ * Cache de assets estáticos offline, notificações em segundo plano e ciclo de vida.
  */
 
-const CACHE_NAME = 'babyjohn-v1';
+const CACHE_NAME = 'babyjohn-v2';
+const STATIC_ASSETS = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icon.svg',
+];
 
+// Instalação do SW: pré-cache de assets essenciais para funcionamento offline
 self.addEventListener('install', (event) => {
-  // Ativação imediata do novo Service Worker
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(STATIC_ASSETS).catch((err) => {
+        console.warn('Aviso no pré-cache de assets offline:', err);
+      });
+    })
+  );
   self.skipWaiting();
 });
 
+// Ativação do SW: limpeza de caches antigos
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -19,6 +33,38 @@ self.addEventListener('activate', (event) => {
           .map((name) => caches.delete(name))
       );
     }).then(() => self.clients.claim())
+  );
+});
+
+// Estratégia de Fetch: Stale-While-Revalidate para navegação offline fluida
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+
+  // Ignorar requisições do Vite Dev Server HMR ou APIs externas dinâmicas
+  if (url.pathname.startsWith('/@vite') || url.pathname.startsWith('/@react-refresh')) {
+    return;
+  }
+
+  event.respondWith(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.match(event.request).then((cachedResponse) => {
+        const fetchPromise = fetch(event.request)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+              cache.put(event.request, networkResponse.clone());
+            }
+            return networkResponse;
+          })
+          .catch(() => {
+            // Se estiver offline e sem rede, retorna resposta cached ou o index.html da SPA
+            return cachedResponse || caches.match('/index.html') || caches.match('/');
+          });
+
+        return cachedResponse || fetchPromise;
+      });
+    })
   );
 });
 
@@ -55,21 +101,14 @@ self.addEventListener('notificationclick', (event) => {
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
-      // Se já existe uma janela aberta, foca nela
       for (const client of windowClients) {
         if ('focus' in client) {
           return client.focus();
         }
       }
-      // Se não, abre uma nova janela com a rota do app
       if (clients.openWindow) {
         return clients.openWindow(targetUrl);
       }
     })
   );
-});
-
-// Evento de fechamento voluntário da notificação
-self.addEventListener('notificationclose', (event) => {
-  // Registra ou limpa se necessário
 });

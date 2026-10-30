@@ -67,6 +67,24 @@
 
   /* Tipografia */
   --font-family-app: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  /* -------------------------------------------------------------
+   * 4. ANT DESIGN MOBILE CSS VARIABLES OVERRIDES
+   * ------------------------------------------------------------- */
+  --adm-color-primary: var(--color-accent);
+  --adm-color-success: var(--color-success);
+  --adm-color-warning: var(--color-warning);
+  --adm-color-danger: var(--color-danger);
+  --adm-color-box: var(--color-secondary);
+  --adm-border-color: var(--color-border);
+  --adm-font-family: var(--font-family-app);
+  --adm-color-text: var(--color-text-primary);
+  --adm-color-text-secondary: var(--color-text-secondary);
+  --adm-color-weak: var(--color-text-muted);
+  --adm-color-light: var(--color-secondary-elevated);
+  --adm-radius-s: var(--app-input-radius);
+  --adm-radius-m: var(--app-button-radius);
+  --adm-radius-l: var(--app-card-radius);
 }
 
 @layer base {
