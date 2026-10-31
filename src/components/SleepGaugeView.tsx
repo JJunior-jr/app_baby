@@ -425,17 +425,7 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             <Baby className="w-5 h-5 text-pink-300" />
           </button>
 
-          {/* Action 3: Diaper / Fralda */}
-          <button
-            type="button"
-            onClick={onSwitchToDiaperGauge || onOpenDiaperModal}
-            title="Ir para Medidor de Fralda"
-            className="relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-teal-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
-          >
-            <Droplets className="w-5 h-5 text-teal-300" />
-          </button>
-
-          {/* Action 4: Formula / Mamadeira */}
+          {/* Action 3: Formula / Mamadeira */}
           <button
             type="button"
             onClick={onOpenFormulaDrawer}
@@ -443,6 +433,16 @@ export const SleepGaugeView: React.FC<SleepGaugeViewProps> = ({
             className="relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-cyan-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
           >
             <Milk className="w-5 h-5 text-cyan-300" />
+          </button>
+
+          {/* Action 4: Diaper / Fralda */}
+          <button
+            type="button"
+            onClick={onSwitchToDiaperGauge || onOpenDiaperModal}
+            title="Ir para Medidor de Fralda"
+            className="relative flex items-center justify-center w-12 h-12 min-w-[48px] min-h-[48px] rounded-xl bg-[#1e293b] hover:bg-slate-700/60 border border-[#334155] text-teal-300 hover:text-white transition duration-150 active:scale-95 cursor-pointer shadow-sm"
+          >
+            <Droplets className="w-5 h-5 text-teal-300" />
           </button>
 
           {/* Action 5: Cloud / White Noise / Rain Sounds Playlist */}

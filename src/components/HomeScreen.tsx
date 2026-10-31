@@ -646,52 +646,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
 
 
-      {/* Section: "O que aconteceu agora?" + Grid Toggle */}
+      {/* Section: "O que aconteceu agora?" */}
       <section className="space-y-3 pt-1">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-white tracking-tight">O que aconteceu agora?</h2>
-          
-          <div className="flex items-center space-x-1.5">
-            {/* View Mode Toggle: Lista vs Gauge - Glassmorphic Pill */}
-            <div className="flex bg-white/10 backdrop-blur-[12px] border border-white/20 p-0.5 rounded-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.25)]">
-              <button
-                type="button"
-                onClick={() => handleSetHomeViewType('list')}
-                title="Lista de Atividades"
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                  homeViewType === 'list'
-                    ? 'text-white shadow-md border border-white/30'
-                    : 'text-gray-300 hover:text-white'
-                }`}
-                style={
-                  homeViewType === 'list'
-                    ? { backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }
-                    : undefined
-                }
-              >
-                <List className="w-3.5 h-3.5" />
-                <span>Lista</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSetHomeViewType('gauge')}
-                title="Visão Minimalista / Gauge"
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                  homeViewType === 'gauge'
-                    ? 'text-white shadow-md border border-white/30'
-                    : 'text-gray-300 hover:text-white'
-                }`}
-                style={
-                  homeViewType === 'gauge'
-                    ? { backgroundColor: 'var(--color-accent)', color: 'var(--color-accent-text)' }
-                    : undefined
-                }
-              >
-                <span>⭕</span>
-                <span>Gauge</span>
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* View Mode: Lista de Atividades (4 elementos líquidos um abaixo do outro com Glassmorphism) */}
@@ -830,6 +788,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 </motion.button>
                 <motion.button
                   type="button"
+                  onClick={() => setIsFormulaDrawerOpen(true)}
+                  whileTap={{ scale: 0.88 }}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 18 }}
+                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-slate-200 flex items-center gap-1 border border-slate-700 shadow-sm"
+                  title="Escolher fórmula em drawer"
+                >
+                  <Milk className="w-3.5 h-3.5 text-cyan-300" />
+                  <span>Fórm.</span>
+                </motion.button>
+                <motion.button
+                  type="button"
                   onClick={() => handleBreastSideClick('right')}
                   whileTap={{ scale: 0.88 }}
                   whileHover={{ scale: 1.05 }}
@@ -847,18 +817,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                       {formatNursingTime(nursingSeconds)}
                     </span>
                   )}
-                </motion.button>
-                <motion.button
-                  type="button"
-                  onClick={() => setIsFormulaDrawerOpen(true)}
-                  whileTap={{ scale: 0.88 }}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-slate-200 flex items-center gap-1 border border-slate-700 shadow-sm"
-                  title="Escolher fórmula em drawer"
-                >
-                  <Milk className="w-3.5 h-3.5 text-cyan-300" />
-                  <span>Fórm.</span>
                 </motion.button>
               </div>
             </motion.div>
