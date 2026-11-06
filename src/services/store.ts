@@ -534,7 +534,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     // Engagement interval
     const engagementInterval = setInterval(() => {
       const trigger = feedbackService.recordInteraction();
-      if (trigger.shouldShow) {
+      if (trigger && trigger.shouldShow) {
         set({ feedbackTriggerContext: trigger });
         get().openModal('feedbackPrompt');
       }

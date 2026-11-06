@@ -72,31 +72,37 @@ export function parseJwt(token: string): { header: Record<string, unknown>; payl
 
 export const authService = {
   getToken(): string | null {
-    return localStorage.getItem(TOKEN_STORAGE_KEY) || localStorage.getItem('roti_hub_jwt_token');
+    try {
+      return localStorage.getItem(TOKEN_STORAGE_KEY) || localStorage.getItem('roti_hub_jwt_token');
+    } catch {
+      return null;
+    }
   },
 
   getCurrentUser(): UserProfile | null {
-    const userJson = localStorage.getItem(USER_STORAGE_KEY) || localStorage.getItem('roti_hub_user');
-    if (!userJson) {
-      // Default user matching screenshots ("Boa noite, Papai!", baby "John")
-      const defaultUser: UserProfile = {
-        id: 'usr_849201',
-        name: 'Papai',
-        email: 'jacsonsajr.study@gmail.com',
-        role: 'admin_parent',
-        babyName: 'John',
-        babyBirthDate: '2026-04-10',
-      };
-      const token = generateMockJwt(defaultUser);
-      defaultUser.token = token;
-      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(defaultUser));
-      localStorage.setItem(TOKEN_STORAGE_KEY, token);
-      return defaultUser;
-    }
+    const defaultUser: UserProfile = {
+      id: 'usr_849201',
+      name: 'Papai',
+      email: 'jacsonsajr.study@gmail.com',
+      role: 'admin_parent',
+      babyName: 'John',
+      babyBirthDate: '2026-04-10',
+    };
+    const token = generateMockJwt(defaultUser);
+    defaultUser.token = token;
+
     try {
+      const userJson = localStorage.getItem(USER_STORAGE_KEY) || localStorage.getItem('roti_hub_user');
+      if (!userJson) {
+        try {
+          localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(defaultUser));
+          localStorage.setItem(TOKEN_STORAGE_KEY, token);
+        } catch {}
+        return defaultUser;
+      }
       return JSON.parse(userJson);
     } catch {
-      return null;
+      return defaultUser;
     }
   },
 
@@ -112,8 +118,10 @@ export const authService = {
     const token = generateMockJwt(user);
     user.token = token;
 
-    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-    localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    try {
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    } catch {}
     return { user, token };
   },
 
@@ -129,14 +137,18 @@ export const authService = {
     const token = generateMockJwt(user);
     user.token = token;
 
-    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
-    localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    try {
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    } catch {}
     return { user, token };
   },
 
   logout(): void {
-    localStorage.removeItem(USER_STORAGE_KEY);
-    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    try {
+      localStorage.removeItem(USER_STORAGE_KEY);
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+    } catch {}
   },
 
   getAuthHeader(): Record<string, string> {

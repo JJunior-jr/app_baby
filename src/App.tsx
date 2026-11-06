@@ -99,8 +99,8 @@ export default function App() {
         className="w-full max-w-[430px] landscape:max-w-xl sm:max-w-md md:max-w-lg lg:max-w-xl h-full max-h-[100dvh] flex flex-col relative shadow-2xl mx-auto overflow-hidden transition-all duration-200 border-x border-[#334155] z-10"
         data-purpose="mobile-viewport"
         style={{
-          backgroundColor: currentPalette.dominant,
-          borderColor: currentPalette.border,
+          backgroundColor: currentPalette?.dominant || '#0f172a',
+          borderColor: currentPalette?.border || '#334155',
         }}
       >
         {/* Native Mobile Status Bar (9:41, WiFi, Battery) */}

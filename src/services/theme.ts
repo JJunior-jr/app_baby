@@ -323,15 +323,21 @@ export const themeService = {
   },
 
   getCurrentPalette(): PaletteTheme {
-    const activeId = localStorage.getItem(THEME_STORAGE_KEY) || 'minimal-dark';
-    const all = this.getAllPalettes();
-    return all.find((p) => p.id === activeId) || all[0];
+    try {
+      const activeId = localStorage.getItem(THEME_STORAGE_KEY) || 'minimal-dark';
+      const all = this.getAllPalettes();
+      return all.find((p) => p.id === activeId) || all[0];
+    } catch {
+      return DEFAULT_PALETTES[0];
+    }
   },
 
   setPalette(paletteId: string): PaletteTheme {
     const all = this.getAllPalettes();
     const found = all.find((p) => p.id === paletteId) || all[0];
-    localStorage.setItem(THEME_STORAGE_KEY, found.id);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, found.id);
+    } catch {}
     this.applyTheme(found);
     listeners.forEach((fn) => fn(found));
     return found;
