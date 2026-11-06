@@ -102,7 +102,25 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
   const [quickLeftover, setQuickLeftover] = useState<number>(0);
   const [isAdjust24hOpen, setIsAdjust24hOpen] = useState(false);
   const [customMinutesInput, setCustomMinutesInput] = useState('');
-  const [centerDisplayMode, setCenterDisplayMode] = useState<'24h' | 'session'>('24h');
+  const [centerDisplayMode, setCenterDisplayMode] = useState<'24h' | 'mamadeira'>('24h');
+  const [bottle24hMl, setBottle24hMl] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('babyjohn_past_bottle_ml_24h');
+      return saved !== null ? parseInt(saved, 10) || 240 : 240;
+    } catch {
+      return 240;
+    }
+  });
+
+  const handleAdjustBottle24hMl = (addedMl: number) => {
+    setBottle24hMl((prev) => {
+      const next = Math.max(0, prev + addedMl);
+      try {
+        localStorage.setItem('babyjohn_past_bottle_ml_24h', String(next));
+      } catch {}
+      return next;
+    });
+  };
   const [isControlsExpanded, setIsControlsExpanded] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('babyjohn_nursing_controls_expanded');
@@ -286,15 +304,14 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => setCenterDisplayMode('session')}
-            className={`px-3 py-1 rounded-lg text-[10.5px] font-extrabold transition cursor-pointer flex items-center gap-1 ${
-              centerDisplayMode === 'session'
-                ? 'bg-purple-600/90 text-white shadow-xs'
+            onClick={() => setCenterDisplayMode('mamadeira')}
+            className={`px-3 py-1 rounded-lg text-[10.5px] font-extrabold transition cursor-pointer ${
+              centerDisplayMode === 'mamadeira'
+                ? 'bg-cyan-600/90 text-white shadow-xs'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            {activeSide && <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-ping shrink-0" />}
-            <span>Sessão</span>
+            Mls
           </button>
         </div>
 
@@ -396,8 +413,8 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
             {centerDisplayMode === '24h' ? (
               <div
                 className="relative cursor-pointer flex flex-col items-center"
-                onClick={() => setCenterDisplayMode('session')}
-                title="Toque para ver a sessão atual"
+                onClick={() => setCenterDisplayMode('mamadeira')}
+                title="Toque para ver os mLs"
               >
                 <span className="text-[10px] text-pink-300 font-bold uppercase tracking-wider mb-0.5">
                   no peito (24h)
@@ -417,27 +434,56 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
               </div>
             ) : (
               <div
-                className="relative cursor-pointer flex flex-col items-center"
+                className="relative cursor-pointer flex flex-col items-center justify-center select-none"
                 onClick={() => setCenterDisplayMode('24h')}
-                title="Toque para ver o total das 24h"
+                title="Toque para ver o total 24h no peito"
               >
-                <span className="text-[10px] text-purple-300 font-bold uppercase tracking-wider mb-0.5">
-                  mamada atual
-                </span>
+                {/* Span principal que traz a quantidade em mLs */}
                 <span
                   className={`font-black tracking-tight text-white leading-none drop-shadow-[0_4px_18px_rgba(0,0,0,0.7)] font-mono transition-all duration-300 ${
                     isControlsExpanded
-                      ? 'text-[30px] xs:text-[34px]'
-                      : 'text-[38px] sm:text-[42px]'
+                      ? 'text-[28px] xs:text-[32px]'
+                      : 'text-[36px] sm:text-[40px]'
                   }`}
                 >
-                  {formatTime(currentSessionSeconds)}
+                  {bottle24hMl} <span className="text-lg sm:text-xl font-extrabold text-cyan-300 font-sans">ml</span>
                 </span>
-                {activeSide && (
-                  <span className="text-[9.5px] text-pink-300 font-bold mt-0.5 animate-pulse">
-                    Peito {activeSide === 'left' ? 'Esquerdo' : 'Direito'}
-                  </span>
-                )}
+
+                {/* Bloco centralizado com "24h" ACIMA de "consumidos" e botões + / - compactos */}
+                <div className="flex items-center justify-center gap-2 mt-1">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAdjustBottle24hMl(-30);
+                    }}
+                    className="w-4.5 h-4.5 rounded-full bg-slate-800/90 hover:bg-slate-700 text-cyan-300 font-bold text-[11px] flex items-center justify-center border border-slate-600 active:scale-90 cursor-pointer shrink-0 shadow-xs"
+                    title="-30ml"
+                  >
+                    -
+                  </button>
+
+                  <div className="flex flex-col items-center leading-none">
+                    <span className="text-[10.5px] font-bold text-cyan-300 tracking-wider uppercase">
+                      24h
+                    </span>
+                    <span className="text-[9.5px] font-medium text-cyan-100/90 tracking-tight mt-0.5">
+                      consumidos
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAdjustBottle24hMl(30);
+                    }}
+                    className="w-4.5 h-4.5 rounded-full bg-slate-800/90 hover:bg-slate-700 text-cyan-300 font-bold text-[11px] flex items-center justify-center border border-slate-600 active:scale-90 cursor-pointer shrink-0 shadow-xs"
+                    title="+30ml"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             )}
           </div>
