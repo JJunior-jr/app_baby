@@ -464,10 +464,10 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
                   </button>
 
                   <div className="flex flex-col items-center leading-none">
-                    <span className="text-[10px] font-bold text-cyan-300 tracking-wider uppercase">
+                    <span className="text-[20px] font-bold text-cyan-300 tracking-wider uppercase">
                       24h
                     </span>
-                    <span className="text-[9px] font-medium text-cyan-100/90 tracking-tight mt-0.5">
+                    <span className="text-[15px] font-medium text-cyan-100/90 tracking-tight mt-0.5">
                       consumidos
                     </span>
                   </div>

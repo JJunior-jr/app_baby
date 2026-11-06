@@ -91,10 +91,29 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     return () => unsub();
   }, []);
 
-  // Sleep state and timers
-  const [isSleeping, setIsSleeping] = useState<boolean>(true);
+  // Sleep state and timers - initialized DEACTIVATED by default unless an active session exists in localStorage
+  const [isSleeping, setIsSleeping] = useState<boolean>(() => {
+    try {
+      const savedStart = localStorage.getItem('babyjohn_active_sleep_start');
+      return savedStart !== null && !isNaN(parseInt(savedStart, 10)) && parseInt(savedStart, 10) > 0;
+    } catch {
+      return false;
+    }
+  });
   const [sleepAnimation, setSleepAnimation] = useState<boolean>(false);
-  const [sleepSeconds, setSleepSeconds] = useState<number>(14 * 60); // Starts at 14m in progress
+  const [sleepSeconds, setSleepSeconds] = useState<number>(() => {
+    try {
+      const savedStart = localStorage.getItem('babyjohn_active_sleep_start');
+      if (savedStart !== null) {
+        const start = parseInt(savedStart, 10);
+        if (!isNaN(start) && start > 0) {
+          return Math.max(0, Math.floor((Date.now() - start) / 1000));
+        }
+      }
+    } catch {}
+    return 0; // Starts at 0
+  });
+
   const [homeViewType, setHomeViewType] = useState<'list' | 'gauge'>(() => {
     try {
       const saved = localStorage.getItem('babyjohn_home_view');
@@ -110,19 +129,70 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       localStorage.setItem('babyjohn_home_view', type);
     } catch {}
   };
-  // UI Visibility Flags (preservando o código original intacto)
-  const isAiAssistantVisible = false; // Desativado para não aparecer na interface do usuário
-  const isBabyJohnVisible = false; // Desabilitado e sem ficar visível na interface do usuário
-  const isRoutineLevelVisible = false; // Desabilitado e sem ficar visível na interface do usuário (contabilização de rotina e nível)
+
+  // UI Visibility Flags
+  const isAiAssistantVisible = false;
+  const isBabyJohnVisible = false;
+  const isRoutineLevelVisible = false;
 
   const [aiQuestion, setAiQuestion] = useState('');
   const [aiResponse, setAiResponse] = useState<string | null>(null);
 
-  // Breastfeeding timer state (item 4)
-  const [activeBreastSide, setActiveBreastSide] = useState<'left' | 'right' | null>(null);
-  const [nursingSeconds, setNursingSeconds] = useState<number>(0);
-  const [leftNursingSeconds, setLeftNursingSeconds] = useState<number>(0);
-  const [rightNursingSeconds, setRightNursingSeconds] = useState<number>(0);
+  // Breastfeeding timer state - initialized DEACTIVATED (null) by default unless active in localStorage
+  const [activeBreastSide, setActiveBreastSide] = useState<'left' | 'right' | null>(() => {
+    try {
+      const savedSide = localStorage.getItem('babyjohn_active_nursing_side');
+      const savedStart = localStorage.getItem('babyjohn_active_nursing_start');
+      if (savedSide && (savedSide === 'left' || savedSide === 'right') && savedStart) {
+        const start = parseInt(savedStart, 10);
+        if (!isNaN(start) && start > 0) {
+          return savedSide as 'left' | 'right';
+        }
+      }
+    } catch {}
+    return null; // Starts deactivated
+  });
+
+  const [leftNursingSeconds, setLeftNursingSeconds] = useState<number>(() => {
+    try {
+      const savedSide = localStorage.getItem('babyjohn_active_nursing_side');
+      const savedStart = localStorage.getItem('babyjohn_active_nursing_start');
+      const savedLeftSecs = localStorage.getItem('babyjohn_active_nursing_left_secs');
+      let base = savedLeftSecs ? parseInt(savedLeftSecs, 10) || 0 : 0;
+      if (savedSide === 'left' && savedStart) {
+        const start = parseInt(savedStart, 10);
+        if (!isNaN(start)) {
+          const elapsed = Math.floor((Date.now() - start) / 1000);
+          if (elapsed > 0) base += elapsed;
+        }
+      }
+      return base;
+    } catch {
+      return 0;
+    }
+  });
+
+  const [rightNursingSeconds, setRightNursingSeconds] = useState<number>(() => {
+    try {
+      const savedSide = localStorage.getItem('babyjohn_active_nursing_side');
+      const savedStart = localStorage.getItem('babyjohn_active_nursing_start');
+      const savedRightSecs = localStorage.getItem('babyjohn_active_nursing_right_secs');
+      let base = savedRightSecs ? parseInt(savedRightSecs, 10) || 0 : 0;
+      if (savedSide === 'right' && savedStart) {
+        const start = parseInt(savedStart, 10);
+        if (!isNaN(start)) {
+          const elapsed = Math.floor((Date.now() - start) / 1000);
+          if (elapsed > 0) base += elapsed;
+        }
+      }
+      return base;
+    } catch {
+      return 0;
+    }
+  });
+
+  const [nursingSeconds, setNursingSeconds] = useState<number>(() => leftNursingSeconds + rightNursingSeconds);
+  const [activeSessionPromptDismissed, setActiveSessionPromptDismissed] = useState<boolean>(false);
   const [gaugeSubView, setGaugeSubView] = useState<'sono' | 'amamentacao' | 'fralda'>(() => {
     try {
       return (localStorage.getItem('babyjohn_gauge_subview') as 'sono' | 'amamentacao' | 'fralda') || 'sono';
@@ -225,7 +295,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Handle side click (item 4)
+  const clearActiveNursingSessionStorage = () => {
+    try {
+      localStorage.removeItem('babyjohn_active_nursing_side');
+      localStorage.removeItem('babyjohn_active_nursing_start');
+      localStorage.removeItem('babyjohn_active_nursing_left_secs');
+      localStorage.removeItem('babyjohn_active_nursing_right_secs');
+    } catch {}
+  };
+
+  const clearActiveSleepSessionStorage = () => {
+    try {
+      localStorage.removeItem('babyjohn_active_sleep_start');
+    } catch {}
+  };
+
+  // Handle side click
   const handleBreastSideClick = (side: 'left' | 'right') => {
     if (activeBreastSide === side) {
       // Toggle off and save
@@ -234,10 +319,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       const sideLabel = side === 'left' ? 'Lado Esquerdo' : 'Lado Direito';
       onQuickTrack('custom', `Amamentação (${sideLabel} - ${minutesElapsed} min)`);
       setActiveBreastSide(null);
+      clearActiveNursingSessionStorage();
       showToast(`Amamentação no ${sideLabel} (${minutesElapsed} min) registrada! 🤱`);
     } else {
       // Switch or start
       setActiveBreastSide(side);
+      try {
+        localStorage.setItem('babyjohn_active_nursing_side', side);
+        localStorage.setItem('babyjohn_active_nursing_start', String(Date.now()));
+      } catch {}
+      setActiveSessionPromptDismissed(false);
       showToast(`Cronômetro iniciado: Lado ${side === 'left' ? 'Esquerdo' : 'Direito'} ⏱️`);
     }
   };
@@ -254,12 +345,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       handleSaveNursingSession(leftM, rightM);
     } else {
       setActiveBreastSide(side);
+      try {
+        localStorage.setItem('babyjohn_active_nursing_side', side);
+        localStorage.setItem('babyjohn_active_nursing_start', String(Date.now()));
+      } catch {}
+      setActiveSessionPromptDismissed(false);
       showToast(`Mamando no lado ${side === 'left' ? 'Esquerdo' : 'Direito'} ▶️`);
     }
   };
 
   const handleResetNursingTimers = () => {
     setActiveBreastSide(null);
+    clearActiveNursingSessionStorage();
     setLeftNursingSeconds(0);
     setRightNursingSeconds(0);
     setNursingSeconds(0);
@@ -367,6 +464,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     }
 
     setActiveBreastSide(null);
+    clearActiveNursingSessionStorage();
     setLeftNursingSeconds(0);
     setRightNursingSeconds(0);
     setNursingSeconds(0);
@@ -405,6 +503,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       setSleepAnimation(true);
       setIsSleeping(true);
       setSleepSeconds(0);
+      try {
+        localStorage.setItem('babyjohn_active_sleep_start', String(Date.now()));
+      } catch {}
+      setActiveSessionPromptDismissed(false);
       onQuickTrack('sleep');
       const emoji = isDaytime ? '☀️' : '🌙';
       const label = isDaytime ? 'Soneca diurna' : 'Sono noturno';
@@ -414,9 +516,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         setSleepAnimation(false);
       }, 1400);
     } else {
-      // If already sleeping, clicking asks to finish or opens fine details
+      // If already sleeping, finish and save
       const durationText = formatSleepTime(sleepSeconds);
       setIsSleeping(false);
+      clearActiveSleepSessionStorage();
       setSleepSeconds(0);
       showToast(`Sono finalizado (${durationText})! John acordou 👶✨`);
     }
@@ -441,6 +544,69 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     }
     showToast(`Mamadeira registrada: ${consumed}ml (${pct}%)! 🍼`);
   };
+
+  const activeSessionPopover = !activeSessionPromptDismissed && (activeBreastSide || isSleeping) ? (
+    <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[420px] p-3.5 rounded-2xl bg-[#1e1b4b]/95 backdrop-blur-xl border-2 border-purple-500/80 shadow-2xl text-white flex flex-col space-y-2 animate-in fade-in slide-in-from-top-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-pink-400 animate-ping shrink-0" />
+          <span className="text-xs font-bold uppercase tracking-wider text-purple-200">
+            Sessão Ativa em Andamento
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setActiveSessionPromptDismissed(true)}
+          className="text-xs text-slate-400 hover:text-white px-1.5 py-0.5 rounded-lg hover:bg-white/10 cursor-pointer"
+          title="Ocultar aviso"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="text-xs text-slate-200 font-medium">
+        {activeBreastSide ? (
+          <span>
+            Amamentação no <strong className="text-pink-300">Lado {activeBreastSide === 'left' ? 'Esquerdo' : 'Direito'}</strong> iniciada há <strong className="font-mono text-amber-300">{formatNursingTime(nursingSeconds)}</strong> min.
+          </span>
+        ) : (
+          <span>
+            Registro de <strong className="text-indigo-300">sono</strong> ativo iniciado há <strong className="font-mono text-amber-300">{formatSleepTime(sleepSeconds)}</strong>.
+          </span>
+        )}
+      </div>
+
+      <div className="flex items-center space-x-2 pt-1">
+        <button
+          type="button"
+          onClick={() => {
+            if (activeBreastSide) {
+              let leftM = Math.round(leftNursingSeconds / 60);
+              let rightM = Math.round(rightNursingSeconds / 60);
+              if (leftM === 0 && rightM === 0) {
+                if (activeBreastSide === 'left' || leftNursingSeconds > 0) leftM = 1;
+                else rightM = 1;
+              }
+              handleSaveNursingSession(leftM, rightM);
+            } else if (isSleeping) {
+              handleSleepClick();
+            }
+            setActiveSessionPromptDismissed(true);
+          }}
+          className="flex-1 py-2 px-3 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow-md active:scale-95 transition cursor-pointer"
+        >
+          ✓ Desativar & Salvar Registro
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveSessionPromptDismissed(true)}
+          className="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 active:scale-95 transition cursor-pointer"
+        >
+          Manter Ativo
+        </button>
+      </div>
+    </div>
+  ) : null;
 
   const gaugeContainerRef = useRef<HTMLDivElement>(null);
 
@@ -541,6 +707,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           onClose={() => setIsFormulaDrawerOpen(false)}
           onConfirm={handleConfirmFormula}
         />
+        {/* Active Session Notification Popover Banner on launch / return */}
+        {activeSessionPopover}
         {/* Toast feedback notification */}
         {toastMessage && (
           <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl bg-[#7158e2] text-white text-xs font-bold shadow-2xl border border-purple-400 flex items-center space-x-2 animate-in fade-in slide-in-from-top-3">
@@ -555,6 +723,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   return (
     <div className="flex-1 overflow-y-auto px-4 sm:px-6 landscape:px-6 pt-2 pb-6 space-y-4 no-scrollbar">
       
+      {/* Active Session Notification Popover Banner on launch / return */}
+      {activeSessionPopover}
       {/* Toast feedback notification */}
       {toastMessage && (
         <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl bg-[#7158e2] text-white text-xs font-bold shadow-2xl border border-purple-400 flex items-center space-x-2 animate-in fade-in slide-in-from-top-3">
