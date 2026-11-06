@@ -319,8 +319,8 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
         <div
           className={`relative flex items-center justify-center shrink-0 transition-all duration-300 ease-out ${
             isControlsExpanded
-              ? 'w-[195px] h-[195px] xs:w-[215px] xs:h-[215px] sm:w-[235px] sm:h-[235px]'
-              : 'w-[250px] h-[250px] xs:w-[270px] xs:h-[270px] sm:w-[285px] sm:h-[285px]'
+              ? 'w-[205px] h-[205px] xs:w-[225px] xs:h-[225px] sm:w-[245px] sm:h-[245px]'
+              : 'w-[260px] h-[260px] xs:w-[280px] xs:h-[280px] sm:w-[290px] sm:h-[290px]'
           }`}
         >
           {/* SVG Arc Gauge with 24 Hours scale markers */}
@@ -407,7 +407,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
           {/* Gauge Center Content: Compact & essential only to fit comfortably inside the ring */}
           <div
             className={`relative z-10 flex flex-col items-center justify-center text-center px-2 transition-all duration-300 ${
-              isControlsExpanded ? 'max-w-[150px]' : 'max-w-[190px]'
+              isControlsExpanded ? 'max-w-[170px]' : 'max-w-[210px]'
             }`}
           >
             {centerDisplayMode === '24h' ? (
@@ -434,7 +434,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
               </div>
             ) : (
               <div
-                className="relative cursor-pointer flex flex-col items-center justify-center select-none"
+                className="relative cursor-pointer flex flex-col items-center justify-center select-none -translate-y-1.5"
                 onClick={() => setCenterDisplayMode('24h')}
                 title="Toque para ver o total 24h no peito"
               >
@@ -449,25 +449,25 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
                   {bottle24hMl} <span className="text-lg sm:text-xl font-extrabold text-cyan-300 font-sans">ml</span>
                 </span>
 
-                {/* Bloco centralizado com "24h" ACIMA de "consumidos" e botões + / - compactos */}
-                <div className="flex items-center justify-center gap-2 mt-1">
+                {/* Bloco centralizado com "24h" ACIMA de "consumidos" e botões + / - ainda mais reduzidos e delicados */}
+                <div className="flex items-center justify-center gap-1.5 mt-0.5">
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleAdjustBottle24hMl(-30);
                     }}
-                    className="w-4.5 h-4.5 rounded-full bg-slate-800/90 hover:bg-slate-700 text-cyan-300 font-bold text-[11px] flex items-center justify-center border border-slate-600 active:scale-90 cursor-pointer shrink-0 shadow-xs"
+                    className="w-3.5 h-3.5 rounded-full bg-slate-800/90 hover:bg-slate-700 text-cyan-300 font-extrabold text-[9px] flex items-center justify-center border border-slate-600/80 active:scale-90 cursor-pointer shrink-0 shadow-xs"
                     title="-30ml"
                   >
                     -
                   </button>
 
                   <div className="flex flex-col items-center leading-none">
-                    <span className="text-[10.5px] font-bold text-cyan-300 tracking-wider uppercase">
+                    <span className="text-[10px] font-bold text-cyan-300 tracking-wider uppercase">
                       24h
                     </span>
-                    <span className="text-[9.5px] font-medium text-cyan-100/90 tracking-tight mt-0.5">
+                    <span className="text-[9px] font-medium text-cyan-100/90 tracking-tight mt-0.5">
                       consumidos
                     </span>
                   </div>
@@ -478,7 +478,7 @@ export const BreastfeedingGaugeView: React.FC<BreastfeedingGaugeViewProps> = ({
                       e.stopPropagation();
                       handleAdjustBottle24hMl(30);
                     }}
-                    className="w-4.5 h-4.5 rounded-full bg-slate-800/90 hover:bg-slate-700 text-cyan-300 font-bold text-[11px] flex items-center justify-center border border-slate-600 active:scale-90 cursor-pointer shrink-0 shadow-xs"
+                    className="w-3.5 h-3.5 rounded-full bg-slate-800/90 hover:bg-slate-700 text-cyan-300 font-extrabold text-[9px] flex items-center justify-center border border-slate-600/80 active:scale-90 cursor-pointer shrink-0 shadow-xs"
                     title="+30ml"
                   >
                     +
